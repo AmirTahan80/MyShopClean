@@ -1,17 +1,12 @@
 ﻿using Application.InterFaces.Admin;
 using Application.InterFaces.Both;
-using Application.Utilities.TagHelper;
 using Application.ViewModels.Admin;
 using Domain.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using MimeKit;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -52,7 +47,7 @@ namespace Application.Services.Admin
             {
                 var isUserNameExist = await _userManager.FindByNameAsync(user.UserName);
                 var isUserEmailExist = await _userManager.FindByEmailAsync(user.UserEmail);
-                if(isUserEmailExist!=null || isUserNameExist!=null)
+                if (isUserEmailExist != null || isUserNameExist != null)
                 {
                     return false;
                 }
@@ -88,14 +83,25 @@ namespace Application.Services.Admin
             }).ToList();
             return usersReturn;
         }
-
+        public async Task<UserDetailViewModel> FinUserById(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            var userReturn = new UserDetailViewModel()
+            {
+                UserId = user.Id,
+                UserName = user.UserName,
+                UserEmail = user.Email,
+                RoleName = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().FirstOrDefault()
+            };
+            return userReturn;
+        }
         public async Task<bool> ConfirmEmailAsync(string userEmail, string token)
         {
             try
             {
                 var findUser = await _userManager.FindByEmailAsync(userEmail);
                 if (findUser == null) return false;
-                var result=await _userManager.ConfirmEmailAsync(findUser, token);
+                var result = await _userManager.ConfirmEmailAsync(findUser, token);
                 if (!result.Succeeded) return false;
                 await _userManager.AddToRoleAsync(findUser, "Customer");
                 return true;
@@ -106,17 +112,17 @@ namespace Application.Services.Admin
                 return false;
             }
         }
-        
+
         //Tag Helpers
         async Task SendEmailAsync(ApplicationUser user, string passForReturn = "ConfirmEmail")
         {
 
             var emailConfiguration = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var callBackUrl = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext,
-    action: passForReturn,"AccountManager",
-     new { userEmail=user.Email,token= emailConfiguration },_httpContextAccessor.HttpContext.Request.Scheme);
+    action: passForReturn, "AccountManager",
+     new { userEmail = user.Email, token = emailConfiguration }, _httpContextAccessor.HttpContext.Request.Scheme);
 
-            string message = "<a href=\""+ callBackUrl + "\" target='_blank' style='font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #FFA73B; display: inline-block;'>تایید اکانت</a>";
+            string message = "<a href=\"" + callBackUrl + "\" target='_blank' style='font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #FFA73B; display: inline-block;'>تایید اکانت</a>";
             //Get TemplateFile located at wwwroot/Templates/EmailTemplate/Register_EmailTemplate.html  
             var pathToFile = _env.WebRootPath
                     + Path.DirectorySeparatorChar.ToString()
@@ -125,7 +131,7 @@ namespace Application.Services.Admin
                     + "EmailTemplate"
                     + Path.DirectorySeparatorChar.ToString()
                     + "EmailConfirmTemplate.html";
-            string builder ;
+            string builder;
             using (StreamReader SourceReader = System.IO.File.OpenText(pathToFile))
             {
                 builder = SourceReader.ReadToEnd();
@@ -153,9 +159,8 @@ namespace Application.Services.Admin
             builder = builder.Replace("{link}", callBackUrl);
             builder = builder.Replace("{userName}", user.UserName);
             builder = builder.Replace("{userEmail}", user.Email);
-            await _messageSender.SendEmailAsync(user.Email,passForReturn, builder, true);
+            await _messageSender.SendEmailAsync(user.Email, passForReturn, builder, true);
         }
 
-        
     }
 }
