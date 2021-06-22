@@ -1,0 +1,214 @@
+﻿@model GetProductsForUserViewModel
+@{ ViewData["Title"] = "خانه"; }
+
+<!--Main Slider Start-->
+
+<h5>Index</h5>
+
+@*<div class="header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="header-img">
+                    <div class="img-item">
+                        <img src="~/Images/Index/@Model.HomePage.IndexImages.Where(i => i.Location == "LeftUp")?.FirstOrDefault()?.ImgSrc "
+                             alt="@(Model.HomePage.IndexImages.Where(i => i.Location == "LeftUp")?.FirstOrDefault()?.Location)">
+                        <a class="img-text" href="/@Model.HomePage.IndexImages.Where(i => i.Location == "LeftUp")?.FirstOrDefault()?.Link">
+                            <p>@Model.HomePage.IndexImages.Where(i => i.Location == "LeftUp")?.FirstOrDefault()?.ImgText</p>
+                        </a>
+                    </div>
+                    <div class="img-item">
+                        <img src="~/Images/Index/@Model.HomePage.IndexImages.Where(i => i.Location == "LeftDown")?.FirstOrDefault()?.ImgSrc"
+                             alt="@Model.HomePage.IndexImages.Where(i => i.Location == "LeftDown")?.FirstOrDefault()?.Location">
+                        <a class="img-text" href="/@Model.HomePage.IndexImages.Where(i => i.Location == "LeftDown")?.FirstOrDefault()?.Link">
+                            <p>@Model.HomePage.IndexImages.Where(i => i.Location == "LeftDown")?.FirstOrDefault()?.ImgText</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="header-slider normal-slider">
+                    @foreach (var item in Model.HomePage.IndexImages.Where(i => i.Location == "Slider").OrderByDescending(i => i.Id))
+                    {
+        <div class="header-slider-item">
+            <img src="~/Images/Index/@item.ImgSrc" alt="@item.Location"/>
+            <div class="header-slider-caption">
+                <p>@item.ImgText</p>
+
+                <div class="product-action">
+                    <a class="btn" href="/@item.Link"><i class="fa fa-book-open"></i></a>
+                    <a class="btn" asp-action="AddToCart" asp-controller="Cart" asp-route-ProductId="@item.Id"><i class="fa fa-shopping-cart"></i></a>
+
+                </div>
+            </div>
+        </div>}
+                </div>
+            </div>
+            <div class="col-md-3" style="text-align:right" dir="rtl">
+                <nav class="navbar bg-light">
+                    @{await Html.RenderPartialAsync("_CategoryRightPartial");}
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+<!--Main Slider End-->
+<!--Recent Product Start-->
+
+@*<div class="featured-product product">
+    <div class="container-fluid">
+        <div class="section-header">
+            <h1 style="text-align:center">محصولات جدید</h1>
+        </div>
+        <div class="row align-items-center product-slider product-slider-4">
+            @{ foreach (var item in Model.HomePage.Products.OrderByDescending(i => i.Id))
+                {
+                <div class="col-lg-5">
+                    <div class="product-item">
+                        <div class="product-title">
+                            <a asp-action="Detail" asp-controller="Product" asp-route-Id="@item.Id">@item.Name</a>
+                            <div class="ratting">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                        </div>
+                        <div class="product-image" style="max-height:330px;">
+                            <a asp-action="Detail" asp-controller="Product" asp-route-Id="@item.Id">
+                                <img style="height:100%;" src="~/Images/ProductImages/@item.ImageSrc" alt="@item.Name">
+                            </a>
+                            <div class="product-action">
+                                <a asp-action="Detail" asp-controller="Product" asp-route-Id="@item.Id"><i class="fa fa-book-open"></i></a>
+                                <a asp-action="AddToCart" asp-controller="Cart" asp-route-ProductId="@item.Id"><i class="fa fa-cart-plus"></i></a>
+                            </div>
+                        </div>
+                        <div class="product-price">
+                            <h3>@item.Price<span>تومان</span></h3>
+                        </div>
+                    </div>
+                </div> } }
+        </div>
+    </div>
+</div>*@
+
+<!--Recent Product End-->
+<!--Category Start-->
+
+@*<div class="category">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="category-item ch-400">
+                    <img src="~/Images/Index/@Model.HomePage.IndexImages.Where(i => i.Location == "CenterLeft")?.FirstOrDefault()?.ImgSrc"
+                         alt="@Model.HomePage.IndexImages.Where(i => i.Location == "CenterLeft")?.FirstOrDefault()?.Location">
+                    <a class="category-name" href="/@Model.HomePage.IndexImages.Where(i => i.Location == "CenterLeft")?.FirstOrDefault()?.Link">
+                        <p>@Model.HomePage.IndexImages.Where(i => i.Location == "CenterLeft")?.FirstOrDefault()?.ImgText</p>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="category-item ch-250">
+                    <img src="~/Images/Index/@Model.HomePage.IndexImages.Where(i => i.Location == "CenterLeftTop")?.FirstOrDefault()?.ImgSrc"
+                         alt="@Model.HomePage.IndexImages.Where(i => i.Location == "CenterLeftTop")?.FirstOrDefault()?.Location">
+                    <a class="category-name" href="/@Model.HomePage.IndexImages.Where(i => i.Location == "CenterLeftTop")?.FirstOrDefault()?.Link">
+                        <p>@Model.HomePage.IndexImages.Where(i => i.Location == "CenterLeftTop")?.FirstOrDefault()?.ImgText</p>
+                    </a>
+                </div>
+                <div class="category-item ch-150">
+                    <img src="~/Images/Index/@Model.HomePage.IndexImages.Where(i => i.Location == "CenterLeftBottom")?.FirstOrDefault()?.ImgSrc"
+                         alt="@Model.HomePage.IndexImages.Where(i => i.Location == "CenterLeftBottom")?.FirstOrDefault()?.Location">
+                    <a class="category-name" href="/@Model.HomePage.IndexImages.Where(i => i.Location == "CenterLeftBottom")?.FirstOrDefault()?.Link">
+                        <p>@Model.HomePage.IndexImages.Where(i => i.Location == "CenterLeftBottom")?.FirstOrDefault()?.ImgText</p>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="category-item ch-150">
+                    <img src="~/Images/Index/@Model.HomePage.IndexImages.Where(i => i.Location == "CenterRightTop")?.FirstOrDefault()?.ImgSrc"
+                         alt="@Model.HomePage.IndexImages.Where(i => i.Location == "CenterRightTop")?.FirstOrDefault()?.Location">
+                    <a class="category-name" href="/@Model.HomePage.IndexImages.Where(i => i.Location == "CenterRightTop")?.FirstOrDefault()?.Link">
+                        <p>@Model.HomePage.IndexImages.Where(i => i.Location == "CenterRightTop")?.FirstOrDefault()?.ImgText</p>
+                    </a>
+                </div>
+                <div class="category-item ch-250">
+                    <img src="~/Images/Index/@Model.HomePage.IndexImages.Where(i => i.Location == "CenterRightBottom")?.FirstOrDefault()?.ImgSrc"
+                         alt="@Model.HomePage.IndexImages.Where(i => i.Location == "CenterRightBottom")?.FirstOrDefault()?.Location">
+                    <a class="category-name" href="/@Model.HomePage.IndexImages.Where(i => i.Location == "CenterRightBottom")?.FirstOrDefault()?.Link">
+                        <p>@Model.HomePage.IndexImages.Where(i => i.Location == "CenterRightBottom")?.FirstOrDefault()?.ImgText</p>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="category-item ch-400">
+                    <img src="~/Images/Index/@Model.HomePage.IndexImages.Where(i => i.Location == "CenterRight")?.FirstOrDefault()?.ImgSrc"
+                         alt="@Model.HomePage.IndexImages.Where(i => i.Location == "CenterRight")?.FirstOrDefault()?.Location">
+                    <a class="category-name" href="/@Model.HomePage.IndexImages.Where(i => i.Location == "CenterRight")?.FirstOrDefault()?.Link">
+                        <p>@Model.HomePage.IndexImages.Where(i => i.Location == "CenterRight")?.FirstOrDefault()?.ImgText</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+<!--Category End-->
+<!--Featured Product Start-->
+
+@*<div class="recent-product product">
+    <div class="container-fluid">
+        <div class="section-header">
+            <h1 style="text-align:center">محصولات برتر</h1>
+        </div>
+        <div class="row align-items-center product-slider product-slider-4">
+            @{ foreach (var item in Model.HomePage.Products.OrderBy(p => p.Price))
+                {
+                <div class="col-lg-5">
+                    <div class="product-item">
+                        <div class="product-title">
+                            <a asp-action="Detail" asp-controller="Product" asp-route-Id="@item.Id">@item.Name</a>
+                            <div class="ratting">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                        </div>
+                        <div class="product-image" style="max-height:330px;max-width:330px;">
+                            <a asp-action="Detail" asp-controller="Product" asp-route-Id="@item.Id">
+                                <img style="height:100%;width:100%;" src="~/Images/ProductImages/@item.ImageSrc" alt="@item.Name">
+                            </a>
+                            <div class="product-action">
+                                <a asp-action="Detail" asp-controller="Product" asp-route-Id="@item.Id"><i class="fa fa-book-open"></i>جزئیات</a>
+                                <a asp-action="AddToCart" asp-controller="Cart" asp-route-ProductId="@item.Id"><i class="fa fa-cart-plus"></i>خرید</a>
+                            </div>
+                        </div>
+                        <div class="product-price">
+                            <h3>@item.Price<span>تومان</span></h3>
+                        </div>
+                    </div>
+                </div> } }
+        </div>
+    </div>
+</div>*@
+
+<!--Featured Product End-->
+<!--Call Action Start-->
+
+@*<div class="call-to-action">
+    <div class="container-fluid">
+        <div class="row align-items-center" dir="rtl">
+            <div class="col-md-6">
+                <h1>با ما در تماس باشید</h1>
+            </div>
+            <div class="col-md-6">
+                <a href="tel:@Model.HomePage.AdminPhone">@Model.HomePage.AdminPhone</a>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+<!--Call Action End-->

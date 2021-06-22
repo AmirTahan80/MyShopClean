@@ -1,0 +1,95 @@
+﻿@model GetCategoryViewModel
+@{
+    ViewData["Title"] = "ویرایش دسته";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    string hasChild, parentName;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title-wrap bar-success">
+                    <h4 class="card-title" id="basic-layout-form">جزئیات دسته بندی @Model.Name</h4>
+                </div>
+                <p class="mb-0">دسته بندی خود را مشاهده ، ویراش و حذف کنید.</p>
+                @{ if (Model.HasChild == true)
+                    {
+                        hasChild = "زیر مجموعه است";
+                    }
+                    else
+                    {
+                        hasChild = "زیر مجموعه نیست";
+                    }
+                    if (Model.Parent != null)
+                    {
+                        parentName = Model.Parent.Name;
+                    }
+                    else
+                    {
+                        parentName = "---";
+                    }
+                }
+                <small>دسته بندی @Model.Name زیر مجموعه @parentName است و دارای @hasChild  </small>
+            </div>
+            <div class="card-body">
+                <div class="px-3">
+                    <form class="form" asp-action="EditCategory" asp-controller="CategoryManager" method="post">
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput1">نام دسته بندی</label>
+                                        <input class="form-control round" asp-for="Name" required autofocus/>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2">پدر دسته بندی</label>
+                                        <select class="custom-select d-block w-100 round"
+                                                asp-for="ParentId" asp-items="Model.Categories">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="col-md-12">توضیحاتی در مورد دسته</label>
+                                        <div class="col-md-12">
+                                            <textarea rows="10" style="width:100%" asp-for="Detail" class="round p-1"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <input type="hidden" class="hide" readonly asp-for="Id" />
+                                <button type="submit" class="btn btn-success">
+                                    <i class="icon-pencil"></i> ویرایش
+                                </button>
+                                <a asp-action="Index" asp-controller="CategoryManager" class="btn btn-primary">
+                                    برگشت به لیست
+                                </a>
+                            </div>
+                            @if (ViewData["Success"] != null)
+                            {
+                                <div class="alert alert-success round">
+                                    <p><strong>موفقیت ! </strong>@ViewData["Success"]</p>
+                                </div>
+                            }
+                            @if (ViewData["Error"] != null)
+                            {
+                                <div class="alert alert-danger round">
+                                    <p><strong>خطا ! </strong>@ViewData["Error"]</p>
+                                </div>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

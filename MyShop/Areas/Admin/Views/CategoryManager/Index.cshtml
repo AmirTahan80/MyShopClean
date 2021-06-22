@@ -1,0 +1,81 @@
+@model IList<GetCategoryViewModel>
+@{ ViewData["Title"] = "لیست دسته ها";
+    int i = 1; }
+<!--Extended Table starts-->
+<section id="extended">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title-wrap bar-success">
+                        <h4 class="card-title">لیست دسته بندی ها</h4>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Error"] != null)
+                    {
+                <div class="aler alert-danger round m-2 p-2">
+                    <p>
+                        <strong>خطا ! </strong>@TempData["Error"]
+                    </p>
+                </div>}
+                    @if (TempData["Success"] != null)
+                    {
+                <div class="aler alert-success round m-2 p-2">
+                    <p>
+                        <strong>موفقیت ! </strong>@TempData["Success"]
+                    </p>
+                </div>}
+                    <div class="card-block">
+                        <form asp-action="DeleteCategory" asp-controller="CategoryManager">
+                            <table class="table table-responsive-md text-center">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th>
+                                            <button class="btn btn-outline-danger"
+                                                    type="submit">
+                                                <i class="icon-trash"></i>
+                                            </button>
+                                        </th>
+                                        <th>نام دسته</th>
+                                        <th>دسته پدر</th>
+                                        <th>نام دسته پدر</th>
+                                        <th>عملیات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <tbody>
+                                    @for (int b = 0; b < Model.Count(); b++)
+                                    {
+                        <tr>
+                            <th scope="row">@i</th>
+                            <td>
+                                <input asp-for="@Model[b].IsSelected" />
+                                <input type="hidden" asp-for="@Model[b].Id" />
+                            </td>
+                            <td>@Model[b].Name</td>
+                            <td>@(Model[b].Parent ==null? "بله":"حیر") </td>
+                            <td>
+                                @{ string parentName = Model[b].Parent != null ? Model[b].Parent.Name : "-"; } <text>@parentName</text>
+                            </td>
+                            <td>
+                                <a class="btn btn-outline-primary"
+                                   asp-action="EditCategory" asp-controller="CategoryManager"
+                                   asp-route-categoryId="@Model[b].Id">
+                                    جزئیات
+                                </a>
+                            </td>
+                        </tr>
+i++;
+                    }
+                                </tbody>
+                            </table>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Extended Table Ends-->

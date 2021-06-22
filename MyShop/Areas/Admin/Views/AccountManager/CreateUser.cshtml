@@ -1,0 +1,81 @@
+﻿@model CreateAccountViewModel
+@{
+    ViewData["Title"] = "ساخت اکانت کاربری";
+}
+<!-- Inputs Icons start -->
+<section class="inputs-icons">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title-wrap bar-primary">
+                        <h4 class="card-title mb-0">افزودن اکانت کاربری</h4>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="px-3">
+                        <form class="form" method="POST" asp-action="CreateUser" asp-controller="AccountManager">
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <p>نام کاربری</p>
+                                            <div class="position-relative has-icon-left">
+                                                <input asp-for="UserName" required autofocus class="form-control round">
+                                                <span asp-validation-for="UserName" class="red"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <p>ایمیل کاربر (پست الکترونیکی(</p>
+                                            <input asp-for="UserEmail" required class="form-control round">
+                                            <span asp-validation-for="UserEmail" class="red"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <p>گذرواژه</p>
+                                            <input asp-for="UserPassWord" required class="form-control round">
+                                            <span asp-validation-for="UserPassWord" class="red"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <p>تکرار گذرواژه</p>
+                                            <input asp-for="UserRePassWord" required class="form-control round">
+                                            <span asp-validation-for="UserRePassWord" class="red"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-12">
+                                        <div class="form-group">
+                                            <div class="position-relative has-icon-left">
+                                                <button type="submit" class="btn btn-success">
+                                                    <i class="icon-note"></i> ذخیره
+                                                </button>
+                                            </div>
+                                            @if (ViewData["Error"] != null)
+                                            {
+                                                <div class="alert alert-danger round">
+                                                    <strong>خطا! </strong>  @ViewData["Error"]
+                                                </div>}
+                                            @if (ViewData["Success"] != null)
+                                            {
+                                                <div class="alert alert-success round">
+                                                    <strong>موفقیت! </strong>  @ViewData["Success"]
+                                                </div>}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Inputs Icons end -->
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,38 @@
+﻿@model ICollection<GetPrivacySettingViewModel>
+@{ ViewData["Title"] = "قوانین سایت "; }
+<!-- Breadcrumb Start -->
+<div class="breadcrumb-wrap">
+    <div class="container-fluid" dir="rtl" style="text-align:right">
+        <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">خانه</a></li>
+            <li class="breadcrumb-item"><a asp-action="Privacy" asp-controller="Home">قوانین</a></li>
+            <li class="breadcrumb-item active">قوانین سایت</li>
+        </ul>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+@if (Model == null)
+{
+<div class="alert alert-warning">چیزی برای نمایش وجود ندارد</div>
+                <div class="col-md-12">
+                    <a asp-action="Index" asp-controller="Home" class="btn btn-outline-light"><i class="fa fa-home"></i>خانه</a>
+                </div> }
+            else
+            {
+@foreach (var item in Model)
+{
+
+<div class="rtl" dir="rtl" style="text-align:right">
+    <div class="col-md-12">
+        <div class="col-md-6">
+            <h1>@item.Title</h1>
+        </div>
+        <div class="col-md-12">
+            <p>@item.Description</p>
+        </div>
+    </div>
+</div>}
+                <div class="col-md-12">
+                    <a asp-action="Index" asp-controller="Home" class="btn btn-outline-light"><i class="fa fa-home"></i>خانه</a>
+                </div>}
+
