@@ -12,6 +12,7 @@ namespace Application.InterFaces.Admin
     {
         Task<bool> CreateUserByEmailAndPass(CreateAccountViewModel user, string userPassword);
         Task<IList<UsersListViewModel>> GetAllUsersListAsync();
+        Task<UserDetailViewModel> FinUserById(string userId);
         Task<bool> ConfirmEmailAsync(string userName, string token);
     }
 }
