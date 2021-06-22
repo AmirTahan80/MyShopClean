@@ -21,6 +21,6 @@ namespace Domain.Models
         //Navigation
         [ForeignKey("AdjectiveId")]
         public Adjective Adjective { get; set; }
-        public ICollection<SubValue> SubValues { get; set; }
+        public SubValue SubValue { get; set; }
     }
 }

@@ -15,5 +15,6 @@ namespace Application.ViewModels.Admin
 
         //Navigation
         public ValueViewModel Value { get; set; }
+        public SubValueViewModel SubValue { get; set; }
     }
 }

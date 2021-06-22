@@ -158,7 +158,7 @@ namespace Application.Services.Admin
                             Product = productForAdd
                         });
                     }
-                    await _productRepository.AddProductProperties(productproperties);
+                    await _productRepository.AddProductPropertiesAsync(productproperties);
                 }
 
                 var images = new List<(string src, string fileName)>();
@@ -180,7 +180,8 @@ namespace Application.Services.Admin
 
                 if (addProduct.Adjectives != null)
                 {
-                    void AddAdjective(IEnumerable<AdjectiveViewModel> t)
+                    await AddAdjective(addProduct.Adjectives);
+                    async Task AddAdjective(IEnumerable<AdjectiveViewModel> t)
                     {
                         var adjective = new List<Adjective>();
                         foreach (var item in t)
@@ -190,16 +191,60 @@ namespace Application.Services.Admin
                                 AdjectiveName = item.AdjectiveName,
                                 ProductId = productForAdd.Id,
                             };
-                            adjective.Add
+                            await _productRepository.AddProductAdjectivesAsync(singleAdjective);
+                            if(item.Values!=null)
+                            {
+                                foreach (var value in item.Values)
+                                {
+                                    var valueReturn = await GetAdjectiveValue(value,item.AdjectiveId);
+                                    singleAdjective.Values.Add(valueReturn);
+                                }
+                            }
+                            adjective.Add(singleAdjective);
                         }
                     }
-                    void GetAdjectiveValue(IEnumerable<ValueViewModel> t)
+                    async Task<Value> GetAdjectiveValue(ValueViewModel t,int adjectiveId)
                     {
-                        var value = new List<Value>();
-                        foreach (var item in collection)
+                        var value = new Value()
                         {
-
+                            ValueName = t.ValueName,
+                            AdjectiveId = adjectiveId,
+                            ValueCount = t.Count,
+                            ValuePrice = t.Price
+                        };
+                        await _productRepository.AddProductAdjectiveValuesAsync(value);
+                        if(t.SubValue!=null)
+                        {
+                            var subValueReturn =await GetSubValue(t.SubValue,null);
+                            value.SubValue = new SubValue()
+                            {
+                                SubValueName = subValueReturn.SubValueName,
+                                ValueId = value.ValueId,
+                                Valuetype = subValueReturn.Valuetype
+                            };
                         }
+                        return value;
+                    }
+                    async Task<SubValue> GetSubValue(SubValueViewModel t,int? parentId)
+                    {
+                        var subvalue = new SubValue()
+                        {
+                            SubValueName = t.SubValueName,
+                            Valuetype = t.Valuetype,
+                            ParentId=parentId
+                        };
+                        await _productRepository.AddProductAdjectiveValueSubValueAsync(subvalue);
+                        if(t.SubValue!=null)
+                        {
+                            var subValueReturn = await GetSubValue(t.SubValue,subvalue.SubValueId);
+                            subvalue.GetSubValue = new SubValue()
+                            {
+                                SubValueName = subValueReturn.SubValueName,
+                                ParentId = subValueReturn.ParentId,
+                                Valuetype = subValueReturn.Valuetype
+                            };
+                        }
+                        return subvalue;
                     }
                 }
 

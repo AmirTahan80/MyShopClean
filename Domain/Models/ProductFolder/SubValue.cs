@@ -14,7 +14,10 @@ namespace Domain.Models
         [Required]
         public int ValueId { get; set; }
 
+        public int? ParentId { get; set; }
+
         [ForeignKey("ValueId")]
         public Value Value { get; set; }
+        public SubValue GetSubValue { get; set; }
     }
 }

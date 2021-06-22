@@ -57,36 +57,36 @@ namespace Data.Repositories.AdminRepositories
         {
             await _context.ProductImages.AddRangeAsync(t);
         }
-        public async Task AddProductProperties(IEnumerable<ProductProperty> t)
+        public async Task AddProductPropertiesAsync(IEnumerable<ProductProperty> t)
         {
             await _context.ProductProperties.AddRangeAsync(t);
         }
-        public async Task AddProductAdjectives(IEnumerable<Adjective> t)
+        public async Task AddProductAdjectivesAsync(IEnumerable<Adjective> t)
         {
             await _context.Adjectives.AddRangeAsync(t);
         }
 
-        public async Task AddProductAdjectives(Adjective t)
+        public async Task AddProductAdjectivesAsync(Adjective t)
         {
             await _context.Adjectives.AddAsync(t);
         }
 
-        public async Task AddProductAdjectiveValues(IEnumerable<Value> t)
+        public async Task AddProductAdjectiveValuesAsync(IEnumerable<Value> t)
         {
             await _context.Values.AddRangeAsync(t);
         }
 
-        public async Task AddProductAdjectiveValues(Value t)
+        public async Task AddProductAdjectiveValuesAsync(Value t)
         {
             await _context.Values.AddAsync(t);
         }
 
-        public async Task AddProductAdjectiveValueSubValue(IEnumerable<SubValue> t)
+        public async Task AddProductAdjectiveValueSubValueAsync(IEnumerable<SubValue> t)
         {
             await _context.SubValues.AddRangeAsync(t);
         }
 
-        public async Task AddProductAdjectiveValueSubValue(SubValue t)
+        public async Task AddProductAdjectiveValueSubValueAsync(SubValue t)
         {
             await _context.SubValues.AddAsync(t);
         }
