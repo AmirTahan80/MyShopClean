@@ -26,7 +26,7 @@ namespace Data.Repositories.AdminRepositories
         }
         public async Task<Product> GetProductAsync(int productId)
         {
-            var product = await _context.Products.Include(p => p.ProductImages).Include(p=>p.Properties)
+            var product = await _context.Products.Include(p => p.ProductImages).Include(p => p.Properties)
                 .SingleOrDefaultAsync(p => p.Id == productId);
             return product;
         }
@@ -61,6 +61,36 @@ namespace Data.Repositories.AdminRepositories
         {
             await _context.ProductProperties.AddRangeAsync(t);
         }
+        public async Task AddProductAdjectives(IEnumerable<Adjective> t)
+        {
+            await _context.Adjectives.AddRangeAsync(t);
+        }
+
+        public async Task AddProductAdjectives(Adjective t)
+        {
+            await _context.Adjectives.AddAsync(t);
+        }
+
+        public async Task AddProductAdjectiveValues(IEnumerable<Value> t)
+        {
+            await _context.Values.AddRangeAsync(t);
+        }
+
+        public async Task AddProductAdjectiveValues(Value t)
+        {
+            await _context.Values.AddAsync(t);
+        }
+
+        public async Task AddProductAdjectiveValueSubValue(IEnumerable<SubValue> t)
+        {
+            await _context.SubValues.AddRangeAsync(t);
+        }
+
+        public async Task AddProductAdjectiveValueSubValue(SubValue t)
+        {
+            await _context.SubValues.AddAsync(t);
+        }
+
         public void DeleteProduct(Product t)
         {
             _context.Products.Remove(t);

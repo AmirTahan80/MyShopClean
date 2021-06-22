@@ -93,7 +93,7 @@ namespace Application.Services.Admin
                 {
                     var product = await _productRepository.GetProductAsync(productId);
                     productsList.Add(product);
-                    productImagesList=product.ProductImages.ToList();
+                    productImagesList = product.ProductImages.ToList();
                     productPropertiesList = product.Properties.ToList();
                 }
                 if (productImagesList != null)
@@ -177,6 +177,31 @@ namespace Application.Services.Admin
                     ProductId = productForAdd.Id
                 });
                 await _productRepository.AddProductImagesAsync(uploadProductImages);
+
+                if (addProduct.Adjectives != null)
+                {
+                    void AddAdjective(IEnumerable<AdjectiveViewModel> t)
+                    {
+                        var adjective = new List<Adjective>();
+                        foreach (var item in t)
+                        {
+                            var singleAdjective = new Adjective()
+                            {
+                                AdjectiveName = item.AdjectiveName,
+                                ProductId = productForAdd.Id,
+                            };
+                            adjective.Add
+                        }
+                    }
+                    void GetAdjectiveValue(IEnumerable<ValueViewModel> t)
+                    {
+                        var value = new List<Value>();
+                        foreach (var item in collection)
+                        {
+
+                        }
+                    }
+                }
 
                 await _productRepository.SaveAsync();
                 return true;
