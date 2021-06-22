@@ -35,5 +35,12 @@ namespace Application.InterFaces.Admin
         /// <param name="token"></param>
         /// <returns>bool : True or False</returns>
         Task<bool> ConfirmEmailAsync(string userName, string token);
+        /// <summary>
+        /// ویرایش کاربر
+        /// Edit User
+        /// </summary>
+        /// <param name="editUser"></param>
+        /// <returns>bool : True or False</returns>
+        Task<bool> EditUserAsync(UserDetailViewModel editUser);
     }
 }

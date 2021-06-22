@@ -54,7 +54,22 @@ namespace MyShop.Areas.Admin.Controllers
             var user = await _accountServices.FinUserById(userId);
             return View(user);
         }
+        [HttpPost]
+        public async Task<IActionResult> EditUser(UserDetailViewModel model)
+        {
+            if(!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var result = await _accountServices.EditUserAsync(model);
 
+            if (result)
+                ViewData["Success"] = "عملیات ویرایش با موفقیت انجام شد !";
+            else
+                ViewData["Error"] = "عملیات ویرایش با موفقیت انجام نشد !";
+
+            return View();
+        }
 
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail(string userEmail, string token)

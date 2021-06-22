@@ -112,7 +112,42 @@ namespace Application.Services.Admin
                 return false;
             }
         }
-
+        public async Task<bool> EditUserAsync(UserDetailViewModel editUser)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(editUser.UserId);
+                if (user == null) return false;
+                var updateUser = new ApplicationUser()
+                {
+                    UserName = editUser.UserName,
+                    Email = editUser.UserEmail,
+                };
+                var userRole = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().SingleOrDefault();
+                if (userRole != editUser.RoleName)
+                {
+                    var resultFordeleteRole = await _userManager.RemoveFromRoleAsync(user, userRole);
+                    if (!resultFordeleteRole.Succeeded)
+                        return false;
+                    else
+                    {
+                        var resultForAddToRole = await _userManager.AddToRoleAsync(user, editUser.RoleName);
+                        if (!resultForAddToRole.Succeeded)
+                            return false;
+                    }
+                }
+                var result = await _userManager.UpdateAsync(updateUser);
+                if (result.Succeeded)
+                    return true;
+                else
+                    return false;
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine(error);
+                return false;
+            }
+        }
         //Tag Helpers
         async Task SendEmailAsync(ApplicationUser user, string passForReturn = "ConfirmEmail")
         {
@@ -161,6 +196,7 @@ namespace Application.Services.Admin
             builder = builder.Replace("{userEmail}", user.Email);
             await _messageSender.SendEmailAsync(user.Email, passForReturn, builder, true);
         }
+
 
     }
 }
