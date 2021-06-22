@@ -48,6 +48,13 @@ namespace MyShop.Areas.Admin.Controllers
             return View();
 
         }
+        [HttpGet]
+        public async Task<IActionResult> EditUser(string userId)
+        {
+            var user = await _accountServices.FinUserById(userId);
+            return View(user);
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail(string userEmail, string token)

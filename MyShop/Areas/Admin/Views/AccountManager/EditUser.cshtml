@@ -1,0 +1,75 @@
+﻿@model UserDetailViewModel
+@{
+    ViewData["Title"] = "ویرایش کاربر";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title-wrap bar-success">
+                    <h4 class="card-title" id="basic-layout-form">جزئیات کاربر @Model.UserName</h4>
+                </div>
+                <p class="mb-0">کاربر را مشاهده ، ویراش و حذف کنید.</p>
+                <small>کاربر @Model.UserName دارای مقام @Model.RoleName است.</small>
+            </div>
+            <div class="card-body">
+                <div class="px-3">
+                    <form class="form" asp-action="EditUser" asp-controller="AccountManager" method="post">
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput1">نام کاربری</label>
+                                        <input class="form-control round" asp-for="UserName" required autofocus />
+                                        <span asp-validation-for="UserName" class="red"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2">ایمیل</label>
+                                        <input asp-for="UserEmail" class="round form-control" required />
+                                        <span class="red" asp-validation-for="UserEmail"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="projectinput2">مقام کاربر</label>
+                                        <input asp-for="UserEmail" class="round form-control" required />
+                                        <span class="red" asp-validation-for="UserEmail"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <input type="hidden" class="hide" readonly asp-for="UserId" />
+                                <button type="submit" class="btn btn-success">
+                                    <i class="icon-pencil"></i> ویرایش
+                                </button>
+                                <a asp-action="Index" asp-controller="AccountManager" class="btn btn-primary">
+                                    برگشت به لیست
+                                </a>
+                            </div>
+                            @if (ViewData["Success"] != null)
+                            {
+                                <div class="alert alert-success round">
+                                    <p><strong>موفقیت ! </strong>@ViewData["Success"]</p>
+                                </div>
+                            }
+                            @if (ViewData["Error"] != null)
+                            {
+                                <div class="alert alert-danger round">
+                                    <p><strong>خطا ! </strong>@ViewData["Error"]</p>
+                                </div>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
