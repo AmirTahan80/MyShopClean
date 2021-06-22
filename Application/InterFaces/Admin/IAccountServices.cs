@@ -12,20 +12,20 @@ namespace Application.InterFaces.Admin
         /// </summary>
         /// <param name="user"></param>
         /// <param name="userPassword"></param>
-        /// <returns></returns>
+        /// <returns>bool : True or False</returns>
         Task<bool> CreateUserByEmailAndPass(CreateAccountViewModel user, string userPassword);
         /// <summary>
         /// گرفتن تمام کاربران از دیتابیس
         /// Get All Users From Data Base
         /// </summary>
-        /// <returns></returns>
+        /// <returns>IList<UsersListViewModel></returns>
         Task<IList<UsersListViewModel>> GetAllUsersListAsync();
         /// <summary>
         /// یافتن و یا پیداکردن یک کاربر با آیدی
         /// Find an User from Id
         /// </summary>
         /// <param name="userId"></param>
-        /// <returns></returns>
+        /// <returns>UserDetailViewModel</returns>
         Task<UserDetailViewModel> FinUserById(string userId);
         /// <summary>
         /// ساخت و جنریت لینک برای تاییدیه ایمیل و ارسال به جیمیل کاربر
@@ -33,7 +33,7 @@ namespace Application.InterFaces.Admin
         /// </summary>
         /// <param name="userName"></param>
         /// <param name="token"></param>
-        /// <returns></returns>
+        /// <returns>bool : True or False</returns>
         Task<bool> ConfirmEmailAsync(string userName, string token);
     }
 }
