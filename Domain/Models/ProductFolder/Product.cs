@@ -28,5 +28,6 @@ namespace Domain.Models
         public Category Category { get; set; }
         public ICollection<ProductImages> ProductImages { get; set; }
         public ICollection<ProductProperty> Properties { get; set; }
+        public Adjective Adjective { get; set; }
     }
 }
