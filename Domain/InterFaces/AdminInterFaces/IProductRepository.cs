@@ -1,12 +1,10 @@
-using System.Threading.Tasks;
-using System;
-using System.Collections.Generic;
 using Domain.Models;
-using Domain.InterFaces;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Domain.InterFaces.AdminInterFaces
 {
-    public interface IProductRepository: ISaveInterFaces
+    public interface IProductRepository : ISaveInterFaces
     {
         Task<IEnumerable<Product>> GetAllProductsAsync();
         Task<Product> GetProductAsync(int productId);
@@ -18,6 +16,11 @@ namespace Domain.InterFaces.AdminInterFaces
         Task AddProductAsync(Product t);
         Task AddProductImagesAsync(IEnumerable<ProductImages> t);
         Task AddProductProperties(IEnumerable<ProductProperty> t);
+
+        Task AddProductAdjectives(IEnumerable<Adjective> t);
+        Task AddPRoductAdjectiveValues(IEnumerable<Value> t);
+        Task AddProductAdjectiveValueSubValue(IEnumerable<SubValue> t);
+
         void DeleteProduct(Product t);
         void DeleteProduct(IEnumerable<Product> t);
         void DeletePhoto(ProductImages t);
