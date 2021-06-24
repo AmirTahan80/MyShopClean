@@ -27,6 +27,9 @@ namespace Application.ViewModels.Admin
         public List<string> ValueName { get; set; }
         public List<string> ValueType { get; set; }
 
+        public List<string> AdjectiveName { get; set; }
+        public List<string> AdjectiveValue { get; set; }
+
         // NavigationBar
 
         [Required(ErrorMessage = "این فیلد اجباری است")]

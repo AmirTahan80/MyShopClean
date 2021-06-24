@@ -85,6 +85,19 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-md-12 col-12">
+                                        <div class="form-group">
+                                            <label>صفات</label>
+                                            <div class="row col-md-12 col-12" id="product-Adjective">
+                                                <button type="button" class="btn btn-success" id="addAdjective">افزودن صفات</button>
+                                                <p>
+                                                    <div class="col-md-12 p-1 m-1 flex-row" id="adjectiveDiv">
+
+                                                    </div>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <div class="position-relative has-icon-left">
@@ -230,15 +243,37 @@
 
         //Add Informations Button Scripts
 
-        var content = "<div class='row mb-2'><div class='col' ><input type='text' required name='ValueType' class='form-control round' placeholder='نام'></div><div class='col'><input type='text' name='ValueName' class='form-control round' required placeholder='مقدار'></div><div class='col'><button type='button' class='btn btn-danger remove-information-btn'><i class='fa fa-trash' aria-hidden='true'></i></button></div></div>";
+        var contentInforMation = "<div class='row mb-2 border'><div class='col' ><input type='text' required name='ValueType' class='form-control round' placeholder='نام'></div><div class='col'><input type='text' name='ValueName' class='form-control round' required placeholder='مقدار'></div><div class='col'><button type='button' class='btn btn-danger remove-information-btn'><i class='fa fa-trash' aria-hidden='true'></i></button></div></div>";
         $("#add-information-btn").click(function () {
-            $(content).insertBefore("#add-information-btn");
+            $(contentInforMation).insertBefore("#add-information-btn");
         });
         $(document).on("click",
             ".remove-information-btn",
             function () {
                 $(this).parent().parent().remove();
             });
+
+
+
+        $("#addAdjective").click(function () {
+            $("<input type='tect' id='adjectiveName' name='AdjectiveName' class='form-control round col-md-6' required placeHolder='نام صفت را وارد کنید'>").insertBefore("#addAdjective");
+            $("<button type='button' class='btn btn-success m-2 round' id='addAdjectiveValue'>افزودن صفت</button>").insertBefore("#addAdjective");
+            $("#addAdjective").hide();
+        });
+            $(document).on("click","#addAdjectiveValue",function () {
+            var value = document.getElementById('adjectiveName').value;
+            if (value == "") {
+                alert = "مقدارد را پر کنید ! ";
+            }
+                var inputAdjective = "<div class='col-md-12 row border-dark border'><input readonly required type='text' class='round col-md-6 m-1 form-control' required /><br/><input required class='col-md-8 round m-1 mr-5 form-control' placeHolder='مقدار را وارد کنید و علامت بعلاوه ( + ) را بزنید' ><button class='round btn btn-success' id = 'btnAddAdjectiveValue' ><i class='icon icon-plus'></i></button ><span class='col-md-12'></span><button class='round btn btn-danger left' id='deleteAdjectiveNameAndValue'><i class='icon icon-trash'></i></button></div > ";
+                $("#addAdjective").show();
+                $("#adjectiveDiv").append(inputAdjective);
+                $(this).prev().remove();
+                $(this).remove();
+            });
+        $(document).on("click", "#deleteAdjectiveNameAndValue", function () {
+            $(this).parent().remove();
+        });
 
     </script>
 }

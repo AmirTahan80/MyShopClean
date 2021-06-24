@@ -328,7 +328,7 @@ namespace Application.Services.Admin
                         };
                         productProperties.Add(productProperty);
                     }
-                    await _productRepository.AddProductProperties(productProperties);
+                    await _productRepository.AddProductPropertiesAsync(productProperties);
                 }
 
                 await _productRepository.SaveAsync();
