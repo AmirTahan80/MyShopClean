@@ -20,38 +20,38 @@
                                 <div class="row">
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <p>نام محصول</p>
+                                            <p>عنوان</p>
                                             <div class="position-relative has-icon-left">
-                                                <input asp-for="Name" required class="form-control round">
+                                                <input id="productName" asp-for="Name" required class="form-control round">
                                                 <span asp-validation-for="Name" class="red"></span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
-                                            <p>قیمت محصول</p>
-                                            <div class="position-relative has-icon-left">
-                                                <input asp-for="Price" required type="number" class="form-control round">
-                                                <span asp-validation-for="Price" class="red"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <p>تعداد محصول</p>
-                                            <div class="position-relative has-icon-left">
-                                                <input asp-for="Count" required type="number" class="form-control round">
-                                                <span asp-validation-for="Count" class="red"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-12">
-                                        <div class="form-group">
-                                            <p>دسته محصول را انتخاب کنید</p>
+                                            <p>دسته بندی</p>
                                             <select class="custom-select d-block w-100 round"
                                                     asp-for="CatId"
                                                     asp-items="@Model.CategoriesTreeView">
                                             </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12" id="productPriceDiv">
+                                        <div class="form-group">
+                                            <p>قیمت محصول</p>
+                                            <div class="position-relative has-icon-left">
+                                                <input id="productPrice" asp-for="Price" required type="number" class="form-control round">
+                                                <span asp-validation-for="Price" class="red"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12" id="productCountDiv">
+                                        <div class="form-group">
+                                            <p>موجودی</p>
+                                            <div class="position-relative has-icon-left">
+                                                <input id="productCount" asp-for="Count" required type="number" class="form-control round">
+                                                <span asp-validation-for="Count" class="red"></span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-12 col-12">
@@ -63,7 +63,7 @@
                                     </div>
                                     <div class="col-md-12 col-12">
                                         <div class="form-group">
-                                            <p>آپلود عکس</p>
+                                            <p>تصاویر محصول</p>
                                             <label for="attachment" class="w-100 text-center">
                                                 <a class="upload-btn mb-2" role="button" aria-disabled="false"><i class="bi bi-cloud-arrow-up-fill text-info display-3"></i></a>
                                             </label>
@@ -79,29 +79,22 @@
                                     </div>
                                     <div class="col-md-12 col-12">
                                         <div class="form-group">
-                                            <label>مشخصات</label>
+                                            <p>ویژگی های محصول</p>
                                             <div class="form-group  p-2 border-dark product-informations">
-                                                <button id="add-information-btn" type="button" class="btn btn-success">افزودن مشخصات</button>
+                                                <button id="add-information-btn" type="button" class="btn btn-primary">افزودن ویژگی</button>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-12 col-12">
-                                        <div class="form-group">
-                                            <label>صفات</label>
-                                            <div class="row col-md-12 col-12" id="product-Adjective">
-                                                <button type="button" class="btn btn-success" id="addAdjective">افزودن صفات</button>
-                                                <p>
-                                                    <div class="col-md-12 p-1 m-1 flex-row" id="adjectiveDiv">
-
-                                                    </div>
-                                                </p>
-                                            </div>
+                                        <div class="form-group ">
+                                            <p>صفت‌ها و تنوع‌ها</p>
+                                            <button class="btn btn-primary" type="button" id="btnAddAdjective">فعال کردن صفت ها</button>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <div class="position-relative has-icon-left">
-                                                <button type="submit" class="btn btn-success">
+                                                <button type="submit" id="btnSave" class="btn btn-success">
                                                     <i class="icon-note"></i> ذخیره
                                                 </button>
                                             </div>
@@ -243,7 +236,7 @@
 
         //Add Informations Button Scripts
 
-        var contentInforMation = "<div class='row mb-2 border'><div class='col' ><input type='text' required name='ValueType' class='form-control round' placeholder='نام'></div><div class='col'><input type='text' name='ValueName' class='form-control round' required placeholder='مقدار'></div><div class='col'><button type='button' class='btn btn-danger remove-information-btn'><i class='fa fa-trash' aria-hidden='true'></i></button></div></div>";
+        var contentInforMation = "<div class='row mb-2 m-2 p-2'><div class='col' ><input type='text' required name='ValueType' class='form-control round' placeholder='نام'></div><div class='col'><input type='text' name='ValueName' class='form-control round' required placeholder='مقدار'></div><div class='col'><button type='button' class='btn btn-danger remove-information-btn'><i class='fa fa-trash' aria-hidden='true'></i></button></div></div>";
         $("#add-information-btn").click(function () {
             $(contentInforMation).insertBefore("#add-information-btn");
         });
@@ -253,27 +246,9 @@
                 $(this).parent().parent().remove();
             });
 
+        // Add Adjective
 
 
-        $("#addAdjective").click(function () {
-            $("<input type='tect' id='adjectiveName' name='AdjectiveName' class='form-control round col-md-6' required placeHolder='نام صفت را وارد کنید'>").insertBefore("#addAdjective");
-            $("<button type='button' class='btn btn-success m-2 round' id='addAdjectiveValue'>افزودن صفت</button>").insertBefore("#addAdjective");
-            $("#addAdjective").hide();
-        });
-            $(document).on("click","#addAdjectiveValue",function () {
-            var value = document.getElementById('adjectiveName').value;
-            if (value == "") {
-                alert = "مقدارد را پر کنید ! ";
-            }
-                var inputAdjective = "<div class='col-md-12 row border-dark border'><input readonly required type='text' class='round col-md-6 m-1 form-control' required /><br/><input required class='col-md-8 round m-1 mr-5 form-control' placeHolder='مقدار را وارد کنید و علامت بعلاوه ( + ) را بزنید' ><button class='round btn btn-success' id = 'btnAddAdjectiveValue' ><i class='icon icon-plus'></i></button ><span class='col-md-12'></span><button class='round btn btn-danger left' id='deleteAdjectiveNameAndValue'><i class='icon icon-trash'></i></button></div > ";
-                $("#addAdjective").show();
-                $("#adjectiveDiv").append(inputAdjective);
-                $(this).prev().remove();
-                $(this).remove();
-            });
-        $(document).on("click", "#deleteAdjectiveNameAndValue", function () {
-            $(this).parent().remove();
-        });
 
     </script>
 }

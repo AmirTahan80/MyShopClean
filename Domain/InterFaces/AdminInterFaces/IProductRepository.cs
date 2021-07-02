@@ -17,12 +17,6 @@ namespace Domain.InterFaces.AdminInterFaces
         Task AddProductImagesAsync(IEnumerable<ProductImages> t);
         Task AddProductPropertiesAsync(IEnumerable<ProductProperty> t);
 
-        Task AddProductAdjectivesAsync(IEnumerable<Adjective> t);
-        Task AddProductAdjectivesAsync(Adjective t);
-        Task AddProductAdjectiveValuesAsync(IEnumerable<Value> t);
-        Task AddProductAdjectiveValuesAsync(Value t);
-        Task AddProductAdjectiveValueSubValueAsync(IEnumerable<SubValue> t);
-        Task AddProductAdjectiveValueSubValueAsync(SubValue t);
 
         void DeleteProduct(Product t);
         void DeleteProduct(IEnumerable<Product> t);
