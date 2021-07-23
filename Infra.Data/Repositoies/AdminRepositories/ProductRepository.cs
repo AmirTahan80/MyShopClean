@@ -27,9 +27,11 @@ namespace Data.Repositories.AdminRepositories
         public async Task<Product> GetProductAsync(int productId)
         {
             var product = await _context.Products.Include(p => p.ProductImages).Include(p => p.Properties)
+                .Include(p=>p.ProductAttributes).ThenInclude(p=>p.AttributeValues).Include(p=>p.AttributeTemplates)
                 .SingleOrDefaultAsync(p => p.Id == productId);
             return product;
         }
+
         public async Task<ProductImages> FindImageByIdAsync(int imageId)
         {
             var photo = await _context.ProductImages.SingleOrDefaultAsync(p => p.Id == imageId);
@@ -61,6 +63,32 @@ namespace Data.Repositories.AdminRepositories
         {
             await _context.ProductProperties.AddRangeAsync(t);
         }
+        public async Task AddProductAttributes(IEnumerable<ProductAttribute> t)
+        {
+            await _context.ProductAttributes.AddRangeAsync(t);
+        }
+        public async Task AddProductAttribute(ProductAttribute t)
+        {
+            await _context.ProductAttributes.AddAsync(t);
+        }
+        public async Task AddAttributeValues(IEnumerable<AttributeValue> t)
+        {
+            await _context.AttributeValues.AddRangeAsync(t);
+        }
+        public async Task AddAttributeValue(AttributeValue t)
+        {
+            await _context.AttributeValues.AddAsync(t);
+        }
+        public async Task AddAttributeTemplates(IEnumerable<AttributeTemplate> t)
+        {
+            await _context.AttributeTemplates.AddRangeAsync(t);
+        }
+        public async Task AddAttributeTemplate(AttributeTemplate t)
+        {
+            await _context.AttributeTemplates.AddAsync(t);
+        }
+
+
 
 
         public void DeleteProduct(Product t)
@@ -87,11 +115,20 @@ namespace Data.Repositories.AdminRepositories
         {
             _context.ProductProperties.RemoveRange(t);
         }
+        public void DeleteProductAttributeValues(IEnumerable<AttributeValue> t)
+        {
+            _context.AttributeValues.RemoveRange(t);
+        }
+        public void DeleteAttributesNamesAndtemplates(IEnumerable<ProductAttribute> tNames, IEnumerable<AttributeTemplate> tTemplates)
+        {
+            _context.ProductAttributes.RemoveRange(tNames);
+            _context.AttributeTemplates.RemoveRange(tTemplates);
+        }
+
         public void EditProduct(Product t)
         {
             _context.Products.Update(t);
         }
-
 
 
 

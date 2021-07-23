@@ -19,6 +19,56 @@ namespace Infra.Data.Migrations
                 .HasAnnotation("ProductVersion", "5.0.6")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("Domain.Models.AttributeTemplate", b =>
+                {
+                    b.Property<int>("AttributeTemplateId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AttrinbuteTemplateCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AttrinbuteTemplatePrice")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Template")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("AttributeTemplateId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("AttributeTemplates");
+                });
+
+            modelBuilder.Entity("Domain.Models.AttributeValue", b =>
+                {
+                    b.Property<int>("ValueId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ProductAttributeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ValueName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("ValueId");
+
+                    b.HasIndex("ProductAttributeId");
+
+                    b.ToTable("AttributeValues");
+                });
+
             modelBuilder.Entity("Domain.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -65,6 +115,9 @@ namespace Infra.Data.Migrations
                     b.Property<DateTime>("InsertTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsProductHaveAttributes")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(250)
@@ -78,6 +131,28 @@ namespace Infra.Data.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("Domain.Models.ProductAttribute", b =>
+                {
+                    b.Property<int>("AttributeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AttributeName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AttributeId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductAttributes");
                 });
 
             modelBuilder.Entity("Domain.Models.ProductImages", b =>
@@ -459,6 +534,28 @@ namespace Infra.Data.Migrations
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 
+            modelBuilder.Entity("Domain.Models.AttributeTemplate", b =>
+                {
+                    b.HasOne("Domain.Models.Product", "Product")
+                        .WithMany("AttributeTemplates")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Domain.Models.AttributeValue", b =>
+                {
+                    b.HasOne("Domain.Models.ProductAttribute", "ProductAttribute")
+                        .WithMany("AttributeValues")
+                        .HasForeignKey("ProductAttributeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductAttribute");
+                });
+
             modelBuilder.Entity("Domain.Models.Category", b =>
                 {
                     b.HasOne("Domain.Models.Category", "Parent")
@@ -477,6 +574,17 @@ namespace Infra.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Domain.Models.ProductAttribute", b =>
+                {
+                    b.HasOne("Domain.Models.Product", "Product")
+                        .WithMany("ProductAttributes")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Domain.Models.ProductImages", b =>
@@ -600,9 +708,18 @@ namespace Infra.Data.Migrations
 
             modelBuilder.Entity("Domain.Models.Product", b =>
                 {
+                    b.Navigation("AttributeTemplates");
+
+                    b.Navigation("ProductAttributes");
+
                     b.Navigation("ProductImages");
 
                     b.Navigation("Properties");
+                });
+
+            modelBuilder.Entity("Domain.Models.ProductAttribute", b =>
+                {
+                    b.Navigation("AttributeValues");
                 });
 
             modelBuilder.Entity("Domain.Models.UserFavorite", b =>

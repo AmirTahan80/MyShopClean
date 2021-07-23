@@ -2,6 +2,9 @@
 @{
     ViewData["Title"] = "افزودن محصول";
 }
+@section Header{
+    <link href="~/Vendors/Tags-master/dist/tags.min.css" rel="stylesheet" />
+}
 <!-- Inputs Icons start -->
 <section class="inputs-icons">
     <div class="row">
@@ -14,7 +17,7 @@
                 </div>
                 <div class="card-body">
                     <div class="px-3">
-                        <form class="form" method="POST" asp-action="AddProduct" asp-controller="ProductManager"
+                        <form class="" method="POST" asp-action="AddProduct" asp-controller="ProductManager"
                               enctype="multipart/form-data">
                             <div class="form-body">
                                 <div class="row">
@@ -22,7 +25,7 @@
                                         <div class="form-group">
                                             <p>عنوان</p>
                                             <div class="position-relative has-icon-left">
-                                                <input id="productName" asp-for="Name" required class="form-control round">
+                                                <input id="productName" asp-for="Name" placeholder="عنوان" class="form-control" autofocus>
                                                 <span asp-validation-for="Name" class="red"></span>
                                             </div>
                                         </div>
@@ -30,7 +33,7 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <p>دسته بندی</p>
-                                            <select class="custom-select d-block w-100 round"
+                                            <select class="custom-select d-block w-100  "
                                                     asp-for="CatId"
                                                     asp-items="@Model.CategoriesTreeView">
                                             </select>
@@ -40,7 +43,7 @@
                                         <div class="form-group">
                                             <p>قیمت محصول</p>
                                             <div class="position-relative has-icon-left">
-                                                <input id="productPrice" asp-for="Price" required type="number" class="form-control round">
+                                                <input value="" id="productPrice" asp-for="Price" type="text" required placeholder="قیمت" class="form-control  ">
                                                 <span asp-validation-for="Price" class="red"></span>
                                             </div>
                                         </div>
@@ -49,7 +52,7 @@
                                         <div class="form-group">
                                             <p>موجودی</p>
                                             <div class="position-relative has-icon-left">
-                                                <input id="productCount" asp-for="Count" required type="number" class="form-control round">
+                                                <input value="" id="productCount" asp-for="Count" type="text" required placeholder="موجودی" class="form-control  ">
                                                 <span asp-validation-for="Count" class="red"></span>
                                             </div>
                                         </div>
@@ -57,7 +60,7 @@
                                     <div class="col-md-12 col-12">
                                         <div class="form-group">
                                             <p>توضیحات</p>
-                                            <textarea required rows="10" id="editor" asp-for="Detail" class="round"></textarea>
+                                            <textarea rows="10" id="editor" asp-for="Detail"></textarea>
                                             <span asp-validation-for="Detail" class="red "></span>
                                         </div>
                                     </div>
@@ -68,7 +71,7 @@
                                                 <a class="upload-btn mb-2" role="button" aria-disabled="false"><i class="bi bi-cloud-arrow-up-fill text-info display-3"></i></a>
                                             </label>
                                             <h4 id="upfile1" style="cursor:pointer"><i class="icon-cloud-upload"></i>آپلود عکس</h4>
-                                            <input style="display:none" type="file" asp-for="Images" accept=".png,.jpg,.jpeg" id="attachment" class="" multiple />
+                                            <input style="display:none" type="file" asp-for="Images" required accept=".png,.jpg,.jpeg" id="attachment" class="" multiple />
                                             <span asp-validation-for="Images" class="red"></span>
                                             <p id="files-area">
                                                 <span id="filesList">
@@ -88,13 +91,25 @@
                                     <div class="col-md-12 col-12">
                                         <div class="form-group ">
                                             <p>صفت‌ها و تنوع‌ها</p>
-                                            <button class="btn btn-primary" type="button" id="btnAddAdjective">فعال کردن صفت ها</button>
+                                            <input type="checkbox" asp-for="IsProductHaveAttributes" style="display:none" id="checkForAttributes" />
+                                            <button class="btn btn-primary" type="button" id="btnEnableAttributes">فعال کردن صفت ها</button><button style="display:none" class="btn btn-danger" type="button" id="btnDisableAttributes">غیره فعال کردن صفت ها</button>
+                                            <div class="border border-dark   col-md-12" id="divBorder" style="display:none">
+                                                <div id="tagsDiv" class="col-md-12 row" style="display:none">
+                                                    <div class="col-md-12 row" id="inputsDiv">
+                                                        <input id="attributesName" class="form-control col-md-4   m-1" name="AttributeNames" required  placeholder="عنوان" value="رنگ" />
+                                                        <input type="text" id="exist-values" name="AttributeValues" class="tagged form-control col-md-5   m-1" data-removeBtn="true" placeholder="مقدار یا مقادیر">
+                                                    </div>
+                                                </div>
+                                                <button class="btn btn-success m-1" type="button" id="btnaddAttribute" style="display:none"><i class="icon-plus"></i> افزودن صفت</button>
+                                                <div class="border-dark border-dark  " id="generateTagsDiv">
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <div class="position-relative has-icon-left">
-                                                <button type="submit" id="btnSave" class="btn btn-success">
+                                                <button type="submit" class="btn btn-success">
                                                     <i class="icon-note"></i> ذخیره
                                                 </button>
                                             </div>
@@ -121,7 +136,8 @@
 </section>
 <!-- Inputs Icons end -->
 @section Scripts{
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script src="~/Vendors/Tags-master/dist/tags.min.js"></script>
     <script src="~/Vendors/ckeditor5/build/ckeditor.js"></script>
     @*Manage Images*@
     <script type='text/javascript'>
@@ -140,7 +156,7 @@
         $("#attachment").on('change', function (e) {
             for (var i = 0; i < this.files.length; i++) {
                 let fileBloc = $('<span/>', { class: 'file-block' }),
-                    fileName = $('<img/>', { class: 'productimages height-100 width-100 round', src: URL.createObjectURL(this.files.item(i)), alt: this.files.item(i).name });
+                    fileName = $('<img/>', { class: 'productimages height-100 width-100  ', src: URL.createObjectURL(this.files.item(i)), alt: this.files.item(i).name });
                 fileBloc.append('<span class="file-delete badge badge-danger"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">\r\n  <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>\r\n</svg></span>')
                     .append(fileName);
                 $("#filesList > #files-names").append(fileBloc);
@@ -236,7 +252,7 @@
 
         //Add Informations Button Scripts
 
-        var contentInforMation = "<div class='row mb-2 m-2 p-2'><div class='col' ><input type='text' required name='ValueType' class='form-control round' placeholder='نام'></div><div class='col'><input type='text' name='ValueName' class='form-control round' required placeholder='مقدار'></div><div class='col'><button type='button' class='btn btn-danger remove-information-btn'><i class='fa fa-trash' aria-hidden='true'></i></button></div></div>";
+        var contentInforMation = "<div class='row mb-2 m-2 p-2'><div class='col' ><input type='text' required name='ValueType' class='form-control  ' placeholder='نام'></div><div class='col'><input type='text' name='ValueName' class='form-control  ' required placeholder='مقدار'></div><div class='col'><button type='button' class='btn btn-danger remove-information-btn'><i class='fa fa-trash' aria-hidden='true'></i></button></div></div>";
         $("#add-information-btn").click(function () {
             $(contentInforMation).insertBefore("#add-information-btn");
         });
@@ -245,10 +261,240 @@
             function () {
                 $(this).parent().parent().remove();
             });
-
+    </script>
+    <script type="text/javascript">
         // Add Adjective
 
+        var tags = new Tags('.tagged'); // <input id="tagged">
+        var anotherTags = new Array;
+        const valuesGetArrayInArray = new Array;
+
+        $('#btnEnableAttributes').click(function () {
+            $("#productCount").attr("disabled", true);
+            $("#productCount").attr("required", false);
+            $("#productCount").attr("name", "");
+            $("#productPrice").attr("disabled", true);
+            $("#productPrice").attr("required", false);
+            $("#productPrice").attr("name", "");
+            $('#checkForAttributes').prop('checked', true);
+            $("#btnDisableAttributes").css("display", "block");
+            $("#tagsDiv").show();
+            $("#divBorder").show();
+            $("#btnaddAttribute").css("display", "block");
+            if (document.getElementById('inputsDiv') == null) {
+                $('#tagsDiv').append("<div class='col-md-12 row' id='inputsDiv'>" +
+                    "<input id='attributesName' class='form-control col-md-4   m-1' name='AttributeNames' required  placeholder='عنوان' value='رنگ' />" +
+                    "<input type='text' id='exist-values' class='tagged form-control col-md-5   m-1' data-removeBtn='true' name='AttributeValues' placeholder='مقدار یا مقادیر'></div>");
+                tags = new Tags('.tagged');
+            }
+            $(this).css("display", "none");
+        });
+
+        $('#btnDisableAttributes').click(function () {
+            $("#productCount").attr("disabled", false);
+            $("#productCount").attr("required", true);
+            $("#productCount").attr("name", "Count");
+            $("#productPrice").attr("disabled", false);
+            $("#productPrice").attr("required", true);
+            $("#productPrice").attr("name", "Price");
+            $("#attributesName").attr("name", "AttributeNames");
+            $('#checkForAttributes').prop('checked', false);
+            $("#btnEnableAttributes").css("display", "block");
+            $("#tagsDiv").children().remove();
+            $("#tagsDiv").hide();
+            $("#divBorder").hide();
+            $("#btnaddAttribute").css("display", "none");
+            $("#generateTagsDiv").children().remove();
+            tags.clearTags();
+            for (var i = 0; i < anotherTags.length; i++) {
+                anotherTags[i].clearTags();
+            }
+            generateTags();
+
+            $(this).css("display", "none");
+        });
+
+        $(document).on('click', "#deleteAttribute", function () {
+            var counterInput = $(this).prev().val();
+            anotherTags[counterInput].clearTags();
+            $(this).parent().remove();
+        });
+
+        var counter = 0;
+        $('#btnaddAttribute').click(function () {
+
+            $("#tagsDiv").append("<div class= 'col-md-12 row'>" +
+                "<input id='attributesName' class='form-control col-md-4   m-1' name='AttributeNames' required  placeholder='عنوان' />" +
+                "<input type='text' id='exist-values' class='tagged" + counter + " form-control col-md-5   m-1' data-removeBtn='true' name='AttributeValues' placeholder='مقدار یا مقادیر'>" +
+                "<input id='input1' type='hidden' value='" + counter + "'><button type='button' class='btn btn-danger m-1 btnId" + counter + "' id='deleteAttribute'><i class='icon-trash'></i></button>" +
+                "</div>");
+            anotherTags[counter] = new Tags('.tagged' + counter);
+            counter++;
+        });
+        //For delete can set number cou--nter in input and when that deleted delete from the list
+
+    </script>
+    <script type="text/javascript">
+
+        function generateTags() {
+
+            var tagsLength = 1;
+            if (tags.getTags().length > 0) {
+                tagsLength = tags.getTags().length;
+            }
+
+            var anotherTagsArrayLength = 0;
+            if (anotherTags.length > 0) {
+                anotherTagsArrayLength = anotherTags.length;
+            }
+            else {
+                anotherTagsArrayLength = 0;
+            }
+
+            var anotherTagslength = 1;
+            if (anotherTagsArrayLength > 0) {
+                for (var i = 0; i < anotherTagsArrayLength; i++) {
+                    if (anotherTags[i].getTags().length > 0) {
+                        anotherTagslength *= anotherTags[i].getTags().length;
+                    }
+                }
+            }
+
+            var allTagsCount = tagsLength * anotherTagslength;
+
+            var plusAllTagsCount = 0;
+            if (tags.getTags().length > 0 || anotherTags.length > 0) {
+                if (tags.getTags().length > 0) {
+                    plusAllTagsCount += tags.getTags().length;
+                }
+                if (anotherTags.length > 0) {
+                    for (var i = 0; i < anotherTags.length; i++) {
+                        if (anotherTags[i].getTags().length > 0) {
+                            plusAllTagsCount += anotherTags[i].getTags().length;
+                        }
+                    }
+                }
+            }
+
+            var mixTagsTogetherArray = [];
+            var mixTagsTogetherArrayTrim = [];
+
+            if (plusAllTagsCount > 0) {
+
+                var tagsRepeatCount = 0;
+
+                if (tagsLength > 0) {
+
+                    tagsRepeatCount = allTagsCount / tagsLength;
+
+                    for (var b = 0; b < tags.getTags().length; b++) {
+
+                        for (var c = 0; c < tagsRepeatCount; c++) {
+
+                            mixTagsTogetherArray.push(tags.getTags()[b])
+                            mixTagsTogetherArrayTrim.push(tags.getTags()[b])
+                        }
+                    }
+                }
+
+                if (anotherTagsArrayLength > 0) {
+
+                    for (var b = 0; b < anotherTagsArrayLength; b++) {
+
+                        if (anotherTags[b].getTags().length > 0) {
+
+                            if (tagsRepeatCount == 0) {
+                                tagsRepeatCount = allTagsCount / anotherTags[b].getTags().length;
+                            }
+                            else {
+                                tagsRepeatCount /= anotherTags[b].getTags().length;
+                            }
+
+                            if (mixTagsTogetherArray.length > 0) {
+
+                                for (var c = 0, numberinCountRepeat = 1, breakBool = 0; c < mixTagsTogetherArray.length; c++, numberinCountRepeat++) {
+
+                                    if (tagsLength > 0) {
+
+                                        var anotherTagsReapet = anotherTags[b].getTags().length;
+
+                                        for (var r = c * (allTagsCount / tagsLength), t = 0, e = 0; t < allTagsCount / tagsLength; r++, t++) {
+
+                                            if (r == mixTagsTogetherArray.length) {
+                                                breakBool = 1;
+                                                break;
+                                            }
+
+                                            mixTagsTogetherArray[r] += " _ " + anotherTags[b].getTags()[e];
+                                            mixTagsTogetherArrayTrim[r] += "_" + anotherTags[b].getTags()[e];
 
 
+                                            if (t == tagsRepeatCount - 1) {
+                                                e++;
+                                                t = -1;
+                                            }
+                                            if (e == anotherTagsReapet) {
+                                                e = 0;
+                                            }
+                                        }
+                                    }
+                                    if (breakBool == 1) {
+                                        break;
+                                    }
+                                }
+                            }
+                            else {
+                                for (var c = 0, numberinCountRepeat = 1, breakBool = 0; c < anotherTags[b].getTags().length; c++, numberinCountRepeat++) {
+
+                                    if (anotherTags[b].getTags().length > 0) {
+                                        mixTagsTogetherArray.push(anotherTags[b].getTags()[c]);
+                                        mixTagsTogetherArrayTrim.push(anotherTags[b].getTags()[c]);
+                                    }
+
+                                    //if (tagsLength > 0) {
+
+                                    //    var anotherTagsReapet = anotherTags[b].getTags().length;
+
+                                    //    for (var r = c * (allTagsCount / tagsLength), t = 0, e = 0; t < allTagsCount / tagsLength; r++, t++) {
+
+                                    //        if (r == mixTagsTogetherArray.length) {
+                                    //            breakBool = 1;
+                                    //            break;
+                                    //        }
+
+                                    //        mixTagsTogetherArray[r] += " _ " + anotherTags[b].getTags()[e];
+
+
+                                    //        if (t == tagsRepeatCount - 1) {
+                                    //            e++;
+                                    //            t = -1;
+                                    //        }
+                                    //        if (e == anotherTagsReapet) {
+                                    //            e = 0;
+                                    //        }
+                                    //    }
+                                    //}
+                                    //if (breakBool == 1) {
+                                    //    break;
+                                    //}
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+            $("#generateTagsDiv").empty();
+            $("#generateTagsDiv").append("<div class='col-md-12 row'><p class='col-md-4'>مقادیر</p><p class='col-md-4'>قیمت</p><p class='col-md-4'>تعداد</p></div>");
+            var productName = document.getElementById('productName').value;
+            if (productName.length > 5) {
+                productName = productName.slice(0, 5);
+            }
+            for (var i = 0; i < mixTagsTogetherArray.length; i++) {
+                $("#generateTagsDiv").append("<div class='col-md-12 row'><p class='col-md-3 p-1'>" + productName + " _ " + mixTagsTogetherArray[i] + "</p><input type='hidden' value='" + mixTagsTogetherArrayTrim[i] + "' name='AttributeTemplates'/><input class='col-md-4   m-1 form-control' type='text' name='AttributePrice' placeHolder='قیمت را وارد کنید'/><input class='col-md-4 m-1   form-control' type='text' placeholder='تعداد را وارد کنید' name='AttributeCount'/> </div>")
+            }
+        };
     </script>
 }

@@ -2,6 +2,9 @@
 @{
     ViewData["Title"] = "ویراش محصول";
 }
+@section Header{
+    <link href="~/Vendors/Tags-master/dist/tags.min.css" rel="stylesheet" />
+}
 <div class="row">
     <div class="col-md-12">
         <div class="card">
@@ -19,56 +22,36 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="projectinput1">نام محصول</label>
-                                        <input class="form-control round" asp-for="Name" />
+                                        <input id="productName" class="form-control " asp-for="Name" />
                                         <span asp-validation-for="Name" required class="red"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="projectinput2">دسته محصول</label>
-                                        <select class="custom-select d-block w-100 round"
+                                        <select class="custom-select d-block w-100 "
                                                 asp-for="CategoryId" asp-items="Model.Categories">
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="projectinput2">تعداد</label>
-                                        <input class="form-control round" asp-for="Count"  required />
-                                        <span asp-validation-for="Count" class="red"></span>
+                                        <label for="projectinput2">قیمت</label>
+                                        <input class="form-control " asp-for="Price" id="inputPrice" required />
+                                        <span asp-validation-for="Price" class="red"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="projectinput2">قیمت</label>
-                                        <input class="form-control round" asp-for="Price" required  />
-                                        <span asp-validation-for="Price" class="red"></span>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label class="col-md-12">خصوصیات محصول</label>
-                                        <div class="form-group p-2 border-dark product-informations">
-                                            @if (Model.Properties != null)
-                                            {
-                                                foreach (var property in Model.Properties)
-                                                {
-                                                    <div class="row mb-2">
-                                                        <input value="@property.ValueId" hidden />
-                                                        <div class="col"><input type="text" class="form-control round" placeholder="نام" value="@property.ValueType"></div>
-                                                        <div class="col"><input type="text" class="form-control round" placeholder="مقدار" value="@property.ValueName"></div>
-                                                        <div class="col"><button type="button" class="btn btn-danger remove-information-btn"><i class="fa fa-trash" aria-hidden="true"></i></button></div>
-                                                    </div>
-                                                }
-                                            }
-                                            <button id="add-information-btn" type="button" class="btn btn-success">افزودن مشخصات</button>
-                                        </div>
+                                        <label for="projectinput2">تعداد</label>
+                                        <input class="form-control " asp-for="Count" id="inputCount" required />
+                                        <span asp-validation-for="Count" class="red"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <p>توضیحات</p>
-                                        <textarea rows="10" id="editor" asp-for="Detail" class="round"></textarea>
+                                        <textarea rows="10" id="editor" asp-for="Detail" ></textarea>
                                         <span asp-validation-for="Detail" class="red"></span>
                                     </div>
                                 </div>
@@ -96,7 +79,7 @@
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
                                                                         <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"></path>
                                                                     </svg>
-                                                                </span><img class="productimages height-100 width-100 round" src="/Images/ProductImages/@currentProductImage.ImgSrc" alt="@currentProductImage.ImgId">
+                                                                </span><img class="productimages height-100 width-100  " src="/Images/ProductImages/@currentProductImage.ImgSrc" alt="@currentProductImage.ImgId">
                                                             </span>
                                                         }
                                                     }
@@ -104,6 +87,118 @@
                                             </span>
                                         </p>
                                         <span asp-validation-for="UploadImages" class="red"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="col-md-12">خصوصیات محصول</label>
+                                        <div class="form-group p-2 border-dark product-informations">
+                                            @if (Model.Properties != null)
+                                            {
+                                                foreach (var property in Model.Properties)
+                                                {
+                                                    <div class="row mb-2">
+                                                        <input value="@property.ValueId" hidden />
+                                                        <div class="col"><input type="text" class="form-control " placeholder="نام" value="@property.ValueType"></div>
+                                                        <div class="col"><input type="text" class="form-control " placeholder="مقدار" value="@property.ValueName"></div>
+                                                        <div class="col"><button type="button" class="btn btn-danger remove-information-btn"><i class="fa fa-trash" aria-hidden="true"></i></button></div>
+                                                    </div>
+                                                }
+                                            }
+                                            <button id="add-information-btn" type="button" class="btn btn-success">افزودن مشخصات</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="col-md-12">صفت‌ها و تنوع‌ها</label>
+                                        <div class="form-group p-2 border-dark product-informations">
+                                            @if (Model.IsProductHaveAttributes == true)
+                                            {
+                                                <button style="display:none" class="btn btn-primary" type="button" id="btnEnableAttributes">فعال کردن صفت ها</button><button class="btn btn-danger" type="button" id="btnDisableAttributes">غیره فعال کردن صفت ها</button>
+                                                <div class="border border-dark   col-md-12" id="divBorder">
+                                                    <div id="tagsDiv" class="col-md-12 row">
+                                                        @for (int i = 0; i < Model.ProductAttributeNameAndValues.Count; i++)
+                                                        {
+                                                            <div class="col-md-12 row" id="@(i == 0 ? "inputsDiv" : "")">
+                                                                <input id="attributesName" class="form-control col-md-4   m-1" name="AttributeNames" required autofocus placeholder="عنوان" value="@Model.ProductAttributeNameAndValues[i].Name" />
+                                                                @{
+                                                                    string valuesString = "";
+                                                                    for (int b = 0; b < Model.ProductAttributeNameAndValues[i].Values.Count; b++)
+                                                                    {
+                                                                        if (b == 0)
+                                                                        {
+                                                                            valuesString = Model.ProductAttributeNameAndValues[i].Values[b].ValueName;
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            valuesString += "," + Model.ProductAttributeNameAndValues[i].Values[b].ValueName;
+                                                                        }
+                                                                    }
+                                                                    if (i == 0)
+                                                                    {
+                                                                        <input type="text" id="exist-values" value="@valuesString" name="AttributeValues" class="tagged form-control col-md-5   m-1" data-removeBtn="true" placeholder="مقدار یا مقادیر">
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        var taggedId = "tagged" + i;
+                                                                        <input type="text" id="exist-values" value="@valuesString" name="AttributeValues" class="@(taggedId) form-control col-md-5   m-1" data-removeBtn="true" placeholder="مقدار یا مقادیر">
+                                                                        <input type='hidden' value="@(i)"><button type="button" class="btn btn-danger m-1 btnId@(i)" id='deleteAttribute'><i class='icon-trash'></i></button>
+                                                                    }
+                                                                }
+                                                            </div>
+                                                        }
+                                                        @{int counterOfTemplate = Model.ProductAttributeNameAndValues.Count - 1;
+                                                        }
+                                                        <input type="hidden" value="@counterOfTemplate" class="hide" id="inputCounterOfNumber" />
+                                                        <input type="hidden" value="@counterOfTemplate" class="hide" id="inputCounterOfNumber1" />
+                                                    </div>
+                                                    <button class="btn btn-success m-1" type="button" id="btnaddAttribute"><i class="icon-plus"></i> افزودن صفت</button>
+                                                    <div class="border-dark border-dark  " id="generateTagsDiv">
+                                                        <div class="col-md-12 row">
+                                                            <p class="col-md-4">مقادیر</p>
+                                                            <p class="col-md-4">قیمت</p><p class="col-md-4">تعداد</p>
+                                                        </div>
+                                                        @for (var i = 0; i < Model.ProductAttributesTemplates.Count; i++)
+                                                        {
+                                                            <div class="col-md-12 row">
+                                                                <p class="col-md-3 m-1">@Model.ProductAttributesTemplates[i].Template</p>
+                                                                <input type="hidden" value="@Model.ProductAttributesTemplates[i].Template" name="AttributeTemplates">
+                                                                <input class="col-md-4   m-1 form-control" value="@Model.ProductAttributesTemplates[i].PriceOfTemplate" type="text" name="AttributePrice" placeholder="قیمت را وارد کنید">
+                                                                <input class="col-md-4 m-1   form-control" value="@Model.ProductAttributesTemplates[i].CountOfTemplate" type="text" placeholder="تعداد را وارد کنید" name="AttributeCount">
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                    <div style="display:none" id="generateDivBack">
+                                                        @for (var i = 0; i < Model.ProductAttributesTemplates.Count; i++)
+                                                        {
+                                                            <div class="col-md-12 row" style="display:none">
+                                                                <input id="template@(i)" value="@Model.ProductAttributesTemplates[i].Template">
+                                                                <input id="priceTem@(i)" value="@Model.ProductAttributesTemplates[i].PriceOfTemplate" />
+                                                                <input id="countTem@(i)" value="@Model.ProductAttributesTemplates[i].CountOfTemplate" />
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                    <input type="hidden" class="hidden" value="@Model.ProductAttributesTemplates.Count" id="templateCount" />
+                                                    <input type="hidden" class="hidden" value="@Model.ProductAttributesTemplates.Count" id="templateCount1" />
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn btn-primary" type="button" id="btnEnableAttributes">فعال کردن صفت ها</button><button style="display:none" class="btn btn-danger" type="button" id="btnDisableAttributes">غیره فعال کردن صفت ها</button>
+                                                <div class="border border-dark   col-md-12" id="divBorder" style="display:none">
+                                                    <div id="tagsDiv" class="col-md-12 row" style="display:none">
+                                                        <div class="col-md-12 row" id="inputsDiv">
+                                                            <input id="attributesName" class="form-control col-md-4   m-1" name="AttributeNames" required autofocus placeholder="عنوان" value="رنگ" />
+                                                            <input type="text" id="exist-values" name="AttributeValues" class="tagged form-control col-md-5   m-1" data-removeBtn="true" placeholder="مقدار یا مقادیر">
+                                                        </div>
+                                                    </div>
+                                                    <button class="btn btn-success m-1" type="button" id="btnaddAttribute" style="display:none"><i class="icon-plus"></i> افزودن صفت</button>
+                                                    <div class="border-dark border-dark  " id="generateTagsDiv">
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -115,6 +210,7 @@
                                         <a asp-action="Index" asp-controller="ProductManager" class="btn btn-primary">
                                             برگشت به لیست
                                         </a>
+                                        <input type="checkbox" asp-for="IsProductHaveAttributes" style="display:none" id="checkForAttributes" />
                                     </div>
                                     @if (ViewData["Success"] != null)
                                     {
@@ -140,7 +236,8 @@
 
 
 @section Scripts{
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script src="~/Vendors/Tags-master/dist/tags.min.js"></script>
     <script src="~/Vendors/ckeditor5/build/ckeditor.js"></script>
     @*Manage Images*@
     <script type='text/javascript'>
@@ -168,7 +265,7 @@
         $("#attachment").on('change', function (e) {
             for (var i = 0; i < this.files.length; i++) {
                 let fileBloc = $('<span/>', { class: 'file-block' }),
-                    fileName = $('<img/>', { class: 'productimages height-100 width-100 round', src: URL.createObjectURL(this.files.item(i)), alt: this.files.item(i).name });
+                    fileName = $('<img/>', { class: 'productimages height-100 width-100  ', src: URL.createObjectURL(this.files.item(i)), alt: this.files.item(i).name });
                 fileBloc.append('<span class="file-delete badge badge-danger"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">\r\n  <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>\r\n</svg></span>')
                     .append(fileName);
                 $("#filesList > #files-names").append(fileBloc);
@@ -264,7 +361,7 @@
 
         //Add Informations Button Scripts
 
-        var content = "<div class='row mb-2'><div class='col' ><input type='text' required name='Valuetype' class='form-control round' placeholder='نام'></div><div class='col'><input type='text' name='ValueName' required class='form-control round' placeholder='مقدار'></div><div class='col'><button type='button' class='btn btn-danger remove-information-btn'><i class='fa fa-trash' aria-hidden='true'></i></button></div></div>";
+        var content = "<div class='row mb-2'><div class='col' ><input type='text' required name='Valuetype' class='form-control  ' placeholder='نام'></div><div class='col'><input type='text' name='ValueName' required class='form-control  ' placeholder='مقدار'></div><div class='col'><button type='button' class='btn btn-danger remove-information-btn'><i class='fa fa-trash' aria-hidden='true'></i></button></div></div>";
         $("#add-information-btn").click(function () {
             $(content).insertBefore("#add-information-btn");
         });
@@ -277,6 +374,327 @@
                 $(this).parent().remove();
             });
 
+    </script>
+
+    <script type="text/javascript">
+        // Add Adjective
+
+        var tags = new Tags('.tagged'); // <input id="tagged">
+        var anotherTags = new Array;
+        const valuesGetArrayInArray = new Array;
+        var checked = document.getElementById("checkForAttributes").value;
+        if (checked) {
+        var counterOfInputOfValues = document.getElementById("inputCounterOfNumber").value;
+        }
+
+        if (checked) {
+            $("#inputCount").attr("disabled", true);
+            $("#inputCount").attr("name", "");
+            $("#inputPrice").attr("disabled", true);
+            $("#inputPrice").attr("name", "");
+        }
+        else {
+            $("#inputCount").attr("disabled", false);
+            $("#inputCount").attr("name", "Count");
+            $("#inputPrice").attr("disabled", false);
+            $("#inputPrice").attr("name", "Price");
+        }
+
+        if (counterOfInputOfValues != 0 || counterOfInputOfValues !== undefined) {
+            for (var i = 0, b = 1; i < counterOfInputOfValues; i++, b++) {
+                var taggedClass = ".tagged" + b;
+                anotherTags[i] = new Tags(taggedClass);
+            }
+        }
+
+        $('#btnEnableAttributes').click(function () {
+            $("#inputCount").attr("disabled", true);
+            $("#inputCount").attr("name", "");
+            $("#inputPrice").attr("disabled", true);
+            $("#inputPrice").attr("name", "");
+            $('#checkForAttributes').prop('checked', true);
+            $("#btnDisableAttributes").css("display", "block");
+            $("#tagsDiv").show();
+            $("#divBorder").show();
+            $("#btnaddAttribute").css("display", "block");
+            if (document.getElementById('inputsDiv') == null) {
+                $('#tagsDiv').append("<div class='col-md-12 row' id='inputsDiv'>" +
+                    "<input id='attributesName' class='form-control col-md-4   m-1' name='AttributeNames' required autofocus placeholder='عنوان' value='رنگ' />" +
+                    "<input type='text' id='exist-values' class='tagged form-control col-md-5   m-1' data-removeBtn='true' name='AttributeValues' placeholder='مقدار یا مقادیر'></div>");
+                tags = new Tags('.tagged');
+            }
+            $(this).css("display", "none");
+        });
+
+        $('#btnDisableAttributes').click(function () {
+            $("#inputCount").attr("disabled", false);
+            $("#inputCount").attr("name", "Count");
+            $("#inputPrice").attr("disabled", false);
+            $("#inputPrice").attr("name", "Price");
+            $("#attributesName").attr("name", "AttributeNames");
+            $('#checkForAttributes').prop('checked', false);
+            $("#btnEnableAttributes").css("display", "block");
+            $("#tagsDiv").children().remove();
+            $("#tagsDiv").hide();
+            $("#divBorder").hide();
+            $("#btnaddAttribute").css("display", "none");
+            $("#generateTagsDiv").children().remove();
+            $("#generateDivBack").children().remove();
+            $("#templateCount").remove();
+            generateDivBack
+            tags.clearTags();
+            for (var i = 0; i < anotherTags.length; i++) {
+                anotherTags[i].clearTags();
+            }
+            generateTags();
+
+            $(this).css("display", "none");
+        });
+
+        var counterDeleteInput = 0;
+
+        $(document).on('click', "#deleteAttribute", function () {
+            var counterInput = $(this).prev().val();
+            counterInput--;
+            anotherTags[counterInput].clearTags();
+            counterDeleteInput += 1;
+            $(this).parent().remove();
+        });
+
+        var counter = document.getElementById("inputCounterOfNumber1").value;
+
+        $('#btnaddAttribute').click(function () {
+
+            if (counter > 0) {
+                counter++;
+            } else {
+                counter = 1;
+            }
+
+            $("#tagsDiv").append("<div class= 'col-md-12 row'>" +
+                "<input id='attributesName' class='form-control col-md-4   m-1' name='AttributeNames' required autofocus placeholder='عنوان' />" +
+                "<input type='text' id='exist-values' class='tagged" + counter + " form-control col-md-5   m-1' data-removeBtn='true' name='AttributeValues' placeholder='مقدار یا مقادیر'>" +
+                "<input id='input1' type='hidden' value='" + counter + "'><button type='button' class='btn btn-danger m-1 btnId" + counter + "' id='deleteAttribute'><i class='icon-trash'></i></button>" +
+                "</div>");
+
+            if (anotherTags.length > 0) {
+                var lengthofAnotherTags = anotherTags.length;
+                var taggedClass = ".tagged" + counter;
+                anotherTags[lengthofAnotherTags] = new Tags(taggedClass);
+                document.getElementById("inputCounterOfNumber1").value = counter;
+            } else {
+                anotherTags[0] = new Tags('.tagged1');
+                document.getElementById("inputCounterOfNumber1").value = counter;
+            }
+        });
+        //For delete can set number cou--nter in input and when that deleted delete from the list
+
+    </script>
+    <script type="text/javascript">
+
+        function generateTags() {
+
+            var countOfTemplateInput;
+            if (document.getElementById("templateCount") !== null) {
+                countOfTemplateInput = document.getElementById("templateCount").value;
+            }
+
+            var template = [];
+            var priceOfTemplate = [];
+            var countOfTemplate = [];
+            if (countOfTemplateInput !== undefined || countOfTemplateInput > 0) {
+                for (var i = 0; i < countOfTemplateInput; i++) {
+                    var templateClass = "template" + i;
+                    var priceTemplate = "priceTem" + i;
+                    var countTemplate = "countTem" + i;
+                    template[i] = document.getElementById(templateClass).value;
+                    priceOfTemplate[i] = document.getElementById(priceTemplate).value;
+                    countOfTemplate[i] = document.getElementById(countTemplate).value;
+                }
+            }
+
+
+            var tagsLength = 1;
+            if (tags.getTags().length > 0) {
+                tagsLength = tags.getTags().length;
+            }
+
+            var anotherTagsArrayLength = 0;
+            if (anotherTags.length > 0) {
+                anotherTagsArrayLength = anotherTags.length;
+            }
+            else {
+                anotherTagsArrayLength = 0;
+            }
+
+            var anotherTagslength = 1;
+            if (anotherTagsArrayLength > 0) {
+                for (var i = 0; i < anotherTagsArrayLength; i++) {
+                    if (anotherTags[i].getTags().length > 0) {
+                        anotherTagslength *= anotherTags[i].getTags().length;
+                    }
+                }
+            }
+
+            var allTagsCount = tagsLength * anotherTagslength;
+
+            var plusAllTagsCount = 0;
+            if (tags.getTags().length > 0 || anotherTags.length > 0) {
+                if (tags.getTags().length > 0) {
+                    plusAllTagsCount += tags.getTags().length;
+                }
+                if (anotherTags.length > 0) {
+                    for (var i = 0; i < anotherTags.length; i++) {
+                        if (anotherTags[i].getTags().length > 0) {
+                            plusAllTagsCount += anotherTags[i].getTags().length;
+                        }
+                    }
+                }
+            }
+
+            var mixTagsTogetherArray = [];
+            var mixTagsTogetherArrayTrim = [];
+
+            if (plusAllTagsCount > 0) {
+
+                var tagsRepeatCount = 0;
+
+                if (tagsLength > 0) {
+
+                    tagsRepeatCount = allTagsCount / tagsLength;
+
+                    for (var b = 0; b < tags.getTags().length; b++) {
+
+                        for (var c = 0; c < tagsRepeatCount; c++) {
+
+                            mixTagsTogetherArray.push(tags.getTags()[b])
+                            mixTagsTogetherArrayTrim.push(tags.getTags()[b])
+                        }
+                    }
+                }
+
+                if (anotherTagsArrayLength > 0) {
+
+                    for (var b = 0; b < anotherTagsArrayLength; b++) {
+
+                        if (anotherTags[b].getTags().length > 0) {
+
+                            if (tagsRepeatCount == 0) {
+                                tagsRepeatCount = allTagsCount / anotherTags[b].getTags().length;
+                            }
+                            else {
+                                tagsRepeatCount /= anotherTags[b].getTags().length;
+                            }
+
+                            if (mixTagsTogetherArray.length > 0) {
+
+                                for (var c = 0, numberinCountRepeat = 1, breakBool = 0; c < mixTagsTogetherArray.length; c++, numberinCountRepeat++) {
+
+                                    if (tagsLength > 0) {
+
+                                        var anotherTagsReapet = anotherTags[b].getTags().length;
+
+                                        for (var r = c * (allTagsCount / tagsLength), t = 0, e = 0; t < allTagsCount / tagsLength; r++, t++) {
+
+                                            if (r == mixTagsTogetherArray.length) {
+                                                breakBool = 1;
+                                                break;
+                                            }
+
+                                            mixTagsTogetherArray[r] += " _ " + anotherTags[b].getTags()[e];
+                                            mixTagsTogetherArrayTrim[r] += "_" + anotherTags[b].getTags()[e];
+
+
+                                            if (t == tagsRepeatCount - 1) {
+                                                e++;
+                                                t = -1;
+                                            }
+                                            if (e == anotherTagsReapet) {
+                                                e = 0;
+                                            }
+                                        }
+                                    }
+                                    if (breakBool == 1) {
+                                        break;
+                                    }
+                                }
+                            }
+                            else {
+                                for (var c = 0, numberinCountRepeat = 1, breakBool = 0; c < anotherTags[b].getTags().length; c++, numberinCountRepeat++) {
+
+                                    if (anotherTags[b].getTags().length > 0) {
+                                        mixTagsTogetherArray.push(anotherTags[b].getTags()[c]);
+                                        mixTagsTogetherArrayTrim.push(anotherTags[b].getTags()[c]);
+                                    }
+
+                                    //if (tagsLength > 0) {
+
+                                    //    var anotherTagsReapet = anotherTags[b].getTags().length;
+
+                                    //    for (var r = c * (allTagsCount / tagsLength), t = 0, e = 0; t < allTagsCount / tagsLength; r++, t++) {
+
+                                    //        if (r == mixTagsTogetherArray.length) {
+                                    //            breakBool = 1;
+                                    //            break;
+                                    //        }
+
+                                    //        mixTagsTogetherArray[r] += " _ " + anotherTags[b].getTags()[e];
+
+
+                                    //        if (t == tagsRepeatCount - 1) {
+                                    //            e++;
+                                    //            t = -1;
+                                    //        }
+                                    //        if (e == anotherTagsReapet) {
+                                    //            e = 0;
+                                    //        }
+                                    //    }
+                                    //}
+                                    //if (breakBool == 1) {
+                                    //    break;
+                                    //}
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+            $("#generateTagsDiv").empty();
+            $("#generateTagsDiv").append("<div class='col-md-12 row'><p class='col-md-4'>مقادیر</p><p class='col-md-4'>قیمت</p><p class='col-md-4'>تعداد</p></div>");
+            var productName = document.getElementById('productName').value;
+            if (productName.length > 5) {
+                productName = productName.slice(0, 5);
+            }
+            if (countOfTemplateInput !== undefined) {
+                for (var i = 0; i < countOfTemplateInput; i++) {
+                    $("#generateTagsDiv").append("<div class='col-md-12 row'><p class='col-md-3 p-1'>" + productName + " _ " + template[i] + "</p><input type='hidden' value='" + template[i] + "' name='AttributeTemplates'/><input class='col-md-4   m-1 form-control' type='text' value='" + priceOfTemplate[i] + "' name='AttributePrice' placeHolder='قیمت را وارد کنید'/><input class='col-md-4 m-1   form-control' value='" + countOfTemplate[i] + "' type='text' placeholder='تعداد را وارد کنید' name='AttributeCount'/> </div>")
+                }
+            }
+            for (var i = 0; i < mixTagsTogetherArray.length; i++) {
+                if (countOfTemplateInput !== undefined) {
+                    var isCreate = false;
+                    for (var b = 0; b < countOfTemplateInput; b++) {
+                        if (template[b] == mixTagsTogetherArrayTrim[i]) {
+                            isCreate = true;
+                            break;
+                        }
+                        else {
+                            isCreate = false;
+                        }
+                    }
+                    if (!isCreate) {
+                        $("#generateTagsDiv").append("<div class='col-md-12 row'><p class='col-md-3 p-1'>" + productName + " _ " + mixTagsTogetherArray[i] + "</p><input type='hidden' value='" + mixTagsTogetherArrayTrim[i] + "' name='AttributeTemplates'/><input class='col-md-4   m-1 form-control' type='text' name='AttributePrice' placeHolder='قیمت را وارد کنید'/><input class='col-md-4 m-1   form-control' type='text' placeholder='تعداد را وارد کنید' name='AttributeCount'/> </div>")
+                    }
+                }
+                else {
+                    $("#generateTagsDiv").append("<div class='col-md-12 row'><p class='col-md-3 p-1'>" + productName + " _ " + mixTagsTogetherArray[i] + "</p><input type='hidden' value='" + mixTagsTogetherArrayTrim[i] + "' name='AttributeTemplates'/><input class='col-md-4   m-1 form-control' type='text' name='AttributePrice' placeHolder='قیمت را وارد کنید'/><input class='col-md-4 m-1   form-control' type='text' placeholder='تعداد را وارد کنید' name='AttributeCount'/> </div>")
+
+                }
+            }
+        };
     </script>
 }
 

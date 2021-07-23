@@ -1,4 +1,5 @@
 using Application.InterFaces.Admin;
+using Application.Utilities;
 using Application.ViewModels.Admin;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +21,28 @@ namespace Areas.Admin.Controllers
 
         #endregion
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNumber)
         {
             var products = await _porudctServices.GetAllProductsAsync();
-            return View(products);
+
+            var paging = new PagingList<GetProductsAndImageSrcViewModel>(products,10, pageNumber?? 1);
+            var productsPaging = paging.QueryResult;
+
+
+            #region ViewBagForPaging
+            ViewBag.PageNumber = pageNumber ?? 1;
+            ViewBag.FirstPage = paging.FirstPage;
+            ViewBag.LastPage = paging.LastPage;
+            ViewBag.PrevPage = paging.PreviousPage;
+            ViewBag.NextPage = paging.NextPage;
+            ViewBag.Count = paging.LastPage;
+            ViewBag.Action = "Index";
+            ViewBag.Controller = "ProductManager";
+            #endregion
+
+
+
+            return View(productsPaging);
         }
         [HttpGet]
         public async Task<IActionResult> AddProduct()

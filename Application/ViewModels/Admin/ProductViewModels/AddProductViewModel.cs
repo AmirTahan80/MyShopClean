@@ -8,11 +8,11 @@ namespace Application.ViewModels.Admin
 {
     public class AddProductViewModel
     {
-        [Required(ErrorMessage = "این فیلد اجباری است")]
+        [Required(ErrorMessage = "فیلد {0} اجباری است")]
         [Display(Name = "نام محصول")]
         [MaxLength(100)]
         public string Name { get; set; }
-        [Required(ErrorMessage = "این فیلد اجباری است")]
+        [Required(ErrorMessage = "فیلد {0} اجباری است")]
         [Display(Name = "توضیحات محصول")]
         public string Detail { get; set; }
 
@@ -21,17 +21,29 @@ namespace Application.ViewModels.Admin
 
         [Display(Name = "قیمت محصول")]
         public int Price { get; set; }
-        [Required(ErrorMessage = "این فیلد اجباری است")]
+        [Required(ErrorMessage = "فیلد {0} اجباری است")]
         [Display(Name = "دسته بندی")]
         public int CatId { get; set; }
+
+        //ProductProperties
         public List<string> ValueName { get; set; }
         public List<string> ValueType { get; set; }
+
+
+        //ProductAttributes
+        public bool IsProductHaveAttributes { get; set; } = false;
+        public List<string> AttributeNames { get; set; }
+        public List<string> AttributeValues { get; set; }
+        public List<string> AttributeTemplates { get; set; }
+        public List<string> AttributePrice { get; set; }
+        public List<string> AttributeCount { get; set; }
+
 
 
 
         // NavigationBar
 
-        [Required(ErrorMessage = "این فیلد اجباری است")]
+        [Required(ErrorMessage = "فیلد {0} اجباری است")]
         [Display(Name = "عکس محصول")]
         [ImageSize(5 * 1024 * 1024)]
         [ImageCount()]

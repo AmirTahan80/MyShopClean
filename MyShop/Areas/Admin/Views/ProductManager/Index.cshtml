@@ -17,18 +17,18 @@
                 <div class="card-body">
                     @if (TempData["Error"] != null)
                     {
-                <div class="aler alert-danger round m-2 p-2">
-                    <p>
-                        <strong>خطا ! </strong>@TempData["Error"]
-                    </p>
-                </div>}
+                        <div class="aler alert-danger round m-2 p-2">
+                            <p>
+                                <strong>خطا ! </strong>@TempData["Error"]
+                            </p>
+                        </div>}
                     @if (TempData["Success"] != null)
                     {
-                <div class="aler alert-success round m-2 p-2">
-                    <p>
-                        <strong>موفقیت ! </strong>@TempData["Success"]
-                    </p>
-                </div>}
+                        <div class="aler alert-success round m-2 p-2">
+                            <p>
+                                <strong>موفقیت ! </strong>@TempData["Success"]
+                            </p>
+                        </div>}
                     <div class="card-block">
                         <div class="table-responsive">
                             <form method="post" asp-action="DeleteProduct" asp-controller="ProductManager">
@@ -84,11 +84,11 @@
                                                     </ul>
                                                 </td>
                                                 <td>
-                                                    <button type="submit" asp-action="EditCategory" asp-controller="CategoryManager"
+                                                    <a asp-action="EditCategory" asp-controller="CategoryManager"
                                                             asp-route-categoryId="@Model[b].CategoryId"
-                                                            class="btn btn-sm btn-outline-danger round">
+                                                            class="btn btn-sm btn-outline-dark">
                                                         @Model[b].CategoryName
-                                                    </button>
+                                                    </a>
                                                 </td>
                                                 <td class="text-truncate"> @Model[b].Price تومان</td>
                                                 <td class="text-truncate">
@@ -105,6 +105,7 @@
                         </div>
                     </div>
                 </div>
+            <partial name="_PagingParitial"></partial>
             </div>
         </div>
     </div>

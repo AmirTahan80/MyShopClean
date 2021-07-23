@@ -18,6 +18,9 @@ namespace Infra.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductImages> ProductImages { get; set; }
         public DbSet<ProductProperty> ProductProperties { get; set; }
+        public DbSet<ProductAttribute> ProductAttributes { get; set; }
+        public DbSet<AttributeValue> AttributeValues { get; set; }
+        public DbSet<AttributeTemplate> AttributeTemplates { get; set; }
 
         public DbSet<Category> Categories { get; set; }       
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }       

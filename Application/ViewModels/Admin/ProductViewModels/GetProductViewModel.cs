@@ -24,8 +24,17 @@ namespace Application.ViewModels.Admin
         [Display(Name = "نام دسته بندی")]
         public string CategoryName { get; set; }
         public int CategoryId { get; set; }
+
         public IList<string> Valuetype { get; set; }
         public IList<string> ValueName { get; set; }
+
+        //Atributes
+        public bool IsProductHaveAttributes { get; set; }
+        public List<string> AttributeNames { get; set; }
+        public List<string> AttributeValues { get; set; }
+        public List<string> AttributeTemplates { get; set; }
+        public List<string> AttributePrice { get; set; }
+        public List<string> AttributeCount { get; set; }
 
         // NavigationBar
         [Display(Name = "عکس ها")]
@@ -34,6 +43,9 @@ namespace Application.ViewModels.Admin
         public IEnumerable<IFormFile> UploadImages { get; set; }
         public IEnumerable<SelectListItem> Categories { get; set; }
         public IEnumerable<GetProductProperties> Properties { get; set; }
+
+        public List<ProductAttributesTemplatesViewModel> ProductAttributesTemplates { get; set; }
+        public List<ProductAttributeNameAndValuesViewModel> ProductAttributeNameAndValues { get; set; }
 
         public IEnumerable<int> DeletedProductImagesIds { get; set; }
         public IEnumerable<int> PropertiesDeletedIds { get; set; }

@@ -77,7 +77,22 @@ namespace Application.Services.Admin
                     ValueName = p.ValueName,
                     ValueType = p.ValueType,
                     ValueId = p.PropertyId
-                }).ToList()
+                }).ToList(),
+                ProductAttributesTemplates = product.AttributeTemplates.Select(p => new ProductAttributesTemplatesViewModel()
+                {
+                    Template = p.Template,
+                    PriceOfTemplate = p.AttrinbuteTemplatePrice,
+                    CountOfTemplate = p.AttrinbuteTemplateCount
+                }).ToList(),
+                ProductAttributeNameAndValues = product.ProductAttributes.Select(p => new ProductAttributeNameAndValuesViewModel()
+                {
+                    Name = p.AttributeName,
+                    Values = p.AttributeValues.Select(c => new ProductAttributeValuesViewModel()
+                    {
+                        ValueName = c.ValueName
+                    }).ToList(),
+                }).ToList(),
+                IsProductHaveAttributes = product.IsProductHaveAttributes,
             };
             return returnProduct;
         }
@@ -86,16 +101,31 @@ namespace Application.Services.Admin
             try
             {
                 var getProductIdsFordelete = deleteListOfProducts.Where(p => p.IsSelected).Select(p => p.Id);
+
                 var productsList = new List<Product>();
                 var productImagesList = new List<ProductImages>();
                 var productPropertiesList = new List<ProductProperty>();
+                var productAttributeNames = new List<ProducesAttribute>();
+                var productAttributeValues = new List<AttributeValue>();
+                var productAttributeTemplates = new List<AttributeTemplate>();
+
                 foreach (var productId in getProductIdsFordelete)
                 {
                     var product = await _productRepository.GetProductAsync(productId);
                     productsList.Add(product);
                     productImagesList = product.ProductImages.ToList();
                     productPropertiesList = product.Properties.ToList();
+                    if(product.IsProductHaveAttributes)
+                    {
+                        foreach (var item in product.ProductAttributes)
+                        {
+                            _productRepository.DeleteProductAttributeValues(item.AttributeValues);
+                        }
+                        _productRepository.DeleteAttributesNamesAndtemplates(product.ProductAttributes,
+                            product.AttributeTemplates);
+                    }
                 }
+
                 if (productImagesList != null)
                 {
                     foreach (var image in productImagesList)
@@ -106,13 +136,16 @@ namespace Application.Services.Admin
                     }
                     _productRepository.DeletePhoto(productImagesList);
                 }
+
                 if (productPropertiesList != null)
                 {
                     _productRepository.DeleteProductProperties(productPropertiesList);
                 }
+
                 _productRepository.DeleteProduct(productsList);
 
                 await _productRepository.SaveAsync();
+
                 return true;
             }
             catch (Exception error)
@@ -134,6 +167,12 @@ namespace Application.Services.Admin
                     return false;
                 }
 
+                if (addProduct.IsProductHaveAttributes)
+                {
+                    addProduct.Count = 0;
+                    addProduct.Price = 0;
+                }
+
                 var productForAdd = new Product()
                 {
                     Name = addProduct.Name,
@@ -142,6 +181,7 @@ namespace Application.Services.Admin
                     Detail = addProduct.Detail,
                     CategoryId = addProduct.CatId,
                     InsertTime = ConverToShamsi.GetDate(DateTime.Now),
+                    IsProductHaveAttributes = addProduct.IsProductHaveAttributes == true ? true : false
                 };
                 await _productRepository.AddProductAsync(productForAdd);
 
@@ -178,6 +218,76 @@ namespace Application.Services.Admin
                 });
                 await _productRepository.AddProductImagesAsync(uploadProductImages);
 
+                if (addProduct.IsProductHaveAttributes)
+                {
+                    //AttributesName
+                    var productAttributes = new List<ProductAttribute>();
+                    for (int i = 0; i < addProduct.AttributeNames.Count; i++)
+                    {
+                        if (addProduct.AttributeValues[i] != "" || addProduct.AttributeValues[i] != null || addProduct.AttributeValues[i].Length! < 0)
+                        {
+                            productAttributes.Add(new ProductAttribute()
+                            {
+                                AttributeName = addProduct.AttributeNames[i],
+                                ProductId = productForAdd.Id,
+                                Product = productForAdd
+                            });
+                        }
+                    }
+                    await _productRepository.AddProductAttributes(productAttributes);
+
+                    //Values
+                    var productAttributesValue = new List<AttributeValue>();
+                    for (int i = 0; i < addProduct.AttributeNames.Count; i++)
+                    {
+                        if (addProduct.AttributeValues[i] != null || addProduct.AttributeValues[i].Length! < 0)
+                        {
+                            //List<string> arrayOfValues = new List<string>();
+                            var counter = addProduct.AttributeValues[i].Split(",").Length;
+                            var getValue = addProduct.AttributeValues[i].Split(",");
+                            //for (int b = 0; b < counter; b++)
+                            //{
+                            //    arrayOfValues.Add(new(getValue[b]));
+                            //}
+                            for (int b = 0; b < getValue.Length; b++)
+                            {
+                                productAttributesValue.Add(new AttributeValue()
+                                {
+                                    ValueName = getValue[b].TrimEnd().TrimStart(),
+                                    ProductAttributeId = productAttributes[i].AttributeId,
+                                    ProductAttribute = productAttributes[i]
+                                });
+                            }
+                        }
+                    }
+                    await _productRepository.AddAttributeValues(productAttributesValue);
+
+                    //Template
+                    var productAttributesTemplates = new List<AttributeTemplate>();
+                    for (int i = 0; i < addProduct.AttributeTemplates.Count; i++)
+                    {
+                        if (addProduct.AttributePrice[i] != null && addProduct.AttributeCount[i] != null)
+                        {
+                            if (addProduct.AttributePrice[i] == null)
+                            {
+                                addProduct.AttributePrice[i] = "0";
+                            }
+                            else if (addProduct.AttributeCount[i] == null)
+                            {
+                                addProduct.AttributeCount[i] = "0";
+                            }
+                            productAttributesTemplates.Add(new AttributeTemplate()
+                            {
+                                Template = addProduct.AttributeTemplates[i],
+                                AttrinbuteTemplateCount = Convert.ToInt32(addProduct.AttributeCount[i]),
+                                AttrinbuteTemplatePrice = Convert.ToInt32(addProduct.AttributePrice[i]),
+                                ProductId = productForAdd.Id,
+                                Product = productForAdd
+                            });
+                        }
+                    }
+                    await _productRepository.AddAttributeTemplates(productAttributesTemplates);
+                }
 
                 await _productRepository.SaveAsync();
                 return true;
@@ -187,13 +297,22 @@ namespace Application.Services.Admin
                 Console.WriteLine(error);
                 return false;
             }
+
         }
         public async Task<bool> EditProductAsync(GetProductViewModel editProduct)
         {
             try
             {
                 if (editProduct.Id == 0) return false;
+
+                if (editProduct.IsProductHaveAttributes)
+                {
+                    editProduct.Price = 0;
+                    editProduct.Count = 0;
+                }
+
                 var findProductById = await _productRepository.GetProductAsync(editProduct.Id);
+
                 findProductById.Name = editProduct.Name;
                 findProductById.Detail = editProduct.Detail;
                 findProductById.Count = editProduct.Count;
@@ -216,7 +335,6 @@ namespace Application.Services.Admin
                     }
                     _productRepository.DeletePhoto(productsFindForDelete);
                 }
-
                 if (editProduct.UploadImages != null)
                 {
                     var productImages = new List<ProductImages>();
@@ -262,7 +380,109 @@ namespace Application.Services.Admin
                     await _productRepository.AddProductPropertiesAsync(productProperties);
                 }
 
+                if (editProduct.IsProductHaveAttributes)
+                {
+                    //Delete Attributes /Name/Values/Template From Product
+                    var productFindAttributes = findProductById.ProductAttributes;
+                    var productFindAttributesTemplate = findProductById.AttributeTemplates;
+
+                    var productFindAttributeValues = new List<AttributeValue>();
+
+                    foreach(var item in productFindAttributes)
+                    {
+                        _productRepository.DeleteProductAttributeValues(item.AttributeValues);
+                    }
+
+                    _productRepository.DeleteAttributesNamesAndtemplates(productFindAttributes, 
+                        productFindAttributesTemplate);
+
+                    //Add Attributes /Names/Values/Templates
+                    if (editProduct.AttributeNames.Count > 0)
+                    {
+                        //Add AttributesName
+                        var productAttributesName = new List<ProductAttribute>();
+                        for (int i = 0; i < editProduct.AttributeNames.Count; i++)
+                        {
+                            if (editProduct.AttributeValues[i] != "" || editProduct.AttributeValues[i] != null || editProduct.AttributeValues[i].Length! < 0)
+                            {
+                                productAttributesName.Add(new ProductAttribute()
+                                {
+                                    AttributeName = editProduct.AttributeNames[i],
+                                    Product = findProductById,
+                                    ProductId=findProductById.Id  
+                                });
+                            }
+                        }
+                        await _productRepository.AddProductAttributes(productAttributesName);
+                        
+                        //Add AtributesValues
+                        var productAttributeValues = new List<AttributeValue>();
+                        for (int i = 0; i < editProduct.AttributeNames.Count; i++)
+                        {
+                            if (editProduct.AttributeValues[i] != null || editProduct.AttributeValues[i].Length! < 0)
+                            {
+                                //var getValuesList = new List<string>();
+                                var counterOfValues = editProduct.AttributeValues[i].Split(",").Length;
+                                var splitIndexOfValues = editProduct.AttributeValues[i].Split(",");
+                                for (int b = 0; b < splitIndexOfValues.Length; b++)
+                                {
+                                    productAttributeValues.Add(new AttributeValue()
+                                    {
+                                        ValueName=splitIndexOfValues[b],
+                                        ProductAttribute= productAttributesName[i],
+                                        ProductAttributeId= productAttributesName[i].AttributeId
+                                    });
+                                }
+                            }
+                        }
+                        await _productRepository.AddAttributeValues(productAttributeValues);
+
+                        //AddAttributesTemplates
+                        var attributesTemplates = new List<AttributeTemplate>();
+                        for (int i = 0; i < editProduct.AttributeTemplates.Count; i++)
+                        {
+                            if(editProduct.AttributePrice[i]!=null && editProduct.AttributeCount[i] != null)
+                            {
+                                if (editProduct.AttributePrice[i] == null)
+                                {
+                                    editProduct.AttributePrice[i] = "0";
+                                }
+                                else if (editProduct.AttributeCount[i] == null)
+                                {
+                                    editProduct.AttributeCount[i] = "0";
+                                }
+                                attributesTemplates.Add(new AttributeTemplate()
+                                {
+                                    Template=editProduct.AttributeTemplates[i],
+                                    AttrinbuteTemplateCount= Convert.ToInt32(editProduct.AttributeCount[i]),
+                                    AttrinbuteTemplatePrice=Convert.ToInt32(editProduct.AttributePrice[i]),
+                                    Product= findProductById,
+                                    ProductId= findProductById.Id
+                                });
+                            }
+                        }
+                        await _productRepository.AddAttributeTemplates(attributesTemplates);
+
+                    }
+                }
+                else
+                {
+                    var productFindAttributes = findProductById.ProductAttributes;
+                    var productFindAttributesTemplate = findProductById.AttributeTemplates;
+
+                    var productFindAttributeValues = new List<AttributeValue>();
+
+                    foreach (var item in productFindAttributes)
+                    {
+                        _productRepository.DeleteProductAttributeValues(item.AttributeValues);
+                    }
+
+                    _productRepository.DeleteAttributesNamesAndtemplates(productFindAttributes,
+                        productFindAttributesTemplate);
+                }
+
                 await _productRepository.SaveAsync();
+
                 return true;
             }
             catch (Exception error)
