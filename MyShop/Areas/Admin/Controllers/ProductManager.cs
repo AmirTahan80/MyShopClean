@@ -110,6 +110,8 @@ namespace Areas.Admin.Controllers
             else
                 ViewData["Error"] = "عملیات ذخیره سازی با شکست مواجه شد!";
 
+            model = new AddProductViewModel();
+
             return View(categoriesTreeView);
         }
         [HttpGet]

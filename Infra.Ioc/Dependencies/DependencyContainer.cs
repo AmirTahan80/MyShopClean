@@ -15,6 +15,8 @@ using Application.InterFaces.Both;
 using Application.Services.Both;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Application.Services.User;
+using Application.InterFaces.User;
 
 namespace Infra.Ioc.Dependencies
 {
@@ -30,6 +32,7 @@ namespace Infra.Ioc.Dependencies
                    
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProudctServices, ProductServices>();
+            services.AddScoped<IProductUserServices, ProductUserServices>();
 
             services.AddScoped<IMessageSenderServices, MessageSenderServices>();
 

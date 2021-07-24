@@ -112,8 +112,36 @@ namespace Application.Services.Admin
 
                 if (addProduct.IsProductHaveAttributes)
                 {
-                    addProduct.Count = 0;
-                    addProduct.Price = 0;
+                    var LowerPriceOfAttributes = 0;
+                    var CountOfLowerPrice = 0;
+                    for (int i = 0; i < addProduct.AttributePrice.Count; i++)
+                    {
+                        if (LowerPriceOfAttributes == 0)
+                        {
+                            if (addProduct.AttributeCount[i] != null && addProduct.AttributeCount[i] != null)
+                            {
+                                var intPrice = Convert.ToInt32(addProduct.AttributePrice[i]);
+                                var intCount = Convert.ToInt32(addProduct.AttributeCount[i]);
+                                LowerPriceOfAttributes = intPrice;
+                                CountOfLowerPrice = intCount;
+                            }
+                        }
+                        else
+                        {
+                            if (addProduct.AttributeCount[i] != null && addProduct.AttributeCount[i] != null)
+                            {
+                                var intPrice = Convert.ToInt32(addProduct.AttributePrice[i]);
+                                var intCount = Convert.ToInt32(addProduct.AttributeCount[i]);
+                                if(intPrice< LowerPriceOfAttributes)
+                                {
+                                    LowerPriceOfAttributes = intPrice;
+                                    CountOfLowerPrice = intCount;
+                                }
+                            }
+                        }
+                    }
+                    addProduct.Count = CountOfLowerPrice;
+                    addProduct.Price = LowerPriceOfAttributes;
                 }
 
                 var productForAdd = new Product()
