@@ -3,6 +3,10 @@ using Application.ViewModels.Admin;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Application.Utilities;
+using System.Linq;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace MyShop.Areas.Admin.Controllers
 {
@@ -19,15 +23,83 @@ namespace MyShop.Areas.Admin.Controllers
         //End Injections
 
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNumber, string searchUser, string filter)
         {
-            var users = await _accountServices.GetAllUsersListAsync();
-            return View(users);
+            var userLogIn = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var users = await _accountServices.GetAllUsersListAsync(userLogIn);
+
+
+            if (!string.IsNullOrWhiteSpace(searchUser))
+            {
+                if (searchUser.Contains("@"))
+                {
+                    users = users.Where(p => p.UserEmail.ToLower().Contains(searchUser.ToLower())).ToList();
+                }
+                else
+                {
+                    users = users.Where(p => p.UserName.ToLower().Contains(searchUser.ToLower())).ToList();
+                }
+
+                ViewBag.SearchUser = searchUser;
+            }
+
+            ViewBag.Filter = "همه";
+
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                switch (filter)
+                {
+                    case "all":
+                        users = users.ToList();
+                        ViewBag.Filter = "همه";
+                        break;
+                    case "admin":
+                        users = users.Where(p => p.RoleName == "Manager").ToList();
+                        ViewBag.Filter = "مدیریت کنندگان";
+                        break;
+                    case "admin2":
+                        users = users.Where(p => p.RoleName == "Writer").ToList();
+                        ViewBag.Filter = "نویسندگان";
+                        break;
+                    case "customer":
+                        users = users.Where(p => p.RoleName == "Customer").ToList();
+                        ViewBag.Filter = "مشتریان";
+                        break;
+                }
+            }
+
+
+            var paging = new PagingList<UsersListViewModel>(users, 10, pageNumber ?? 1);
+            var userPaging = paging.QueryResult;
+
+            #region ViewBagForPaging
+            ViewBag.PageNumber = pageNumber ?? 1;
+            ViewBag.FirstPage = paging.FirstPage;
+            ViewBag.LastPage = paging.LastPage;
+            ViewBag.PrevPage = paging.PreviousPage;
+            ViewBag.NextPage = paging.NextPage;
+            ViewBag.Count = paging.LastPage;
+            ViewBag.Action = "Index";
+            ViewBag.Controller = "UserManager";
+            #endregion
+
+            ViewData["Error"] = TempData["Error"];
+            ViewData["Success"] = TempData["Success"];
+
+            return View(userPaging);
         }
+
         [HttpGet]
-        public IActionResult CreateUser()
+        public async Task<IActionResult> CreateUser()
         {
-            return View();
+            var userLoginId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var roles = await _accountServices.GetRolesAsync(userLoginId);
+            var modelForReturnToView = new CreateAccountViewModel()
+            {
+                RolesItem = roles
+            };
+
+            return View(modelForReturnToView);
         }
         [HttpPost]
         public async Task<IActionResult> CreateUser(CreateAccountViewModel model)
@@ -48,16 +120,18 @@ namespace MyShop.Areas.Admin.Controllers
             return View();
 
         }
+
         [HttpGet]
         public async Task<IActionResult> EditUser(string userId)
         {
-            var user = await _accountServices.FinUserById(userId);
+            var userLogIn = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _accountServices.FinUserById(userId, userLogIn);
             return View(user);
         }
         [HttpPost]
         public async Task<IActionResult> EditUser(UserDetailViewModel model)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return View(model);
             }
@@ -69,6 +143,21 @@ namespace MyShop.Areas.Admin.Controllers
                 ViewData["Error"] = "عملیات ویرایش با موفقیت انجام نشد !";
 
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUsers(IEnumerable<UsersListViewModel> model)
+        {
+            if (model.Count() <= 0) return NotFound();
+
+            var result = await _accountServices.DeleteUsersAsync(model);
+
+            if (!result)
+                TempData["Error"] = "مشکلی در حذف کاربر یا کابران به وجود آمده است !!";
+            else
+                TempData["Success"] = "حذف کاربر یا کاربران با موفقیت انجام شد !";
+
+            return RedirectToAction("Index");
         }
 
         [HttpGet]

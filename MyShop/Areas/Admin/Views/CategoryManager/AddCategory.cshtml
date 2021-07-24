@@ -20,7 +20,7 @@
                                         <div class="form-group">
                                             <p>نام دسته بندی</p>
                                             <div class="position-relative has-icon-left">
-                                                <input asp-for="Name" required class="form-control round">
+                                                <input asp-for="Name" required class="form-control">
                                                 <span asp-validation-for="Name" class="red"></span>
                                             </div>
                                         </div>
@@ -28,7 +28,7 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <p>دسته بندی پدر را انتخاب کنید</p>
-                                            <select class="custom-select d-block w-100 round"
+                                            <select class="custom-select d-block w-100"
                                                     asp-for="ParentId"
                                                     asp-items="@Model.CategoriesTreeView">
                                             </select>
@@ -43,12 +43,12 @@
                                             </div>
                                             @if (ViewData["Error"] != null)
                                             {
-                                <div class="alert alert-danger round">
+                                <div class="alert alert-danger">
                                     <strong>خطا! </strong>  @ViewData["Error"]
                                 </div>}
                                             @if (ViewData["Success"] != null)
                                             {
-                                <div class="alert alert-success round">
+                                <div class="alert alert-success">
                                     <strong>موفقیت! </strong>  @ViewData["Success"]
                                 </div>}
                                         </div>

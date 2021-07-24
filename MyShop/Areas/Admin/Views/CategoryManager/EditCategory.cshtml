@@ -40,13 +40,13 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="projectinput1">نام دسته بندی</label>
-                                        <input class="form-control round" asp-for="Name" required autofocus/>
+                                        <input class="form-control" asp-for="Name" required autofocus/>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="projectinput2">پدر دسته بندی</label>
-                                        <select class="custom-select d-block w-100 round"
+                                        <select class="custom-select d-block w-100"
                                                 asp-for="ParentId" asp-items="Model.Categories">
                                         </select>
                                     </div>
@@ -55,7 +55,7 @@
                                     <div class="form-group">
                                         <label class="col-md-12">توضیحاتی در مورد دسته</label>
                                         <div class="col-md-12">
-                                            <textarea rows="10" style="width:100%" asp-for="Detail" class="round p-1"></textarea>
+                                            <textarea rows="10" style="width:100%" asp-for="Detail" class="p-1"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -71,13 +71,13 @@
                             </div>
                             @if (ViewData["Success"] != null)
                             {
-                                <div class="alert alert-success round">
+                                <div class="alert alert-success">
                                     <p><strong>موفقیت ! </strong>@ViewData["Success"]</p>
                                 </div>
                             }
                             @if (ViewData["Error"] != null)
                             {
-                                <div class="alert alert-danger round">
+                                <div class="alert alert-danger">
                                     <p><strong>خطا ! </strong>@ViewData["Error"]</p>
                                 </div>
                             }

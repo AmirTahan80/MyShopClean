@@ -30,6 +30,7 @@ namespace Application.Services.Admin
         public async Task<IEnumerable<GetProductsAndImageSrcViewModel>> GetAllProductsAsync()
         {
             var products = await _productRepository.GetAllProductsAsync();
+            products = products.OrderByDescending(p => p.Id);
             var productsReturn = products.Select(p => new GetProductsAndImageSrcViewModel()
             {
                 Id = p.Id,
@@ -42,15 +43,6 @@ namespace Application.Services.Admin
                 ImagesCount = p.ProductImages.Count - 2
             }).ToList();
             return productsReturn;
-        }
-        public async Task<AddProductViewModel> GetCategoriesTreeViewForAdd()
-        {
-            var categoriesTreeView = await _categoryServices.GetCategoriesTreeForAdd();
-            var returnCategories = new AddProductViewModel()
-            {
-                CategoriesTreeView = categoriesTreeView.CategoriesTreeView.Skip(1),
-            };
-            return returnCategories;
         }
         public async Task<GetProductViewModel> GetProductAsync(int productId)
         {
@@ -96,65 +88,16 @@ namespace Application.Services.Admin
             };
             return returnProduct;
         }
-        public async Task<bool> DeleteListOfProducts(IEnumerable<GetProductsAndImageSrcViewModel> deleteListOfProducts)
+
+        public async Task<AddProductViewModel> GetCategoriesTreeViewForAdd()
         {
-            try
+            var categoriesTreeView = await _categoryServices.GetCategoriesTreeForAdd();
+            var returnCategories = new AddProductViewModel()
             {
-                var getProductIdsFordelete = deleteListOfProducts.Where(p => p.IsSelected).Select(p => p.Id);
-
-                var productsList = new List<Product>();
-                var productImagesList = new List<ProductImages>();
-                var productPropertiesList = new List<ProductProperty>();
-                var productAttributeNames = new List<ProducesAttribute>();
-                var productAttributeValues = new List<AttributeValue>();
-                var productAttributeTemplates = new List<AttributeTemplate>();
-
-                foreach (var productId in getProductIdsFordelete)
-                {
-                    var product = await _productRepository.GetProductAsync(productId);
-                    productsList.Add(product);
-                    productImagesList = product.ProductImages.ToList();
-                    productPropertiesList = product.Properties.ToList();
-                    if(product.IsProductHaveAttributes)
-                    {
-                        foreach (var item in product.ProductAttributes)
-                        {
-                            _productRepository.DeleteProductAttributeValues(item.AttributeValues);
-                        }
-                        _productRepository.DeleteAttributesNamesAndtemplates(product.ProductAttributes,
-                            product.AttributeTemplates);
-                    }
-                }
-
-                if (productImagesList != null)
-                {
-                    foreach (var image in productImagesList)
-                    {
-                        var result = DeletePhoto(image.ImgSrc, image.ImgFile);
-                        if (!result)
-                            break;
-                    }
-                    _productRepository.DeletePhoto(productImagesList);
-                }
-
-                if (productPropertiesList != null)
-                {
-                    _productRepository.DeleteProductProperties(productPropertiesList);
-                }
-
-                _productRepository.DeleteProduct(productsList);
-
-                await _productRepository.SaveAsync();
-
-                return true;
-            }
-            catch (Exception error)
-            {
-                Console.WriteLine(error);
-                return false;
-            }
+                CategoriesTreeView = categoriesTreeView.CategoriesTreeView.Skip(1),
+            };
+            return returnCategories;
         }
-
 
 
         public async Task<bool> AddProductAsync(AddProductViewModel addProduct)
@@ -299,6 +242,7 @@ namespace Application.Services.Admin
             }
 
         }
+
         public async Task<bool> EditProductAsync(GetProductViewModel editProduct)
         {
             try
@@ -388,12 +332,12 @@ namespace Application.Services.Admin
 
                     var productFindAttributeValues = new List<AttributeValue>();
 
-                    foreach(var item in productFindAttributes)
+                    foreach (var item in productFindAttributes)
                     {
                         _productRepository.DeleteProductAttributeValues(item.AttributeValues);
                     }
 
-                    _productRepository.DeleteAttributesNamesAndtemplates(productFindAttributes, 
+                    _productRepository.DeleteAttributesNamesAndtemplates(productFindAttributes,
                         productFindAttributesTemplate);
 
                     //Add Attributes /Names/Values/Templates
@@ -409,12 +353,12 @@ namespace Application.Services.Admin
                                 {
                                     AttributeName = editProduct.AttributeNames[i],
                                     Product = findProductById,
-                                    ProductId=findProductById.Id  
+                                    ProductId = findProductById.Id
                                 });
                             }
                         }
                         await _productRepository.AddProductAttributes(productAttributesName);
-                        
+
                         //Add AtributesValues
                         var productAttributeValues = new List<AttributeValue>();
                         for (int i = 0; i < editProduct.AttributeNames.Count; i++)
@@ -428,9 +372,9 @@ namespace Application.Services.Admin
                                 {
                                     productAttributeValues.Add(new AttributeValue()
                                     {
-                                        ValueName=splitIndexOfValues[b],
-                                        ProductAttribute= productAttributesName[i],
-                                        ProductAttributeId= productAttributesName[i].AttributeId
+                                        ValueName = splitIndexOfValues[b],
+                                        ProductAttribute = productAttributesName[i],
+                                        ProductAttributeId = productAttributesName[i].AttributeId
                                     });
                                 }
                             }
@@ -441,7 +385,7 @@ namespace Application.Services.Admin
                         var attributesTemplates = new List<AttributeTemplate>();
                         for (int i = 0; i < editProduct.AttributeTemplates.Count; i++)
                         {
-                            if(editProduct.AttributePrice[i]!=null && editProduct.AttributeCount[i] != null)
+                            if (editProduct.AttributePrice[i] != null && editProduct.AttributeCount[i] != null)
                             {
                                 if (editProduct.AttributePrice[i] == null)
                                 {
@@ -453,11 +397,11 @@ namespace Application.Services.Admin
                                 }
                                 attributesTemplates.Add(new AttributeTemplate()
                                 {
-                                    Template=editProduct.AttributeTemplates[i],
-                                    AttrinbuteTemplateCount= Convert.ToInt32(editProduct.AttributeCount[i]),
-                                    AttrinbuteTemplatePrice=Convert.ToInt32(editProduct.AttributePrice[i]),
-                                    Product= findProductById,
-                                    ProductId= findProductById.Id
+                                    Template = editProduct.AttributeTemplates[i],
+                                    AttrinbuteTemplateCount = Convert.ToInt32(editProduct.AttributeCount[i]),
+                                    AttrinbuteTemplatePrice = Convert.ToInt32(editProduct.AttributePrice[i]),
+                                    Product = findProductById,
+                                    ProductId = findProductById.Id
                                 });
                             }
                         }
@@ -492,6 +436,64 @@ namespace Application.Services.Admin
             }
         }
 
+        public async Task<bool> DeleteListOfProducts(IEnumerable<GetProductsAndImageSrcViewModel> deleteListOfProducts)
+        {
+            try
+            {
+                var getProductIdsFordelete = deleteListOfProducts.Where(p => p.IsSelected).Select(p => p.Id);
+
+                var productsList = new List<Product>();
+                var productImagesList = new List<ProductImages>();
+                var productPropertiesList = new List<ProductProperty>();
+                var productAttributeNames = new List<ProducesAttribute>();
+                var productAttributeValues = new List<AttributeValue>();
+                var productAttributeTemplates = new List<AttributeTemplate>();
+
+                foreach (var productId in getProductIdsFordelete)
+                {
+                    var product = await _productRepository.GetProductAsync(productId);
+                    productsList.Add(product);
+                    productImagesList = product.ProductImages.ToList();
+                    productPropertiesList = product.Properties.ToList();
+                    if (product.IsProductHaveAttributes)
+                    {
+                        foreach (var item in product.ProductAttributes)
+                        {
+                            _productRepository.DeleteProductAttributeValues(item.AttributeValues);
+                        }
+                        _productRepository.DeleteAttributesNamesAndtemplates(product.ProductAttributes,
+                            product.AttributeTemplates);
+                    }
+                }
+
+                if (productImagesList != null)
+                {
+                    foreach (var image in productImagesList)
+                    {
+                        var result = DeletePhoto(image.ImgSrc, image.ImgFile);
+                        if (!result)
+                            break;
+                    }
+                    _productRepository.DeletePhoto(productImagesList);
+                }
+
+                if (productPropertiesList != null)
+                {
+                    _productRepository.DeleteProductProperties(productPropertiesList);
+                }
+
+                _productRepository.DeleteProduct(productsList);
+
+                await _productRepository.SaveAsync();
+
+                return true;
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine(error);
+                return false;
+            }
+        }
         public async Task<bool> DeletePhotoAsync(int imageId)
         {
             try
@@ -513,6 +515,7 @@ namespace Application.Services.Admin
                 return false;
             }
         }
+
         public JsonResult UploadFileEditor(IFormFile file)
         {
             try
@@ -609,7 +612,6 @@ namespace Application.Services.Admin
                 return null;
             }
         }
-
         #endregion
     }
 }

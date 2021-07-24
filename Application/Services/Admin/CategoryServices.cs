@@ -23,6 +23,7 @@ namespace Application.Services.Admin
         {
 
             var categories = await _categoryRepository.GetAllCategoriesAsync();
+            categories = categories.OrderByDescending(p => p.Id);
             var categoryList = categories.Select(p => new GetCategoryViewModel()
             {
                 Id = p.Id,
@@ -72,6 +73,7 @@ namespace Application.Services.Admin
             };
             return returnTreeView;
         }
+
         public async Task<bool> AddCategoryAsync(AddCategoryViewModel categoryForAdd)
         {
             try
@@ -94,6 +96,7 @@ namespace Application.Services.Admin
                 return false;
             }
         }
+
         public async Task<bool> EditCategoryAsync(GetCategoryViewModel categoryForEdit)
         {
             try
@@ -116,6 +119,7 @@ namespace Application.Services.Admin
                 return false;
             }
         }
+
         public async Task<bool> DeleteCategoryAsync(IEnumerable<GetCategoryViewModel> categoriesForDelete)
         {
             try
@@ -158,6 +162,7 @@ namespace Application.Services.Admin
             var parent = categories.SingleOrDefault(p => p.Id == ParentId);
             return parent;
         }
+
         private List<Category> CategoriesList(IEnumerable<Category> categories = null,
             IEnumerable<Category> childcategories = null)
         {
@@ -248,6 +253,7 @@ namespace Application.Services.Admin
                 }
             }
         }
+
         private List<SelectListItem> CategoriesListTreeView(int? categoryId, IEnumerable<Category> categories = null,
            IEnumerable<Category> childcategories = null)
         {
@@ -292,6 +298,7 @@ namespace Application.Services.Admin
                     {
                         count++;
                         GetChilderFromParent(category.Children, count);
+                        count = 0;
                     }
                 }
             }
@@ -319,6 +326,7 @@ namespace Application.Services.Admin
                 }
             }
         }
+
         private ICollection<GetChildrenCategoryViewModel> GetChildrenCategory(IEnumerable<Category> categories, int categoryId)
         {
             var returnChild = categories.Where(p => p.ParentId == categoryId).Select(p => new GetChildrenCategoryViewModel()
@@ -330,6 +338,7 @@ namespace Application.Services.Admin
             }).ToList();
             return returnChild;
         }
+        
         private async Task<bool> DeleteCategoriesAndChild(GetCategoryViewModel categoryForDelete)
         {
             if (categoryForDelete == null)

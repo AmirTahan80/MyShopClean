@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.ViewModels.Admin
 {
@@ -19,5 +21,9 @@ namespace Application.ViewModels.Admin
         [MinLength(8)]
         [Compare("UserPassWord", ErrorMessage = "تکرار گذرواژه با گذزواژه وارد شده یکسان نیست ! ")]
         public string UserRePassWord { get; set; }
+        [Required(ErrorMessage ="مقام کاربر در وبسایت مهم است !!!")]
+        public string RoleId { get; set; }
+
+        public List<SelectListItem> RolesItem { get; set; }
     }
 }

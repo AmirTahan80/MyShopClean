@@ -1,4 +1,5 @@
 ﻿using Application.ViewModels.Admin;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -19,14 +20,14 @@ namespace Application.InterFaces.Admin
         /// Get All Users From Data Base
         /// </summary>
         /// <returns>IList<UsersListViewModel></returns>
-        Task<IList<UsersListViewModel>> GetAllUsersListAsync();
+        Task<IList<UsersListViewModel>> GetAllUsersListAsync(string userLoginId);
         /// <summary>
         /// یافتن و یا پیداکردن یک کاربر با آیدی
         /// Find an User from Id
         /// </summary>
         /// <param name="userId"></param>
         /// <returns>UserDetailViewModel</returns>
-        Task<UserDetailViewModel> FinUserById(string userId);
+        Task<UserDetailViewModel> FinUserById(string userId,string userLoginId);
         /// <summary>
         /// ساخت و جنریت لینک برای تاییدیه ایمیل و ارسال به جیمیل کاربر
         /// Generate Link And Send To User Email For Confirm Email
@@ -42,5 +43,19 @@ namespace Application.InterFaces.Admin
         /// <param name="editUser"></param>
         /// <returns>bool : True or False</returns>
         Task<bool> EditUserAsync(UserDetailViewModel editUser);
+        /// <summary>
+        /// حذف لیستی از کاربران
+        /// Delete Users
+        /// </summary>
+        /// <param name="editUser"></param>
+        /// <returns>bool : True or False</returns>
+        Task<bool> DeleteUsersAsync(IEnumerable<UsersListViewModel> deleteUser);
+        /// <summary>
+        /// گرفتن تمامی مقام با شرط کاربران بر اساس مقام آنها
+        /// GetAllRoles
+        /// </summary>
+        /// <param name="userLoginId"></param>
+        /// <returns>List of selectListItem Of Roles</returns>
+        Task<List<SelectListItem>> GetRolesAsync(string userLoginId);
     }
 }

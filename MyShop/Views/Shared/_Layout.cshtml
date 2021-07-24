@@ -1,155 +1,46 @@
 ﻿<!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-    <meta charset="utf-8">
-    <title>@ViewData["Title"]- فروشگاه من</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="فروشگاه من" name="keywords">
-    <meta content="فروشگاه من" name="description">
-
-    <!-- Favicon -->
-    <link href="img/favicon.ico" rel="icon">
-
-    <!--Show Category Css-->
-    <link href="~/css/ShowCategoryStyle.css" rel="stylesheet" />
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400|Source+Code+Pro:700,900&display=swap" rel="stylesheet">
-
-    <!-- CSS Libraries -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="~/lib/slick/slick.css" rel="stylesheet">
-    <link href="~/lib/slick/slick-theme.css" rel="stylesheet">
-
-    <!-- Template Stylesheet -->
-    <link href="~/css/style.css" rel="stylesheet">
-
-    <!-- Website Font -->
-    <link href="https://v1.fontapi.ir/css/Mitra:1000@700" rel="stylesheet">
-
-    <!--Set Font In Document-->
-    <style>
-        *, body, h1, h2, h3, h4, h5, h6, div, header, button, p, a {
-            font-family: 'Mitra', sans-serif;
-        }
-    </style>
-    <!--Set Font In Document End-->
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - فروشگاه من</title>
+    <!-- font---------------------------------------->
+    <link rel="stylesheet" href="~/assets/css/vendor/font-awesome.min.css">
+    <link rel="stylesheet" href="~/assets/css/vendor/materialdesignicons.css">
+    <!-- plugin-------------------------------------->
+    <link rel="stylesheet" href="~/assets/css/vendor/bootstrap.css">
+    <link rel="stylesheet" href="~/assets/css/vendor/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/assets/css/vendor/nice-select.css">
+    <!-- main-style---------------------------------->
+    <link rel="stylesheet" href="~/assets/css/main.css">
+    <link rel="stylesheet" href="~/assets/css/responsive.css">
 
     @await RenderSectionAsync("Header", required: false)
 
 </head>
 <body>
-    <!--Top bar start-->
-    @*@await Component.InvokeAsync("ContactComponent")*@
-    <!--Top bar end-->
-    <!--Top Nav Bar start-->
-    <div class="nav">
-        <div class="container-fluid">
-            <nav class="navbar navbar-expand-md bg-dark navbar-dark">
-                <a href="#" class="navbar-brand">منو</a>
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+    <!-- header-------------------------------->
+    <partial name="_Header"></partial>
+    <!-- header-------------------------------->
 
-                <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
-                    <div class="navbar-nav mr-auto" dir="rtl">
-                        @*@{ await Html.RenderPartialAsync("_AccountPartial");}*@
-                        <a asp-action="CallToUs" asp-controller="Account" class="nav-item nav-link"><i class="fa fa-phone"></i> ارتباط با ما</a>
-                    </div>
-                    <div class="navbar-nav ml-auto" dir="rtl">
-                        <a asp-action="Index" asp-controller="Home" class="nav-item nav-link active"><i class="fa fa-home"></i> خانه</a>
-                        <a asp-action="Index" asp-controller="Product" class="nav-item nav-link"><i class="fa fa-plus"></i> محصولات</a>
-                        <a asp-action="Privacy" asp-controller="Home" class="nav-item nav-link"><i class="fa fa-key"></i> قوانین</a>
-                        <a asp-action="ShowCart" asp-controller="Cart" class="nav-item nav-link"><i class="fa fa-shopping-cart"></i> سبد خرید</a>
-                        <a asp-action="UserProfile" asp-controller="Account" class="nav-item nav-link"><i class="fa fa-user"></i> پروفایل من</a>
-                        <div class="nav-item">
-                            @*@await Component.InvokeAsync("CategoryComponent")*@
-                        </div>
-                    </div>
-                </div>
-            </nav>
-        </div>
+    <div class="main">
+        @RenderBody();
     </div>
-    <!--Top Nav Bar end-->
-    <!--Bottom Bar start-->
-    <div class="bottom-bar" dir="rtl">
-        <div class="container-fluid">
-            <div class="row align-items-center">
-                <div class="col-md-3">
-                    <div class="logo">
-                        <a asp-action="Index" asp-controller="Home">
-                            <h1><span style="color:orange">MY</span><span style="color:black"> SHOP</span></h1>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <form asp-action="@((ViewBag.Action!=null)?ViewBag.Action : "Index")" asp-controller="@((ViewBag.Controller!=null)?ViewBag.Controller:"Product")"
-                          method="get" enctype="text/plain">
-                        <div class="search">
-                            <input type="hidden" value="@ViewBag.CatId" name="CatId" id="CatId" />
-                            <input style="text-align:right" dir="rtl" name="search" id="search" type="text" placeholder="جستجو" value="@ViewBag.Search">
-                        </div>
-                    </form>
-                </div>
-                <div class="col-md-3">
-                    <div class="user">
-                        <a style="margin:5px" asp-action="ShowCart" asp-controller="Cart" class="btn cart">
-                            <i class="fa fa-shopping-cart"></i>
-                        </a>
-                        <a style="margin:5px" asp-action="ShowFavorites" asp-controller="Account" class="btn cart">
-                            <i class="fa fa-heart"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--Bottom Bar start-->
-    <!--Render Body-->
-    <div>
-        <main role="main">
-            @RenderBody()
-        </main>
-    </div>
-    <!--Render Body End-->
-    <!-- Footer Start -->
-    <div class="footer" dir="rtl" style="text-align:right">
-        <div class="container-fluid">
-            <div class="row">
-                @*@await Component.InvokeAsync("FooterComponent")*@
-            </div>
-        </div>
-    </div>
-    <!-- Footer End -->
-    <!-- Footer Bottom Start -->
-    <div class="footer-bottom">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 copyright">
-                    <p>Copyright &copy; <a href="https://AmirTahan80.ir">Amir Tahan</a>. All Rights Reserved</p>
-                </div>
+    
+    <!-- footer------------------------------------------->
+    <partial name="_Footer"></partial>
+    <!-- footer------------------------------------------->
+    <!-- file js---------------------------------------------------->
+    <script src="~/assets/js/vendor/jquery-3.2.1.min.js"></script>
+    <script src="~/assets/js/vendor/bootstrap.js"></script>
+    <!-- plugin----------------------------------------------------->
+    <script src="~/assets/js/vendor/owl.carousel.min.js"></script>
+    <script src="~/assets/js/vendor/jquery.countdown.js"></script>
+    <script src="~/assets/js/vendor/jquery.nice-select.min.js"></script>
+    <!-- main js---------------------------------------------------->
+    <script src="~/assets/js/main.js"></script>
 
-                <div class="col-md-6 template-by">
-                    <p>Template By <a href="https://AmirTahan80.ir">Amir Tahan</a></p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Footer Bottom End -->
-    <!-- Back to Top -->
-    <a href="#" class="back-to-top"><i class="fa fa-chevron-up"></i></a>
+    @await RenderSectionAsync("Scripts", required: false);
 
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/easing/easing.min.js"></script>
-    <script src="~/lib/slick/slick.min.js"></script>
-
-    <!-- Template Javascript -->
-    <script src="~/js/main.js"></script>
-
-    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

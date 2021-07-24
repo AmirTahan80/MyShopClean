@@ -64,5 +64,9 @@
 	  <ProjectReference Include="..\Infra.Ioc\Infra.Ioc.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="wwwroot\assets\images\menu-main\card\" />
+	</ItemGroup>
+
 
 </Project>

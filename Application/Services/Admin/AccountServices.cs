@@ -5,6 +5,7 @@ using Domain.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -51,6 +52,7 @@ namespace Application.Services.Admin
                 {
                     return false;
                 }
+
                 var applicationUser = new ApplicationUser()
                 {
                     UserName = user.UserName,
@@ -58,8 +60,16 @@ namespace Application.Services.Admin
                     EmailConfirmed = true
                 };
                 var result = await _userManager.CreateAsync(applicationUser, userPassword);
-                if (result.Succeeded)
+                if (result.Succeeded) 
                 {
+
+                    var findRoleById = await _roleManager.FindByIdAsync(user.RoleId);
+                    if(findRoleById!=null)
+                    {
+                        var resultAddToRole=await _userManager.AddToRoleAsync(applicationUser, findRoleById.Name);
+                        if (!resultAddToRole.Succeeded)
+                            return false;
+                    }
                     return true;
                 }
                 else
@@ -72,29 +82,92 @@ namespace Application.Services.Admin
             }
         }
 
-        public async Task<IList<UsersListViewModel>> GetAllUsersListAsync()
+        public async Task<IList<UsersListViewModel>> GetAllUsersListAsync(string userLoginId)
         {
+
             var users = await _userManager.Users.ToListAsync();
+
+            var userLogin = await _userManager.FindByIdAsync(userLoginId);
+            var userLoginRoles = await _userManager.GetRolesAsync(userLogin);
+            var userLoginRole = userLoginRoles.FirstOrDefault();
+
+            if (userLoginRole == "Manager")
+            {
+                users = users.Where(p => _userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault()!= "Founder" &&
+                 _userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault() != "Manager").ToList();
+            }
+            else if (userLoginRole == "Writer")
+            {
+                users = users.Where(p => _userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault() != "Founder" &&
+                 _userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault() != "Manager" &&
+                 _userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault() != "Writer").ToList();
+            }
+            else if (userLoginRole == "Customer")
+            {
+                users = users.Where(p => _userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault() != "Founder" &&
+                 _userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault() != "Manager" &&
+                 _userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault() != "Writer" &&
+                 _userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault() != "Customer").ToList();
+            }
+
             var usersReturn = users.Select(p => new UsersListViewModel()
             {
                 UserName = p.UserName,
                 UserEmail = p.Email,
-                RoleName = _userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault()
+                RoleName = _userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault(),
+                UserId=p.Id
             }).ToList();
             return usersReturn;
         }
-        public async Task<UserDetailViewModel> FinUserById(string userId)
+        public async Task<UserDetailViewModel> FinUserById(string userId, string userLoginId)
         {
             var user = await _userManager.FindByIdAsync(userId);
+            var roles = await _roleManager.Roles.ToListAsync();
+
+            var findUserLogIn = await _userManager.FindByIdAsync(userLoginId);
+            var userLogInRoles = await _userManager.GetRolesAsync(findUserLogIn);
+            var userLogInRole = userLogInRoles.FirstOrDefault();
+
+            var correctRolesGet = new List<RoleModel>();
+
+            if (userLogInRole == "Manager")
+            {
+                correctRolesGet = roles.Where(p => p.Name != "Founder" && p.Name!="Manager").ToList();
+            }
+            else if(userLogInRole == "Writer")
+            {
+                correctRolesGet = roles.Where(p => p.Name != "Founder" && p.Name!="Manager" && p.Name!="Writer").ToList();
+            }
+            else if (userLogInRole == "Customer")
+            {
+                correctRolesGet = roles.Where(p => p.Name != "Founder" && p.Name != "Manager" && p.Name != "Writer" && p.Name != "Customer").ToList();
+            }
+            else if (userLogInRole == "Founder")
+            {
+                correctRolesGet = roles.ToList();
+            }
+
+            var rolesItem = new List<SelectListItem>();
+            foreach (var role in correctRolesGet)
+            {
+                rolesItem.Add(new SelectListItem()
+                {
+                    Value = role.Id,
+                    Text = role.Name == "Manager" ? "ادمین | مدیریت کننده" : role.Name == "Writer" ? "نویسنده" : role.Name == "Customer" ? "مشتری" : role.Name == "Founder" ? "سازنده سایت" : ""
+                });
+            }
+
             var userReturn = new UserDetailViewModel()
             {
                 UserId = user.Id,
                 UserName = user.UserName,
                 UserEmail = user.Email,
-                RoleName = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().FirstOrDefault()
+                RoleName = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().FirstOrDefault(),
+                RolesName=rolesItem
             };
             return userReturn;
         }
+
         public async Task<bool> ConfirmEmailAsync(string userEmail, string token)
         {
             try
@@ -112,6 +185,7 @@ namespace Application.Services.Admin
                 return false;
             }
         }
+
         public async Task<bool> EditUserAsync(UserDetailViewModel editUser)
         {
             try
@@ -148,6 +222,39 @@ namespace Application.Services.Admin
                 return false;
             }
         }
+        public async Task<bool> DeleteUsersAsync(IEnumerable<UsersListViewModel> deleteUsers)
+        {
+            try
+            {
+                var deleteUsersSelected = deleteUsers.Where(p => p.IsSelected).Select(p => p.UserId).ToList();
+
+                foreach (var userId in deleteUsersSelected)
+                {
+                    var findUserById = await _userManager.FindByIdAsync(userId);
+                    var result=await _userManager.DeleteAsync(findUserById);
+                    if(!result.Succeeded)
+                    {
+                        return false;
+                    }
+                }
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
+        }
+
+        public async Task<List<SelectListItem>> GetRolesAsync(string userLoginId)
+        {
+            var reslut = await GetRoles(userLoginId);
+
+            return reslut;
+        }
+
         //Tag Helpers
         async Task SendEmailAsync(ApplicationUser user, string passForReturn = "ConfirmEmail")
         {
@@ -196,7 +303,46 @@ namespace Application.Services.Admin
             builder = builder.Replace("{userEmail}", user.Email);
             await _messageSender.SendEmailAsync(user.Email, passForReturn, builder, true);
         }
+        private async Task<List<SelectListItem>> GetRoles(string userLoginId)
+        {
+            var roles = await _roleManager.Roles.ToListAsync();
 
+            var userLoginSite = await _userManager.FindByIdAsync(userLoginId);
+            var userLoginRoles = await _userManager.GetRolesAsync(userLoginSite);
+            var userLoginRole = userLoginRoles.FirstOrDefault();
+
+            var correctRolesGet = new List<RoleModel>();
+
+            if (userLoginRole == "Manager")
+            {
+                correctRolesGet = roles.Where(p => p.Name != "Founder" && p.Name != "Manager").ToList();
+            }
+            else if (userLoginRole == "Writer")
+            {
+                correctRolesGet = roles.Where(p => p.Name != "Founder" && p.Name != "Manager" && p.Name != "Writer").ToList();
+            }
+            else if (userLoginRole == "Customer")
+            {
+                correctRolesGet = roles.Where(p => p.Name != "Founder" && p.Name != "Manager" && p.Name != "Writer" && p.Name != "Customer").ToList();
+            }
+            else if (userLoginRole == "Founder")
+            {
+                correctRolesGet = roles.ToList();
+            }
+
+            var listOfRoleItem = new List<SelectListItem>();
+
+            foreach (var role in correctRolesGet)
+            {
+                listOfRoleItem.Add(new SelectListItem()
+                {
+                    Value=role.Id,
+                    Text = role.Name == "Manager" ? "ادمین | مدیریت کننده" : role.Name == "Writer" ? "نویسنده" : role.Name == "Customer" ? "مشتری" : role.Name == "Founder" ? "سازنده سایت" : ""
+                });
+            }
+
+            return listOfRoleItem;
+        }
 
     }
 }

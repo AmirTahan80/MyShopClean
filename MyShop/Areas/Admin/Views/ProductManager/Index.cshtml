@@ -10,21 +10,37 @@
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title-wrap bar-warning">
-                        <h4 class="card-title">محصولات</h4>
+                    <div class="card-title-wrap bar-warning row">
+                        <h4 class="card-title col-md-12">محصولات</h4>
+                        <div class="col-md-12">
+                            <form class="form-group row" enctype="text/plain" method="get" asp-action="Index" asp-controller="ProductManager">
+                                <input type="text" class="form-control m-1 col-md-4" placeholder="نام محصول را وارد کنید ..." value="@ViewBag.SearchProduct" name="searchProduct" />
+                                <select class="form-control col-md-4 m-1" name="filter">
+                                    <option class="bg-blue white">@ViewBag.Filter</option>
+                                    <option value="newest">جدید ترین</option>
+                                    <option value="older">قدیمی ترین</option>
+                                    <option value="lower10">کمتر از 10</option>
+                                    <option value="lower20">کمتر از 20</option>
+                                    <option value="finish">اتمام یافته</option>
+                                    <option value="expensive">گران ترین</option>
+                                    <option value="cheaper">ارزان ترین</option>
+                                </select>
+                                <button type="submit" class="btn btn-outline-info m-1"><i class="icon-magnifier"></i> جست و جو</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
                     @if (TempData["Error"] != null)
                     {
-                        <div class="aler alert-danger round m-2 p-2">
+                        <div class="aler alert-danger m-2 p-2">
                             <p>
                                 <strong>خطا ! </strong>@TempData["Error"]
                             </p>
                         </div>}
                     @if (TempData["Success"] != null)
                     {
-                        <div class="aler alert-success round m-2 p-2">
+                        <div class="aler alert-success m-2 p-2">
                             <p>
                                 <strong>موفقیت ! </strong>@TempData["Success"]
                             </p>

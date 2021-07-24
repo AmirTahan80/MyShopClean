@@ -1,4 +1,5 @@
 using Application.InterFaces.Admin;
+using Application.Utilities;
 using Application.ViewModels.Admin;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -18,13 +19,65 @@ namespace Areas.Admin.Controllers
             _categoryServices = categoryServices;
         }
         #endregion
+
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNumber,string searchCategory="",string filter="")
         {
             var categories = await _categoryServices.GetAllCategoriesAsync();
+
+            var categoriesSearch=new List<GetCategoryViewModel>();
+
+            if(!string.IsNullOrWhiteSpace(searchCategory))
+            {
+                categories = categories.Where(p => p.Name.Contains(searchCategory) || (p.Parent!=null?p.Parent.Name.Contains(searchCategory):p.Name.Contains(searchCategory))).ToList();
+                
+                ViewBag.SearchCategory = searchCategory;
+            }
+
+            ViewBag.Filter = "جدید ترین";
+
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                switch (filter)
+                {
+                    case "newest":
+                        categories = categories.OrderByDescending(p => p.Id).ToList();
+                        ViewBag.Filter = "جدید ترین";
+                        break;
+                    case "older":
+                        categories = categories.OrderBy(p => p.Id).ToList();
+                        ViewBag.Filter = "قدیمی ترین";
+                        break;                    
+                    case "parent":
+                        categories = categories.Where(p => p.Parent!=null).ToList();
+                        ViewBag.Filter = "دسته های پدر";
+                        break;
+                    case "sub":
+                        categories = categories.Where(p => p.Parent==null).ToList();
+                        ViewBag.Filter = "دسته های فرزند";
+                        break;
+                }
+            }
+
+            var paging = new PagingList<GetCategoryViewModel>(categories, 10, pageNumber ?? 1);
+            var categoriesPaging = paging.QueryResult;
+
+
+            #region ViewBagForPaging
+            ViewBag.PageNumber = pageNumber ?? 1;
+            ViewBag.FirstPage = paging.FirstPage;
+            ViewBag.LastPage = paging.LastPage;
+            ViewBag.PrevPage = paging.PreviousPage;
+            ViewBag.NextPage = paging.NextPage;
+            ViewBag.Count = paging.LastPage;
+            ViewBag.Action = "Index";
+            ViewBag.Controller = "CategoryManager";
+            #endregion
+
             ViewData["Error"] = TempData["Error"];
             ViewData["Success"] = TempData["Success"];
-            return View(categories);
+
+            return View(categoriesPaging);
         }
         [HttpGet]
         public async Task<IActionResult> AddCategory()

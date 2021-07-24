@@ -1,21 +1,25 @@
-﻿<div class="col-lg-6 col-md-12">
-    <nav aria-label="Page navigation mb-3">
-        <ul class="pagination justify-content-center">
-            <li class="page-item">
-                <a class="page-link @((ViewBag.PageNumber==1)? "bg-blue white" : "")" asp-action="@ViewBag.Action"
-                   asp-controller="@ViewBag.Controller" asp-route-PageNumber="@ViewBag.PrevPage" aria-label="Previous">«</a>
-            </li>
-            @for (var i = 1; i <= ViewBag.Count; i++)
-            {
-<li class="page-item">
-    <a class="page-link @((ViewBag.PageNumber == i) ? "bg-blue white" : "") " asp-action="@ViewBag.Action"
-       asp-controller="@ViewBag.Controller" asp-route-PageNumber="@i">@i</a>
-</li>}
+﻿@if (ViewBag.Count > 0)
+{
+    <div class="col-lg-6 col-md-12">
+        <nav aria-label="Page navigation mb-3">
+            <ul class="pagination justify-content-center">
+                <li class="page-item">
+                    <a class="page-link @((ViewBag.PageNumber == 1) ? "bg-blue white" : "")" asp-action="@ViewBag.Action"
+                       asp-controller="@ViewBag.Controller" asp-route-PageNumber="@ViewBag.PrevPage" aria-label="Previous">«</a>
+                </li>
+                @for (var i = 1; i <= ViewBag.Count; i++)
+                {
+                    <li class="page-item">
+                        <a class="page-link @((ViewBag.PageNumber == i) ? "bg-blue white" : "") " asp-action="@ViewBag.Action"
+                           asp-controller="@ViewBag.Controller" asp-route-PageNumber="@i">@i</a>
+                    </li>
+                }
 
-            <li class="page-item">
-                <a class="page-link @((ViewBag.PageNumber==ViewBag.Count)? "bg-blue white" : "")" asp-action="@ViewBag.Action"
-               asp-controller="@ViewBag.Controller" asp-route-PageNumber="@ViewBag.NextPage" aria-label="Next">»</a>
-            </li>
-        </ul>
-    </nav>
-</div>
+                <li class="page-item">
+                    <a class="page-link @((ViewBag.PageNumber == ViewBag.Count) ? "bg-blue white" : "")" asp-action="@ViewBag.Action"
+                       asp-controller="@ViewBag.Controller" asp-route-PageNumber="@ViewBag.NextPage" aria-label="Next">»</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+}

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.ViewModels.Admin
 {
@@ -15,5 +17,8 @@ namespace Application.ViewModels.Admin
         [Required(ErrorMessage ="فیلد {0} اجباری است")]
         [Display(Name ="مقام")]
         public string RoleName { get; set; }
+
+
+        public List<SelectListItem> RolesName { get; set; }
     }
 }

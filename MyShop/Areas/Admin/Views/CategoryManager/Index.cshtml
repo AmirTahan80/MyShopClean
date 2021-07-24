@@ -9,23 +9,36 @@
                 <div class="card-header">
                     <div class="card-title-wrap bar-success">
                         <h4 class="card-title">لیست دسته بندی ها</h4>
+                        <div class="col-md-12">
+                            <form class="row form-group" asp-action="Index" asp-controller="CategoryManager" enctype="text/plain" method="get">
+                                <input type="text" class="form-control col-md-4 m-1" value="@ViewBag.SearchCategory" placeholder="نام دسته را وارد کنید ..." name="searchCategory"/>
+                                <select class="form-control col-md-4 m-1" name="filter">
+                                    <option class="bg-blue white">@ViewBag.Filter</option>
+                                    <option value="newest">جدید ترین</option>
+                                    <option value="older">قدیمی ترین</option>
+                                    <option value="parent">دسته های پدر</option>
+                                    <option value="sub">دسته های فرزند</option>
+                                </select>
+                                <button class="btn btn-outline-primary m-1"><i class="icon-magnifier"></i> جست و جو</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
                     @if (TempData["Error"] != null)
                     {
-                <div class="aler alert-danger round m-2 p-2">
-                    <p>
-                        <strong>خطا ! </strong>@TempData["Error"]
-                    </p>
-                </div>}
+        <div class="aler alert-danger m-2 p-2">
+            <p>
+                <strong>خطا ! </strong>@TempData["Error"]
+            </p>
+        </div>}
                     @if (TempData["Success"] != null)
                     {
-                <div class="aler alert-success round m-2 p-2">
-                    <p>
-                        <strong>موفقیت ! </strong>@TempData["Success"]
-                    </p>
-                </div>}
+        <div class="aler alert-success m-2 p-2">
+            <p>
+                <strong>موفقیت ! </strong>@TempData["Success"]
+            </p>
+        </div>}
                     <div class="card-block">
                         <form asp-action="DeleteCategory" asp-controller="CategoryManager">
                             <table class="table table-responsive-md text-center">
@@ -74,6 +87,7 @@ i++;
                         </form>
                     </div>
                 </div>
+                <partial name="_PagingParitial"></partial>
             </div>
         </div>
     </div>

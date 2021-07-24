@@ -35,6 +35,13 @@
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
+                                            <p>مقام کاربر در وبسایت</p>
+                                            <select asp-items="Model.RolesItem" asp-for="RoleId"></select>
+                                            <span asp-validation-for="RoleId" class="red"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
                                             <p>گذرواژه</p>
                                             <input asp-for="UserPassWord" required class="form-control round">
                                             <span asp-validation-for="UserPassWord" class="red"></span>
