@@ -7,9 +7,24 @@ namespace Application.InterFaces.User
     public interface IProductUserServices
     {
         /// <summary>
-        /// گرفتن تمامی محصولات
+        /// گرفتن محصولات برای صفحه اول 
         /// </summary>
         /// <returns>IEnumerable<GetListOfProductViewModel></returns>
-        Task<IEnumerable<GetListOfProductViewModel>> GetProdctsAsync();
+        Task<ListOfProductsViewModel> GetProdctsListForIndexAsync();
+
+        /// <summary>
+        /// گرفتن محصولا برای صفحه محصولات و یا گرفتن محصولات دسته بندی خاص
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <returns>GetListOfProductViewModel</returns>
+        Task<IEnumerable<GetListOfProductViewModel>> GetProductsListAsync(int categoryId);
+
+        /// <summary>
+        /// گرفتن جزئیات محصول با آیدی
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns>GetProductDescriptionViewModel</returns>
+        Task<GetProductDescriptionViewModel> GetProductDescriptionAsync(int productId);
+
     }
 }

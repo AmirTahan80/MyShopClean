@@ -20,11 +20,12 @@ namespace Controllers
         }
         #endregion
 
-        public async Task<IActionResult> Index(long CatId=0)
+        public async Task<IActionResult> Index()
         {
-            var products = await _productUserServices.GetProdctsAsync();
+            var products = await _productUserServices.GetProdctsListForIndexAsync();
             return View(products);
         }
+
         //public IActionResult Privacy()
         //{
         //    return View();

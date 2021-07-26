@@ -1,4 +1,5 @@
-﻿@{ ViewData["Title"] = "خانه"; }
+﻿@model ListOfProductsViewModel
+@{ ViewData["Title"] = "خانه"; int i = 0;}
 <!-- adplacement------------------------------->
 <div class="container-main">
     <div class="col-lg-3 col-md-3 col-xs-12 pr">
@@ -56,97 +57,122 @@
 
 </div>
 <!-- slider-product-------------------------------->
-<partial name="_ProductPartial" />
 <div class="col-lg-12 col-md-12 col-xs-12 pr order-1 d-block">
     <div class="slider-widget-products slider-content-tabs">
         <div class="widget widget-product card slider-content-tabs">
             <header class="card-header header-product">
-                <span class="title-one">گوشی موبایل</span>
+                <span class="title-one">جدید ترین محصولات</span>
                 <h3 class="card-title"></h3>
             </header>
             <div class="product-carousel owl-carousel owl-theme owl-rtl owl-loaded owl-drag">
                 <div class="owl-stage-outer">
                     <div class="owl-stage" style="transform: translate3d(0px, 0px, 0px); transition: all 0s ease 0s; width: 1534px;">
-                        <div class="owl-item active tab-item" style="width: 296.75px; margin-left: 10px;">
-                            <div class="item">
-                                <a href="#" class="d-block hover-img-link">
-                                    <img src="assets/images/slider-product/Samsung-S10Plus.jpg" class="img-fluid" alt="">
-                                </a>
-                                <h2 class="post-title">
-                                    <a href="#">
-                                        سامسونگ گلکسی اس 10 پلاس – 128 گیگابایت – دو سیم کارت
-                                    </a>
-                                </h2>
-                                <div class="price">
-                                    <del><span>۱۲,۰۰۰,۰۰۰<span>تومان</span></span></del>
-                                    <ins><span>۱۰,۵۰۰,۰۰۰<span>تومان</span></span></ins>
+                        @foreach (var newProduct in Model.NewstProducts)
+                        {
+                            if (i <= 5)
+                            {
+                                <div class="owl-item active tab-item" style="width: 296.75px; margin-left: 10px;">
+                                    <div class="item">
+                                        <a asp-action="Description" asp-controller="Product" asp-route-productId="@newProduct.Id" class="d-block hover-img-link">
+                                            <img src="~/Images/ProductImages/@newProduct.ImageSrc" class="img-fluid" alt="@newProduct.Name">
+                                        </a>
+                                        <h2 class="post-title">
+                                            <a asp-action="Description" asp-controller="Product" asp-route-productId="@newProduct.Id">
+                                                @newProduct.Name
+                                            </a>
+                                        </h2>
+                                        <div class="price">
+                                            <ins><span>@newProduct.Price<span>تومان</span></span></ins>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="owl-item active tab-item" style="width: 296.75px; margin-left: 10px;">
-                            <div class="item">
-                                <a href="#" class="d-block hover-img-link">
-                                    <img src="assets/images/slider-product/huawei-p-smart.jpg" class="img-fluid" alt="">
-                                </a>
-                                <h2 class="post-title">
-                                    <a href="#">
-                                        هوآوی مدل P Smart 2019 دو سیم کارت ظرفیت 64 گیگابایت
-                                    </a>
-                                </h2>
-                                <div class="price">
-                                    <del><span>۳,۲۰۰,۰۰۰<span>تومان</span></span></del>
-                                    <ins><span>۲,۵۰۰,۰۰۰<span>تومان</span></span></ins>
+                            }
+                            else
+                            {
+                                <div class="owl-item tab-item" style="width: 296.75px; margin-left: 10px;">
+                                    <div class="item">
+                                        <a asp-action="Description" asp-controller="Product" asp-route-productId="@newProduct.Id" class="d-block hover-img-link">
+                                            <img src="~/Images/ProductImages/@newProduct.ImageSrc" class="img-fluid" alt="@newProduct.Name">
+                                        </a>
+                                        <h2 class="post-title">
+                                            <a asp-action="Description" asp-controller="Product" asp-route-productId="@newProduct.Id">
+                                                @newProduct.Name
+                                            </a>
+                                        </h2>
+                                        <div class="price">
+                                            <ins><span>@newProduct.Price<span>تومان</span></span></ins>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="owl-item active tab-item" style="width: 296.75px; margin-left: 10px;">
-                            <div class="item">
-                                <a href="#" class="d-block hover-img-link">
-                                    <img src="assets/images/slider-product/iphone-xs-max-space.jpg" class="img-fluid" alt="">
-                                </a>
-                                <h2 class="post-title">
-                                    <a href="#">
-                                        اپل آیفون ایکس اس مکس – 256 گیگابایت – دو سیم کارت
-                                    </a>
-                                </h2>
-                                <div class="price">
-                                    <del><span>۳,۵۰۰,۰۰۰<span>تومان</span></span></del>
-                                    <ins><span>۲,۰۰۰,۰۰۰<span>تومان</span></span></ins>
+                            }
+                            i++;
+                        }
+                    </div>
+                </div>
+                <div class="owl-nav">
+                    <button type="button" role="presentation" class="owl-prev disabled">
+                        <i class="fa fa-angle-right"></i>
+                    </button>
+                    <button type="button" role="presentation" class="owl-next">
+                        <i class="fa fa-angle-left"></i>
+                    </button>
+                </div>
+                <div class="owl-dots disabled"></div>
+                <div class="owl-nav"><button type="button" role="presentation" class="owl-prev disabled"><i class="fa fa-angle-right"></i></button><button type="button" role="presentation" class="owl-next"><i class="fa fa-angle-left"></i></button></div><div class="owl-dots disabled"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-lg-12 col-md-12 col-xs-12 pr order-1 d-block">
+    <div class="slider-widget-products slider-content-tabs">
+        <div class="widget widget-product card slider-content-tabs">
+            <header class="card-header header-product">
+                <span class="title-one">محصولات ارزان</span>
+                <h3 class="card-title"></h3>
+            </header>
+            <div class="product-carousel owl-carousel owl-theme owl-rtl owl-loaded owl-drag">
+                <div class="owl-stage-outer">
+                    <div class="owl-stage" style="transform: translate3d(0px, 0px, 0px); transition: all 0s ease 0s; width: 1534px;">
+                        @foreach (var cheapProduct in Model.CheapestProducts)
+                        {
+                            if (i <= 5)
+                            {
+                                <div class="owl-item active tab-item" style="width: 296.75px; margin-left: 10px;">
+                                    <div class="item">
+                                        <a asp-action="Description" asp-controller="Product" asp-route-productId="@cheapProduct.Id" class="d-block hover-img-link">
+                                            <img src="~/Images/ProductImages/@cheapProduct .ImageSrc" class="img-fluid" alt="@cheapProduct.Name">
+                                        </a>
+                                        <h2 class="post-title">
+                                            <a asp-action="Description" asp-controller="Product" asp-route-productId="@cheapProduct .Id">
+                                                @cheapProduct .Name
+                                            </a>
+                                        </h2>
+                                        <div class="price">
+                                            <ins><span>@cheapProduct .Price<span>تومان</span></span></ins>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="owl-item active tab-item" style="width: 296.75px; margin-left: 10px;">
-                            <div class="item">
-                                <a href="#" class="d-block hover-img-link">
-                                    <img src="assets/images/slider-product/honer.jpg" class="img-fluid" alt="">
-                                </a>
-                                <h2 class="post-title">
-                                    <a href="#">
-                                        هواوی هانر ویوو 20 – 256 گیگابایت – دو سیم کارت
-                                    </a>
-                                </h2>
-                                <div class="price">
-                                    <del><span>۶,۵۰۰,۰۰۰<span>تومان</span></span></del>
-                                    <ins><span>۴,۲۰۰,۰۰۰<span>تومان</span></span></ins>
+                            }
+                            else
+                            {
+                                <div class="owl-item tab-item" style="width: 296.75px; margin-left: 10px;">
+                                    <div class="item">
+                                        <a asp-action="Description" asp-controller="Product" asp-route-productId="@cheapProduct.Id" class="d-block hover-img-link">
+                                            <img src="~/Images/ProductImages/@cheapProduct.ImageSrc" class="img-fluid" alt="@cheapProduct.Name">
+                                        </a>
+                                        <h2 class="post-title">
+                                            <a asp-action="Description" asp-controller="Product" asp-route-productId="@cheapProduct.Id">
+                                                @cheapProduct.Name
+                                            </a>
+                                        </h2>
+                                        <div class="price">
+                                            <ins><span>@cheapProduct.Price<span>تومان</span></span></ins>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="owl-item tab-item" style="width: 296.75px; margin-left: 10px;">
-                            <div class="item">
-                                <a href="#" class="d-block hover-img-link">
-                                    <img src="assets/images/slider-product/huawei.jpg" class="img-fluid" alt="">
-                                </a>
-                                <h2 class="post-title">
-                                    <a href="#">
-                                        هواوی پی 20 پرو 128 گیگابایت – دو سیم کارت
-                                    </a>
-                                </h2>
-                                <div class="price">
-                                    <del><span>۷,۵۰۰,۰۰۰<span>تومان</span></span></del>
-                                    <ins><span>۶,۰۰۰,۰۰۰<span>تومان</span></span></ins>
-                                </div>
-                            </div>
-                        </div>
+                            }
+                            i++;
+                        }
                     </div>
                 </div>
                 <div class="owl-nav">
@@ -187,92 +213,52 @@
     <div class="slider-widget-products slider-content-tabs">
         <div class="widget widget-product card slider-content-tabs">
             <header class="card-header header-product">
-                <span class="title-one">کامپیوتر و لپ تاپ</span>
+                <span class="title-one">محصولات محبوب</span>
                 <h3 class="card-title"></h3>
             </header>
             <div class="product-carousel owl-carousel owl-theme owl-rtl owl-loaded owl-drag">
                 <div class="owl-stage-outer">
                     <div class="owl-stage" style="transform: translate3d(0px, 0px, 0px); transition: all 0s ease 0s; width: 1534px;">
-                        <div class="owl-item active tab-item" style="width: 296.75px; margin-left: 10px;">
-                            <div class="item">
-                                <a href="#" class="d-block hover-img-link">
-                                    <img src="assets/images/slider-product/mitbook.jpg" class="img-fluid" alt="">
-                                </a>
-                                <h2 class="post-title">
-                                    <a href="#">
-                                        هواوای میت بوک X پرو 13.9 اینچ
-                                    </a>
-                                </h2>
-                                <div class="price">
-                                    <del><span>۱۲,۰۰۰,۰۰۰<span>تومان</span></span></del>
-                                    <ins><span>۱۰,۵۰۰,۰۰۰<span>تومان</span></span></ins>
+                        @foreach (var mostSalerProduct in Model.MostSalerProducts)
+                        {
+                            if (i <= 5)
+                            {
+                                <div class="owl-item active tab-item" style="width: 296.75px; margin-left: 10px;">
+                                    <div class="item">
+                                        <a asp-action="Description" asp-controller="Product" asp-route-productId="@mostSalerProduct.Id" class="d-block hover-img-link">
+                                            <img src="~/Images/ProductImages/@mostSalerProduct .ImageSrc" class="img-fluid" alt="@mostSalerProduct.Name">
+                                        </a>
+                                        <h2 class="post-title">
+                                            <a asp-action="Description" asp-controller="Product" asp-route-productId="@mostSalerProduct .Id">
+                                                @mostSalerProduct.Name
+                                            </a>
+                                        </h2>
+                                        <div class="price">
+                                            <ins><span>@mostSalerProduct.Price<span>تومان</span></span></ins>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="owl-item active tab-item" style="width: 296.75px; margin-left: 10px;">
-                            <div class="item">
-                                <a href="#" class="d-block hover-img-link">
-                                    <img src="assets/images/slider-product/SL1200_-300x300.jpg" class="img-fluid" alt="">
-                                </a>
-                                <h2 class="post-title">
-                                    <a href="#">
-                                        لپ تاپ چووی الترابوک 14 اینچ پرو
-                                    </a>
-                                </h2>
-                                <div class="price">
-                                    <del><span>۳,۲۰۰,۰۰۰<span>تومان</span></span></del>
-                                    <ins><span>۲,۵۰۰,۰۰۰<span>تومان</span></span></ins>
+                            }
+                            else
+                            {
+                                <div class="owl-item tab-item" style="width: 296.75px; margin-left: 10px;">
+                                    <div class="item">
+                                        <a asp-action="Description" asp-controller="Product" asp-route-productId="@mostSalerProduct.Id" class="d-block hover-img-link">
+                                            <img src="~/Images/ProductImages/@mostSalerProduct.ImageSrc" class="img-fluid" alt="@mostSalerProduct.Name">
+                                        </a>
+                                        <h2 class="post-title">
+                                            <a asp-action="Description" asp-controller="Product" asp-route-productId="@mostSalerProduct.Id">
+                                                @mostSalerProduct.Name
+                                            </a>
+                                        </h2>
+                                        <div class="price">
+                                            <ins><span>@mostSalerProduct.Price<span>تومان</span></span></ins>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="owl-item active tab-item" style="width: 296.75px; margin-left: 10px;">
-                            <div class="item">
-                                <a href="#" class="d-block hover-img-link">
-                                    <img src="assets/images/slider-product/zenbook.jpg" class="img-fluid" alt="">
-                                </a>
-                                <h2 class="post-title">
-                                    <a href="#">
-                                        لپ تاپ 13 اینچی ایسوس مدل ZenBook S13 UX392FN - A
-                                    </a>
-                                </h2>
-                                <div class="price">
-                                    <del><span>۷,۵۰۰,۰۰۰<span>تومان</span></span></del>
-                                    <ins><span>۶,۰۰۰,۰۰۰<span>تومان</span></span></ins>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="owl-item active tab-item" style="width: 296.75px; margin-left: 10px;">
-                            <div class="item">
-                                <a href="#" class="d-block hover-img-link">
-                                    <img src="assets/images/slider-product/computer-appel.jpg" class="img-fluid" alt="">
-                                </a>
-                                <h2 class="post-title">
-                                    <a href="#">
-                                        کامپیوتر همه کاره 27 اینچی اپل مدل iMac CTO - A 2019 با صفحه نمایش رتینا 5K
-                                    </a>
-                                </h2>
-                                <div class="price">
-                                    <del><span>۳,۵۰۰,۰۰۰<span>تومان</span></span></del>
-                                    <ins><span>۲,۰۰۰,۰۰۰<span>تومان</span></span></ins>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="owl-item tab-item" style="width: 296.75px; margin-left: 10px;">
-                            <div class="item">
-                                <a href="#" class="d-block hover-img-link">
-                                    <img src="assets/images/slider-product/asus-laptop.jpg" class="img-fluid" alt="">
-                                </a>
-                                <h2 class="post-title">
-                                    <a href="#">
-                                        لپ تاپ ایسوس زِنبوک 14
-                                    </a>
-                                </h2>
-                                <div class="price">
-                                    <del><span>۶,۵۰۰,۰۰۰<span>تومان</span></span></del>
-                                    <ins><span>۴,۲۰۰,۰۰۰<span>تومان</span></span></ins>
-                                </div>
-                            </div>
-                        </div>
+                            }
+                            i++;
+                        }
                     </div>
                 </div>
                 <div class="owl-nav">

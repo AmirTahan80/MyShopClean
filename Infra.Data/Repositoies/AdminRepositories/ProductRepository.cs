@@ -28,6 +28,7 @@ namespace Data.Repositories.AdminRepositories
         {
             var product = await _context.Products.Include(p => p.ProductImages).Include(p => p.Properties)
                 .Include(p=>p.ProductAttributes).ThenInclude(p=>p.AttributeValues).Include(p=>p.AttributeTemplates)
+                .Include(p=>p.Category)
                 .SingleOrDefaultAsync(p => p.Id == productId);
             return product;
         }
