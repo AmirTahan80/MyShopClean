@@ -29,7 +29,8 @@ namespace Infra.Ioc.Dependencies
 
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ICategoryServices, CategoryServices>();
-                   
+            services.AddScoped<ICategoryUserServices, CategoryUserServices>();
+
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProudctServices, ProductServices>();
             services.AddScoped<IProductUserServices, ProductUserServices>();

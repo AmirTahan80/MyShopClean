@@ -195,13 +195,13 @@
                                 <div class="product-attributes">
                                     <div class="product-config">
                                         <span class="product-title-en">@Model.Name</span>
-                                        <div class="product-rate">
-                                            @*<i class="fa fa-star active"></i>
+                                        @*<div class="product-rate">
                                                 <i class="fa fa-star active"></i>
-                                                <i class="fa fa-star active"></i>
-                                                <i class="fa fa-star active"></i>
-                                                <i class="fa fa-star active"></i>*@
-                                        </div>
+                                                    <i class="fa fa-star active"></i>
+                                                    <i class="fa fa-star active"></i>
+                                                    <i class="fa fa-star active"></i>
+                                                    <i class="fa fa-star active"></i>
+                                            </div>*@
                                     </div>
                                 </div>
                                 <div class="product-config-wrapper">
@@ -230,43 +230,48 @@
                                         </ul>
                                     </div>
                                     <div class="col=lg-6 col-md-6 col-xs-12 pr">
-                                        <div class="product-variants">
-                                            @if (Model.IsProductHaveAttributes)
-                                            {
-                                                foreach (var item in Model.Attributes)
+                                        @if (Model.IsProductHaveAttributes)
+                                        {
+                                            <div class="product-variants">
+                                                @foreach (var item in Model.Attributes)
                                                 {
                                                     <div>
                                                         <span>@item.AttributesName: </span>
                                                         <div>
-                                                            <select id="selectAttributeValue@(c)" class="form-control m-1" asp-items="item.AttributesValue" onchange="CkeckTemplate(this)"></select>
+                                                            <select id="selectAttributeValue@(c)" class="form-control m-1" asp-items="item.AttributesValue" onchange="CkeckTemplate(this)">
+                                                                <option value="0">لطفا انتخاب کنید !</option>
+                                                            </select>
                                                         </div>
                                                     </div>
                                                     c++;
                                                 }
                                                 <input id="attributeNameCountInput" value="@Model.Attributes.Count()" type="hidden" />
-                                                foreach (var template in Model.Templates)
+                                                @foreach (var template in Model.Templates)
                                                 {
-                                                    <input id="templateId@(b)" value="@template.Id" type="hidden" />
-                                                    <input id="template@(b)" value="@template.Template" type="hidden" />
-                                                    <input id="templateprice@(b)" value="@template.Price" type="hidden" />
-                                                    <input id="templatecount@(b)" value="@template.Count" type="hidden" />
-                                                    b++;
+                                                <input id="templateId@(b)" value="@template.Id" type="hidden" />
+                                                <input id="template@(b)" value="@template.Template" type="hidden" />
+                                                <input id="templateprice@(b)" value="@template.Price" type="hidden" />
+                                                <input id="templatecount@(b)" value="@template.Count" type="hidden" />
+                                                b++;
                                                 }
                                                 <input id="templateCountInput" value="@Model.Templates.Count()" type="hidden" />
-                                            }
-                                        </div>
-                                        <div class="product-params pt-3">
-                                            <ul data-title="ویژگی‌های محصول">
-                                                @if (Model.PropertyName.Count >= 2)
-                                                    @for (int i = 0; i < 2; i++)
-                                                    {
-                                                        <li>
-                                                            <span>@Model.PropertyValue[i]: </span>
-                                                            <span>@Model.PropertyName[i]</span>
-                                                        </li>
-                                                    }
-                                            </ul>
-                                        </div>
+                                            </div>
+                                        }
+                                        @if (Model.PropertyName.Count>0)
+                                        {
+                                            <div class="product-params pt-3">
+                                                <ul data-title="ویژگی‌های محصول">
+                                                    @if (Model.PropertyName.Count >= 2)
+                                                        @for (int i = 0; i < 2; i++)
+                                                        {
+                                                            <li>
+                                                                <span>@Model.PropertyValue[i]: </span>
+                                                                <span>@Model.PropertyName[i]</span>
+                                                            </li>
+                                                        }
+                                                </ul>
+                                            </div>
+                                        }
                                         @*<div class="product-price-survey-question">
                                                 آیا قیمت مناسب‌تری سراغ دارید؟
                                                 <div class="answers">

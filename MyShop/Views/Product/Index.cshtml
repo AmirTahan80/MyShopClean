@@ -1,0 +1,43 @@
+﻿@model IEnumerable<GetListOfProductViewModel>
+@{
+    ViewData["Title"] = "لیست محصولات";
+}
+
+    <div class="col-md-12 " >
+        <form class="form-group row border-bottom" enctype="text/plain"
+              style="justify-content:center"
+              method="get" asp-action="Index" asp-controller="Product">
+            <input type="hidden" hidden value="@ViewBag.CategoryId" name="categoryId" />
+            <input type="text" class="form-control m-1 col-md-4" placeholder="نام محصول را وارد کنید ..." value="@ViewBag.SearchProduct" name="searchProduct" />
+            <select class="form-control col-md-4 m-1" name="filter">
+                <option class="bg-blue white" value="@ViewBag.FilterValue">@ViewBag.Filter</option>
+                <option value="newest">جدید ترین</option>
+                <option value="older">قدیمی ترین</option>
+                <option value="expensive">گران ترین</option>
+                <option value="cheaper">ارزان ترین</option>
+            </select>
+            <button type="submit" class="btn btn-outline-info m-1"><i class="icon-magnifier"></i> جست و جو</button>
+        </form>
+    </div>
+<div class="row" style="justify-content:center">
+    @foreach (var item in Model)
+    {
+        <div class="card bg-white col-md-3 m-1 p-1" style="width: 20rem; height:20rem">
+            <a asp-action="Description" asp-controller="Product" asp-route-productId="@item.Id">
+                <img class="card-img-top" style="max-height:12rem;" src="~/Images/ProductImages/@item.ImageSrc" alt="@item.Name">
+            </a>
+            <div class="card-body" style="text-align:center">
+                <a asp-action="Description" asp-controller="Product" asp-route-productId="@item.Id">
+                    <h5 class="card-title" style="text-align:center;color:black">@item.Name</h5>
+                </a>
+                <br />
+                <a asp-action="Description" asp-controller="Product" asp-route-productId="@item.Id"
+                   style="text-align:center"
+                   class="price center">@item.Price <span>تومان</span></a>
+            </div>
+        </div>
+    }
+</div>
+
+
+

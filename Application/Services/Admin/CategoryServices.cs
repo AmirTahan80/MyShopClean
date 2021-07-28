@@ -321,6 +321,7 @@ namespace Application.Services.Admin
                         {
                             countNumber++;
                             GetChilderFromParent(chidCategory.Children, countNumber);
+                            countNumber = 1;
                         }
                     }
                 }

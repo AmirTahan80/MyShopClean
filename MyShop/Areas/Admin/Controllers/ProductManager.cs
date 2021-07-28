@@ -27,12 +27,14 @@ namespace Areas.Admin.Controllers
             var products = await _porudctServices.GetAllProductsAsync();
 
             ViewBag.Filter = "جدید ترین";
+            ViewBag.FilterValue = "newest";
 
-            if(!string.IsNullOrWhiteSpace(searchProduct))
+            if (!string.IsNullOrWhiteSpace(searchProduct))
             {
                 products = products.Where(p => p.Name.Contains(searchProduct) || p.CategoryName.Contains(searchProduct));
                 ViewBag.SearchProduct = searchProduct;
             }
+
             if(!string.IsNullOrWhiteSpace(filter))
             {
                 switch (filter)
@@ -66,6 +68,7 @@ namespace Areas.Admin.Controllers
                         ViewBag.Filter = "ارزان ترین";
                         break;
                 }
+                ViewBag.FilterValue = filter;
             }
 
             var paging = new PagingList<GetProductsAndImageSrcViewModel>(products,10, pageNumber?? 1);
