@@ -19,10 +19,10 @@ namespace MyShop.Controllers
         }
         #endregion
 
-        public async Task<IActionResult> Index(int categoryId=0,int? pageNumber=1,string searchProduct="",string filter="")
+        public async Task<IActionResult> Index(int categoryId = 0, int? pageNumber = 1, string searchProduct = "", string filter = "")
         {
             var products = await _productUserServices.GetProductsListAsync(categoryId);
-
+            products.OrderByDescending(p => p.Id);
 
             if (!string.IsNullOrWhiteSpace(searchProduct))
             {
@@ -43,7 +43,7 @@ namespace MyShop.Controllers
                     case "older":
                         products = products.OrderBy(p => p.Id);
                         ViewBag.Filter = "قدیمی ترین";
-                        break;                   
+                        break;
                     case "expensive":
                         products = products.OrderByDescending(p => p.Price);
                         ViewBag.Filter = "گران ترین";
@@ -56,7 +56,7 @@ namespace MyShop.Controllers
                 ViewBag.FilterValue = filter;
             }
 
-            var paging = new PagingList<GetListOfProductViewModel>(products, 10, pageNumber ?? 1);
+            var paging = new Paging<GetListOfProductViewModel>(products, 6, pageNumber ?? 1);
             var productsPaging = paging.QueryResult;
 
 
@@ -73,17 +73,17 @@ namespace MyShop.Controllers
 
             ViewBag.CategoryId = categoryId;
 
-            return View(products);
+            return View(productsPaging);
         }
 
         [HttpGet]
-        public async Task<IActionResult> Description(int productId=0)
+        public async Task<IActionResult> Description(int productId = 0)
         {
             if (productId == 0) return NotFound();
 
             var result = await _productUserServices.GetProductDescriptionAsync(productId);
             if (result == null) return NotFound();
-            
+
             return View(result);
         }
     }
