@@ -1,0 +1,75 @@
+﻿@model ProfileViewModel
+@{
+    ViewData["Title"] = "اطلاعات حساب";
+}
+
+<!-- profile------------------------------->
+<div class="container-main">
+    <div class="d-block">
+        <section class="profile-home">
+            <div class="col-lg">
+                <div class="post-item-profile order-1 d-block">
+                    <div class="col-lg-3 col-md-3 col-xs-12 pr">
+                        <div class="sidebar-profile sidebar-navigation">
+                            <partial name="_SidebarProfilePartial"></partial>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 col-md-9 col-xs-12 pl">
+                        <div class="profile-content">
+                            <div class="profile-stats">
+                                <div class="profile-address">
+                                    <div class="middle-container">
+                                        <form asp-action="PersonalInfo" asp-controller="Account"
+                                              method="post" class="form-checkout">
+                                            <div class="form-checkout-row">
+                                                <label for="namefirst">نام کاربری <abbr class="required" title="ضروری" style="color:red;">*</abbr></label>
+                                                <input asp-for="Name" type="text" id="namefirst" class="input-namefirst-checkout form-control">
+
+                                                <label for="email">نام</label>
+                                                <input asp-for="FirstName" type="text" id="firstName" class="input-email-checkout form-control">
+
+                                                <label for="email">نام خانوادگی</label>
+                                                <input asp-for="LastName" type="text" id="astName" class="input-email-checkout form-control">
+
+                                                <label for="email">شماره تلفن</label>
+                                                <input asp-for="PhoneNumber" type="text" id="phoneNumber" class="input-email-checkout form-control">
+
+                                                <label for="email">ایمیل <abbr class="required" title="ضروری" style="color:red;">*</abbr></label>
+                                                <input asp-for="Email" type="text" id="email" class="input-email-checkout form-control">
+
+                                                <label for="email">آدرس</label>
+                                                <input asp-for="Address" type="text" id="address" class="input-email-checkout form-control">
+
+                                                <div class="AR-CR">
+                                                    <button class="btn-registrar"> ثبت تغییرات </button>
+                                                    <a asp-action="Profile" asp-controller="Account" class="cancel-edit-address" data-dismiss="modal" aria-label="Close">بازگشت</a>
+                                                    @if (ViewData["Error"] != null)
+                                                    {
+                                                        <div class="alert alert-danger" style="margin:2px">
+                                                            خطا ! @ViewData["Error"]
+                                                        </div>
+                                                    }
+                                                    @if (ViewData["Success"] != null)
+                                                    {
+                                                        <div class="alert alert-success" style="margin:2px">
+                                                            موفقیت ! @ViewData["Success"]
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<!-- profile------------------------------->
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

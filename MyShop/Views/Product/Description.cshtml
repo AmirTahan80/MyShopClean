@@ -26,7 +26,10 @@
                                         <div>
                                             <ul class="gallery-actions">
                                                 <li>
-                                                    <a href="#" class="btn-option add-product-wishes">
+                                                    <a asp-action="AddToFavorite" asp-controller="Account"
+                                                       asp-route-productId="@Model.Id"
+                                                       asp-route-returnUrl="@this.Url.Action("Description","Product",Model.Id)"
+                                                       class="btn-option add-product-wishes" style="@(Model.IsInUserFavorite==true?"background: antiquewhite;":"")">
                                                         <i class="mdi mdi-heart-outline"></i>
                                                         <span>محبوب</span>
                                                     </a>
@@ -248,16 +251,16 @@
                                                 <input id="attributeNameCountInput" value="@Model.Attributes.Count()" type="hidden" />
                                                 @foreach (var template in Model.Templates)
                                                 {
-                                                <input id="templateId@(b)" value="@template.Id" type="hidden" />
-                                                <input id="template@(b)" value="@template.Template" type="hidden" />
-                                                <input id="templateprice@(b)" value="@template.Price" type="hidden" />
-                                                <input id="templatecount@(b)" value="@template.Count" type="hidden" />
-                                                b++;
+                                                    <input id="templateId@(b)" value="@template.Id" type="hidden" />
+                                                    <input id="template@(b)" value="@template.Template" type="hidden" />
+                                                    <input id="templateprice@(b)" value="@template.Price" type="hidden" />
+                                                    <input id="templatecount@(b)" value="@template.Count" type="hidden" />
+                                                    b++;
                                                 }
                                                 <input id="templateCountInput" value="@Model.Templates.Count()" type="hidden" />
                                             </div>
                                         }
-                                        @if (Model.PropertyName.Count>0)
+                                        @if (Model.PropertyName.Count > 0)
                                         {
                                             <div class="product-params pt-3">
                                                 <ul data-title="ویژگی‌های محصول">
@@ -301,31 +304,48 @@
                                                             }
                                                             else
                                                             {
-                                                                <input type="hidden" id="templateId" />
                                                                 <span id="templatePrice"></span>
                                                             }
                                                             <span>تومان</span>
                                                         </span>
                                                     </a>
                                                 </div>
-                                                <div class="product-seller-row guarantee">
-                                                    <span class="title mt-3"> تعداد:</span>
-                                                    <div class="quantity pl">
-                                                        @if (Model.IsProductHaveAttributes == false)
+                                                <form asp-action="AddToCart" asp-controller="Account" method="get" enctype="text/plain">
+                                                    <input type="hidden" name="returnUrl" value="@this.Url.Action("Description","Product")" />
+                                                    <input type="hidden" asp-for="Id" name="productId" />
+                                                    <div class="product-seller-row guarantee">
+                                                        <span class="title mt-3"> تعداد:</span>
+                                                        <div class="quantity pl">
+                                                            @if (Model.IsProductHaveAttributes == false)
+                                                            {
+                                                                <input name="count" type="number" min="1" max="@Model.Count" step="1" value="1">
+                                                            }
+                                                            else
+                                                            {
+                                                                <div id="insertCounter"></div>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div class="product-seller-row add-to-cart">
+                                                        <input type="hidden" id="templateId" asp-for="TemplateId" name="templateId" value="0" />
+                                                        <button class="btn-add-to-cart btn btn-primary @(Model.IsProductHaveAttributes==true?"disabled":"")"
+                                                                id="btnAddTocart">
+                                                            <span class="btn-add-to-cart-txt">افزودن به سبد خرید</span>
+                                                        </button>
+                                                        @if (ViewData["Error"] != null)
                                                         {
-                                                            <input type="number" min="1" max="@Model.Count" step="1" value="1">
+                                                            <div class="alert alert-danger">
+                                                                خطا ! @ViewData["Error"]
+                                                            </div>
                                                         }
-                                                        else
+                                                        @if (ViewData["Success"] != null)
                                                         {
-                                                            <div id="insertCounter"></div>
+                                                            <div class="alert alert-success">
+                                                                موفقیت ! @ViewData["Success"]
+                                                            </div>
                                                         }
                                                     </div>
-                                                </div>
-                                                <div class="product-seller-row add-to-cart">
-                                                    <a href="#" class="btn-add-to-cart btn btn-primary">
-                                                        <span class="btn-add-to-cart-txt">افزودن به سبد خرید</span>
-                                                    </a>
-                                                </div>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
@@ -854,9 +874,11 @@
                             }
                         }
 
-                        var inputCreator = "<select class='form-control m-1'>" + optionsCount + "</select>";
+                        var inputCreator = "<select name='count' class='form-control m-1'>" + optionsCount + "</select>";
 
                         document.getElementById("insertCounter").innerHTML = inputCreator;
+
+                        $("#btnAddTocart").removeClass("disabled");
 
                         break;
                     }
@@ -865,6 +887,8 @@
                         document.getElementById("templatePrice").innerHTML = "0";
                         document.getElementsByClassName("quantity ").innerHTML = "";
                         document.getElementById("insertCounter").innerHTML = "نا موجود";
+
+                        $("#btnAddTocart").addClass("disabled");
                     }
                 }
             }

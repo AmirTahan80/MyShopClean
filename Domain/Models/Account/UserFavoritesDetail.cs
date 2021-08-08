@@ -9,10 +9,8 @@ namespace Domain.Models
         public int UserFavoritesDetailId { get; set; }
         [Required]
         public int UserFavoriteId { get; set; }
+        [Required]
         public int ProductId { get; set; }
-        public string ProductName { get; set; }
-        public string ImgSrc { get; set; }
-        public int ProductPrice { get; set; }
 
         // Navigation
         public Product Product { get; set; }

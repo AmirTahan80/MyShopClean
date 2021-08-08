@@ -26,6 +26,10 @@ namespace Application.ViewModels.User
         [Required]
         public int CategoryId { get; set; }
 
+        public int TemplateId { get; set; }
+
+        public bool IsInUserFavorite { get; set; } = false;
+
         //Navigation
         public IEnumerable<ProductAttributeViewModel> Attributes { get; set; }
         public IEnumerable<ProductImageViewModel> Images { get; set; }

@@ -1,0 +1,77 @@
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "ورود به سایت";
+}
+
+<!-- login----------------------------------->
+<div class="container">
+    <div class="row">
+        <div class="col-lg">
+            <section class="page-account-box">
+                <div class="col-lg-6 col-md-6 col-xs-12 mx-auto">
+                    <div class="ds-userlogin">
+                        <a asp-action="Index" asp-controller="Home" class="account-box-logo">MyShop</a>
+                        <div class="account-box">
+                            <div class="account-box-headline">
+                                <a asp-action="Login" asp-controller="Account" class="login-ds active">
+                                    <span class="title">ورود</span>
+                                    <span class="sub-title">به فروشگاه من</span>
+                                </a>
+                                <a asp-action="Register" asp-controller="Account" class="register-ds">
+                                    <span class="title">ثبت نام</span>
+                                    <span class="sub-title">در فروشگاه من</span>
+                                </a>
+                            </div>
+                            <div class="Login-to-account mt-4">
+                                <div class="account-box-content">
+                                    <h4>ورود به حساب کاربری</h4>
+                                    <form method="post" asp-action="Login" asp-controller="Account" class="form-account text-right">
+                                        <div class="form-account-title">
+                                            <label for="email-phone">ایمیل / نام کاربری</label>
+                                            <input type="text" class="number-email-input" id="email-phone" asp-for="EmailOrName">
+                                            <span style="color:red" asp-validation-for="EmailOrName"></span>
+                                        </div>
+                                        <div class="form-account-title">
+                                            <label for="password">رمز عبور</label>
+                                            <a asp-action="ForgotPassword" asp-controller="Account" class="account-link-password">رمز خود را فراموش کرده ام</a>
+                                            <input type="password" class="password-input" asp-for="PassWord">
+                                            <span style="color:red" asp-validation-for="PassWord"></span>
+                                        </div>
+                                        <div class="form-auth-row">
+                                            <label for="#" class="ui-checkbox mt-1">
+                                                <input type="checkbox" asp-for="RememberMe" id="remember">
+                                                <span class="ui-checkbox-check"></span>
+                                            </label>
+                                            <label for="remember" class="remember-me mr-0">مرا به خاطر بسپار</label>
+                                        </div>
+                                        <div class="form-row-account">
+                                            <button class="btn btn-primary btn-login">ورود به فروشگاه من</button>
+                                            @if (ViewData["Error"] != null)
+                                            {
+                                                <div class="alert alert-danger">
+                                                    خطا ! @ViewData["Error"]
+                                                </div>
+                                            }
+                                            @if (ViewData["Success"] != null)
+                                            {
+                                                <div class="alert alert-success">
+                                                    موفقیت ! @ViewData["Success"]
+                                                </div>
+                                            }
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<!-- login----------------------------------->
+
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

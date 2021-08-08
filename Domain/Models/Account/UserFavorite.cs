@@ -10,8 +10,9 @@ namespace Domain.Models
         [Key]
         public int UserFavoriteId { get; set; }
         public int UserFavoritesDetailId { get; set; }
-        public int ProductsCount { get; set; }
+        [Required]
         public string UserId { get; set; }
+        [Required]
         public DateTime CreateTime { get; set; }
 
         //Navigation

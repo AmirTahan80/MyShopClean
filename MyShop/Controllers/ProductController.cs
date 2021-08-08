@@ -2,9 +2,8 @@
 using Application.Utilities;
 using Application.ViewModels.User;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace MyShop.Controllers
@@ -22,7 +21,7 @@ namespace MyShop.Controllers
         public async Task<IActionResult> Index(int categoryId = 0, int? pageNumber = 1, string searchProduct = "", string filter = "")
         {
             var products = await _productUserServices.GetProductsListAsync(categoryId);
-            products.OrderByDescending(p => p.Id);
+            products = products.OrderByDescending(p => p.Id);
 
             if (!string.IsNullOrWhiteSpace(searchProduct))
             {
@@ -81,7 +80,9 @@ namespace MyShop.Controllers
         {
             if (productId == 0) return NotFound();
 
-            var result = await _productUserServices.GetProductDescriptionAsync(productId);
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _productUserServices.GetProductDescriptionAsync(productId,userId);
             if (result == null) return NotFound();
 
             return View(result);

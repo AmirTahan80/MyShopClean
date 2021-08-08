@@ -4,14 +4,16 @@ using Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infra.Data.Migrations
 {
     [DbContext(typeof(AppWebContext))]
-    partial class AppWebContextModelSnapshot : ModelSnapshot
+    [Migration("20210804135233_CreateCartModelAndCartDetailModel")]
+    partial class CreateCartModelAndCartDetailModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,11 +104,11 @@ namespace Infra.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("AttributeValues")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("CartId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ImgSrc")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ProductCount")
                         .HasColumnType("int");
@@ -114,13 +116,10 @@ namespace Infra.Data.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
+                    b.Property<string>("ProductName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("ProductPrice")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TemplatesAttributeTemplateId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TotalPrice")
                         .HasColumnType("int");
 
                     b.HasKey("CartDetailId");
@@ -128,8 +127,6 @@ namespace Infra.Data.Migrations
                     b.HasIndex("CartId");
 
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("TemplatesAttributeTemplateId");
 
                     b.ToTable("CartDetails");
                 });
@@ -318,17 +315,20 @@ namespace Infra.Data.Migrations
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("ProductsCount")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserFavoritesDetailId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserFavoriteId");
 
                     b.HasIndex("UserId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("UserFavorites");
                 });
@@ -340,7 +340,16 @@ namespace Infra.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("ImgSrc")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProductName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductPrice")
                         .HasColumnType("int");
 
                     b.Property<int>("UserFavoriteId")
@@ -632,15 +641,9 @@ namespace Infra.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Models.AttributeTemplate", "Templates")
-                        .WithMany()
-                        .HasForeignKey("TemplatesAttributeTemplateId");
-
                     b.Navigation("Cart");
 
                     b.Navigation("Product");
-
-                    b.Navigation("Templates");
                 });
 
             modelBuilder.Entity("Domain.Models.Category", b =>
@@ -700,9 +703,7 @@ namespace Infra.Data.Migrations
                 {
                     b.HasOne("Domain.Models.ApplicationUser", "User")
                         .WithOne("UserFavorite")
-                        .HasForeignKey("Domain.Models.UserFavorite", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Domain.Models.UserFavorite", "UserId");
 
                     b.Navigation("User");
                 });

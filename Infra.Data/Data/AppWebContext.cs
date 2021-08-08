@@ -22,12 +22,17 @@ namespace Infra.Data
         public DbSet<AttributeValue> AttributeValues { get; set; }
         public DbSet<AttributeTemplate> AttributeTemplates { get; set; }
 
-        public DbSet<Category> Categories { get; set; }       
+        public DbSet<Category> Categories { get; set; }     
+        
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }       
         public DbSet<RoleModel> RoleModels { get; set; }
         public DbSet<UserDetail> UserDetails { get; set; }       
         public DbSet<UserFavorite> UserFavorites { get; set; }       
         public DbSet<UserFavoritesDetail> UserFavoritesDetails { get; set; }       
+
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartDetail> CartDetails { get; set; }
+
         #endregion
         #region ModelCreating
         protected override void OnModelCreating(ModelBuilder builder)

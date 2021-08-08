@@ -5,10 +5,10 @@ namespace Domain.Models
 {
     public class Cart
     {
-        public long CartId { get; set; }
+        public int CartId { get; set; }
         public string UserId { get; set; }
         public DateTime CreateTime { get; set; }
-        public decimal Price { get; set; }
+        public int TotalPrice { get; set; }
         public bool IsFinally { get; set; }
 
         //Navigation

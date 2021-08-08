@@ -1,0 +1,126 @@
+﻿@model FavoriteViewModel
+@{
+    ViewData["Title"] = "علاقه مندی ها";
+}
+
+@if (Model != null || Model.FavoriteDetails.Count()>0)
+{
+    <!-- cart---------------------------------->
+    <div class="container-main">
+        <div class="d-block">
+            <div class="main-row">
+                <div id="breadcrumb">
+                    <i class="mdi mdi-home"></i>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">خانه</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">علاقه مندی ها</li>
+                        </ol>
+                    </nav>
+                </div>
+                <section class="cart-home">
+                    <div class="post-item-cart d-block order-2">
+                        <div class="content-page">
+                            <div class="cart-form">
+                                @if (ViewData["Error"] != null)
+                                {
+                                    <div class="alert alert-danger">
+                                        خطا ! @ViewData["Error"]
+                                    </div>
+                                }
+                                @if (ViewData["Success"] != null)
+                                {
+                                    <div class="alert alert-success">
+                                        موفقیت ! @ViewData["Success"]
+                                    </div>
+                                }
+                                <form action="#" class="c-form">
+                                    <table class="table-cart cart table table-borderless">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="product-cart-name">نام محصول</th>
+                                                <th scope="col" class="product-cart-quantity">تعداد</th>
+                                                <th scope="col" class="product-cart-price">قیمت</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.FavoriteDetails)
+                                            {
+
+                                                <tr>
+                                                    <th scope="row" class="product-cart-name">
+                                                        <div class="product-thumbnail-img">
+                                                            <a asp-action="Description" asp-controller="Product"
+                                                               asp-route-productId="@item.ProductId">
+                                                                <img src="/Images/ProductImages/@item.ProductImage">
+                                                            </a>
+                                                            <div class="product-remove">
+                                                                <a asp-action="RemoveFavorite" asp-controller="Account"
+                                                                   asp-route-favoriteDetailId="@item.Id" class="remove">
+                                                                    <i class="mdi mdi-close"></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="product-title">
+                                                            <a asp-action="Description" asp-controller="Product"
+                                                               asp-route-productId="@item.Id">
+                                                                @item.ProductName
+                                                            </a>
+                                                        </div>
+                                                    </th>
+                                                    <td class="product-cart-quantity">
+                                                        <div class="required-number before">
+                                                            <div class="quantity">
+                                                                <span>@item.ProductCount</span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="product-cart-price">
+                                                        <span class="amount">
+                                                            @item.ProductPrice
+                                                            <span>تومان</span>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <!-- cart---------------------------------->
+}
+else
+{
+    <!-- cart---------------------------------->
+    <div class="container-main">
+        <div class="d-block">
+            <div class="main-row">
+                <section class="cart-home">
+                    <div class="post-item-cart d-block order-2">
+                        <div class="content-page">
+                            <div class="cart-form">
+                                <div class="cart-empty text-center d-block">
+                                    <div class="cart-empty-img mb-4 mt-4">
+                                        <img src="/assets/images/shopping-cart.png">
+                                    </div>
+                                    <p class="cart-empty-title">محصولی برای نمایش وجود ندارد !!</p>
+                                    <div class="return-to-shop">
+                                        <a asp-action="Index" asp-controller="Product" class="backward btn btn-secondary">بازگشت به صفحه اصلی</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <!-- cart---------------------------------->
+
+}

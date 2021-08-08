@@ -24,7 +24,7 @@ namespace Application.InterFaces.User
         /// </summary>
         /// <param name="productId"></param>
         /// <returns>GetProductDescriptionViewModel</returns>
-        Task<GetProductDescriptionViewModel> GetProductDescriptionAsync(int productId);
+        Task<GetProductDescriptionViewModel> GetProductDescriptionAsync(int productId,string userId="");
 
     }
 }

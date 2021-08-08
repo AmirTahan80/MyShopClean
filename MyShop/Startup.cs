@@ -1,19 +1,11 @@
+using Infra.Data;
 using Infra.Ioc.Dependencies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Application.Security.AuthenTication;
-using Domain.Models;
-using Infra.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MyShop
 {
@@ -30,39 +22,11 @@ namespace MyShop
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            #region DbContext : Identity
+
+            #region DbContext
             services.AddDbContext<AppWebContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("ConnectToDataBase"));
-            });
-
-            services.AddIdentity<ApplicationUser, RoleModel>(option=>
-            {
-                option.Password.RequiredLength = 8;
-                option.Password.RequireDigit = false;
-                option.Password.RequireLowercase = false;
-                option.Password.RequireUppercase = false;
-                option.Password.RequireNonAlphanumeric = false;
-                option.Password.RequiredUniqueChars = 0;
-                option.User.RequireUniqueEmail = true;
-                option.User.AllowedUserNameCharacters =
-                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
-                option.SignIn.RequireConfirmedEmail = false;
-            })
-            .AddEntityFrameworkStores<AppWebContext>()
-            .AddDefaultTokenProviders();
-
-            services.ConfigureApplicationCookie(option =>
-            {
-                option.AccessDeniedPath = "/Account/AccessDenied";
-                option.LoginPath = "/Account/Login";
-                option.LogoutPath = "/Account/Logout";
-            });
-
-            services.Configure<SecurityStampValidatorOptions>(options =>
-            {
-                // enables immediate logout, after updating the user's stat.
-                options.ValidationInterval = TimeSpan.Zero;
             });
             #endregion
 

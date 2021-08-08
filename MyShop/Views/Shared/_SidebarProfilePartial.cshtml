@@ -1,0 +1,70 @@
+﻿
+<section class="profile-box">
+    <header class="profile-box-header-inline">
+        <div class="profile-avatar user-avatar profile-img">
+            <img src="/assets/images/man.png">
+        </div>
+    </header>
+    <footer class="profile-box-content-footer">
+        <span class="profile-box-nameuser">@Model.Name</span>
+        <br />
+        <span class="profile-box-phone">شماره همراه : @Model.PhoneNumber</span>
+        <div class="profile-box-tabs">
+            <form asp-action="SignOutWeb" asp-controller="Account" method="post">
+                <button class="profile-box-tab-sign-out btn btn-outline-danger"><i class="mdi mdi-logout-variant"></i>خروج از حساب</button>
+            </form>
+        </div>
+    </footer>
+</section>
+<section class="profile-box">
+    <ul class="profile-account-navs">
+        <li class="profile-account-nav-item navigation-link-dashboard">
+            <a asp-action="Profile" asp-controller="Account" class="@(ViewBag.Class==0?"active" : "")">
+                <i class="mdi mdi-account-outline"></i>
+                پروفایل
+            </a>
+        </li>
+        <li class="profile-account-nav-item navigation-link-dashboard">
+            <a href="#" class="@(ViewBag.Class==1?"active" : "")">
+                <i class="mdi mdi-cart"></i>
+                همه سفارش ها
+            </a>
+        </li>
+        <li class="profile-account-nav-item navigation-link-dashboard">
+            <a asp-action="ShowFavorite" asp-controller="Account" class="@(ViewBag.Class==2?"active" : "")">
+                <i class="mdi mdi-heart"></i>
+                لیست علاقه مندی
+            </a>
+        </li>
+        <li class="profile-account-nav-item navigation-link-dashboard">
+            <a asp-action="ShowCart" asp-controller="Account" class="">
+                <i class="mdi mdi-cart"></i>
+                سبد خرید
+            </a>
+        </li>
+        <li class="profile-account-nav-item navigation-link-dashboard">
+            <a href="#" class="@(ViewBag.Class==3?"active" : "")">
+                <i class="mdi mdi-map-outline"></i>
+                آدرس ها
+            </a>
+        </li>
+        <li class="profile-account-nav-item navigation-link-dashboard">
+            <a href="#" class="@(ViewBag.Class==4?"active" : "")">
+                <i class="mdi mdi-email-open-outline"></i>
+                نظرات
+            </a>
+        </li>
+        <li class="profile-account-nav-item navigation-link-dashboard">
+            <a asp-action="PersonalInfo" asp-controller="Account" class="@(ViewBag.Class==5?"active" : "")">
+                <i class="mdi mdi-tooltip-text-outline"></i>
+                اطلاعات حساب
+            </a>
+        </li>
+        <li class="profile-account-nav-item navigation-link-dashboard">
+            <a asp-action="ChangePassWord" asp-controller="Account" class="">
+                <i class=""></i>
+                تغییر رمز عبور
+            </a>
+        </li>
+    </ul>
+</section>

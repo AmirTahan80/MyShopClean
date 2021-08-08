@@ -5,10 +5,6 @@ namespace Domain.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public ApplicationUser()
-        {
-            UserDetail = new UserDetail();
-        }
         public int UserDetailId { get; set; }
 
         public UserFavorite UserFavorite { get; set; }
