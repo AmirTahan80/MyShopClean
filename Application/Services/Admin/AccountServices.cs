@@ -1,6 +1,8 @@
 ﻿using Application.InterFaces.Admin;
 using Application.InterFaces.Both;
+using Application.ViewModels;
 using Application.ViewModels.Admin;
+using Domain.InterFaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -18,6 +20,7 @@ namespace Application.Services.Admin
 {
     public class AccountServices : IAccountServices
     {
+        #region Injections
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMessageSenderServices _messageSender;
@@ -25,11 +28,13 @@ namespace Application.Services.Admin
         private readonly IHostingEnvironment _env;
         private readonly LinkGenerator _linkGenerator;
         private readonly RoleManager<RoleModel> _roleManager;
+        private readonly ICommentRepository _commentRepository;
         public AccountServices(SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
             IMessageSenderServices messageSender, IHostingEnvironment env,
             IHttpContextAccessor httpContextAccessor,
-            LinkGenerator linkGenerator, RoleManager<RoleModel> roleManager)
+            LinkGenerator linkGenerator, RoleManager<RoleModel> roleManager,
+            ICommentRepository commentRepository)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -38,7 +43,9 @@ namespace Application.Services.Admin
             _httpContextAccessor = httpContextAccessor;
             _linkGenerator = linkGenerator;
             _roleManager = roleManager;
+            _commentRepository = commentRepository;
         }
+        #endregion
 
 
         //Impeliments
@@ -60,13 +67,13 @@ namespace Application.Services.Admin
                     EmailConfirmed = true
                 };
                 var result = await _userManager.CreateAsync(applicationUser, userPassword);
-                if (result.Succeeded) 
+                if (result.Succeeded)
                 {
 
                     var findRoleById = await _roleManager.FindByIdAsync(user.RoleId);
-                    if(findRoleById!=null)
+                    if (findRoleById != null)
                     {
-                        var resultAddToRole=await _userManager.AddToRoleAsync(applicationUser, findRoleById.Name);
+                        var resultAddToRole = await _userManager.AddToRoleAsync(applicationUser, findRoleById.Name);
                         if (!resultAddToRole.Succeeded)
                             return false;
                     }
@@ -93,7 +100,7 @@ namespace Application.Services.Admin
 
             if (userLoginRole == "Manager")
             {
-                users = users.Where(p => _userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault()!= "Founder" &&
+                users = users.Where(p => _userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault() != "Founder" &&
                  _userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault() != "Manager").ToList();
             }
             else if (userLoginRole == "Writer")
@@ -115,7 +122,7 @@ namespace Application.Services.Admin
                 UserName = p.UserName,
                 UserEmail = p.Email,
                 RoleName = _userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault(),
-                UserId=p.Id
+                UserId = p.Id
             }).ToList();
             return usersReturn;
         }
@@ -132,11 +139,11 @@ namespace Application.Services.Admin
 
             if (userLogInRole == "Manager")
             {
-                correctRolesGet = roles.Where(p => p.Name != "Founder" && p.Name!="Manager").ToList();
+                correctRolesGet = roles.Where(p => p.Name != "Founder" && p.Name != "Manager").ToList();
             }
-            else if(userLogInRole == "Writer")
+            else if (userLogInRole == "Writer")
             {
-                correctRolesGet = roles.Where(p => p.Name != "Founder" && p.Name!="Manager" && p.Name!="Writer").ToList();
+                correctRolesGet = roles.Where(p => p.Name != "Founder" && p.Name != "Manager" && p.Name != "Writer").ToList();
             }
             else if (userLogInRole == "Customer")
             {
@@ -163,7 +170,7 @@ namespace Application.Services.Admin
                 UserName = user.UserName,
                 UserEmail = user.Email,
                 RoleName = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().FirstOrDefault(),
-                RolesName=rolesItem
+                RolesName = rolesItem
             };
             return userReturn;
         }
@@ -231,8 +238,8 @@ namespace Application.Services.Admin
                 foreach (var userId in deleteUsersSelected)
                 {
                     var findUserById = await _userManager.FindByIdAsync(userId);
-                    var result=await _userManager.DeleteAsync(findUserById);
-                    if(!result.Succeeded)
+                    var result = await _userManager.DeleteAsync(findUserById);
+                    if (!result.Succeeded)
                     {
                         return false;
                     }
@@ -253,6 +260,89 @@ namespace Application.Services.Admin
             var reslut = await GetRoles(userLoginId);
 
             return reslut;
+        }
+
+        public async Task<IEnumerable<CommentsViewModel>> GetCommentsAsync()
+        {
+            var comments = await _commentRepository.GetCommentsAsync();
+
+            var resturnComment = comments.Select(p => new CommentsViewModel()
+            {
+                CommentId = p.CommentId,
+                CommentText = p.CommentText,
+                CommentTopic = p.CommentTopic,
+                InsertTime = p.CommentInsertTime,
+                IsShow = p.IsShow,
+                ProductImage = p.Product.ProductImages.FirstOrDefault().ImgFile + "/" + p.Product.ProductImages.FirstOrDefault().ImgSrc,
+                ProductName = p.Product.Name,
+                Suggest = p.Suggest,
+                UserEmail = p.User.Email,
+                UserName = p.User.UserName,
+                UserId = p.User.Id
+            });
+
+            return resturnComment;
+        }
+        public async Task<CommentsViewModel> GetCommentAsync(int commentId)
+        {
+            var comment = await _commentRepository.GetCommentAsync(commentId);
+
+            var commentReturn = new CommentsViewModel()
+            {
+                CommentId = comment.CommentId,
+                CommentText = comment.CommentText,
+                CommentTopic = comment.CommentTopic,
+                InsertTime = comment.CommentInsertTime,
+                IsShow = comment.IsShow,
+                ProductImage = comment.Product.ProductImages.FirstOrDefault().ImgFile + "/" + comment.Product.ProductImages.FirstOrDefault().ImgSrc,
+                ProductName = comment.Product.Name,
+                Suggest = comment.Suggest,
+                UserEmail = comment.User.Email,
+                UserId = comment.UserId,
+                UserName = comment.User.UserName,
+                ProductId = comment.ProductId,
+                Goodness = comment.ProductGoodNess != null ? comment.ProductGoodNess.Split(",") : null,
+                Bads = comment.ProductBads != null ? comment.ProductBads.Split(",") : null
+            };
+
+            return commentReturn;
+        }
+        public async Task<ResultDto> EditCommentAsync(CommentsViewModel editComment)
+        {
+            try
+            {
+                var returnResultDto = new ResultDto();
+
+                var comment = await _commentRepository.GetCommentAsync(editComment.CommentId);
+                if(comment==null)
+                {
+                    returnResultDto.ErrorMessage = "ویرایش کامنت با شکست مواجه شد !!! صفحه را رفرش کنید و دوباره سعی کنید !!!";
+                    returnResultDto.Status = false;
+                    return returnResultDto;
+                }
+
+                comment.CommentTopic = editComment.CommentTopic;
+                comment.CommentText = editComment.CommentText;
+                comment.IsShow = true;
+
+                await _commentRepository.SaveAsync();
+
+                returnResultDto.SuccesMessage = "ویرایش و نمایش نظر در سایت با موفقیت اعمال شد ...";
+                returnResultDto.Status = true;
+
+                return returnResultDto;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                var returnResultDto = new ResultDto()
+                {
+                    ErrorMessage = "مشکلی در ویرایش نظر به وجود آمده است لطفا دقایقی دیگر امتحان کنید و در صورت وجود مشکل با پشتیبانی تماس بگیرید !!!",
+                    Status = false
+                };
+                return returnResultDto;
+            }
         }
 
         //Tag Helpers
@@ -336,7 +426,7 @@ namespace Application.Services.Admin
             {
                 listOfRoleItem.Add(new SelectListItem()
                 {
-                    Value=role.Id,
+                    Value = role.Id,
                     Text = role.Name == "Manager" ? "ادمین | مدیریت کننده" : role.Name == "Writer" ? "نویسنده" : role.Name == "Customer" ? "مشتری" : role.Name == "Founder" ? "سازنده سایت" : ""
                 });
             }

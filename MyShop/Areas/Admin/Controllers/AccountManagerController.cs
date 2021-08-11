@@ -80,7 +80,7 @@ namespace MyShop.Areas.Admin.Controllers
             ViewBag.NextPage = paging.NextPage;
             ViewBag.Count = paging.LastPage;
             ViewBag.Action = "Index";
-            ViewBag.Controller = "UserManager";
+            ViewBag.Controller = "AccountManager";
             #endregion
 
             ViewData["Error"] = TempData["Error"];
@@ -175,6 +175,91 @@ namespace MyShop.Areas.Admin.Controllers
 
             //ToDo: Pass User to dashboard if email confirm
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Comments(int? pageNumber,string searchComment,string filter)
+        {
+            var comments = await _accountServices.GetCommentsAsync();
+            comments = comments.OrderByDescending(p => p.CommentId);
+
+            if (!string.IsNullOrWhiteSpace(searchComment))
+            {
+                comments = comments.Where(p => p.CommentText.Contains(searchComment) || p.CommentTopic.Contains(searchComment)
+                  || p.UserEmail.Contains(searchComment) || p.UserName.Contains(searchComment) || p.ProductName.Contains(searchComment));
+
+                ViewBag.SearchComment = searchComment;
+            }
+
+            ViewBag.Filter = "جدید ترین";
+
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                switch (filter)
+                {
+                    case "New":
+                        comments = comments.OrderByDescending(p => p.CommentId);
+                        ViewBag.Filter = "جدید ترین";
+                        break;
+                    case "Old":
+                        comments = comments.OrderBy(p => p.CommentId);
+                        ViewBag.Filter = "قدیمی ترین";
+                        break;
+                    case "NotShow":
+                        comments = comments.Where(p => !p.IsShow).ToList();
+                        ViewBag.Filter = "تایید نشده";
+                        break;
+                    case "Show":
+                        comments = comments.Where(p => p.IsShow).ToList();
+                        ViewBag.Filter = "تایید شده";
+                        break;
+                }
+            }
+
+
+            var paging = new PagingList<CommentsViewModel>(comments, 10, pageNumber ?? 1);
+            var userPaging = paging.QueryResult;
+
+            #region ViewBagForPaging
+            ViewBag.PageNumber = pageNumber ?? 1;
+            ViewBag.FirstPage = paging.FirstPage;
+            ViewBag.LastPage = paging.LastPage;
+            ViewBag.PrevPage = paging.PreviousPage;
+            ViewBag.NextPage = paging.NextPage;
+            ViewBag.Count = paging.LastPage;
+            ViewBag.Action = "Comments";
+            ViewBag.Controller = "AccountManager";
+            #endregion
+
+            return View(comments.ToList());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditComment(int commentId=0)
+        {
+            if (commentId == 0) return NotFound();
+
+            var result = await _accountServices.GetCommentAsync(commentId);
+
+            return View(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditComment(CommentsViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var result = await _accountServices.EditCommentAsync(model);
+
+            if(result.Status)
+            {
+                ViewData["Success"] = result.SuccesMessage;
+            }
+            else
+            {
+                ViewData["Error"] = result.ErrorMessage;
+            }
+
+            return View(model);
         }
     }
 }

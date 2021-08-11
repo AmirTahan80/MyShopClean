@@ -33,6 +33,8 @@ namespace Infra.Data
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartDetail> CartDetails { get; set; }
 
+        public DbSet<Comment> Comments { get; set; }
+
         #endregion
         #region ModelCreating
         protected override void OnModelCreating(ModelBuilder builder)

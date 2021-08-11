@@ -1,0 +1,142 @@
+﻿@model CommentsViewModel
+@{
+    ViewData["Title"] = "جزئیات نظر";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title-wrap bar-success">
+                    <h4 class="card-title" id="basic-layout-form">جزئیات نظر @Model.CommentTopic</h4>
+                </div>
+                <p class="mb-0">نظر را مشاهده ، ویراش و حذف کنید.</p>
+            </div>
+            <div class="card-body">
+                <div class="px-3">
+                    @if (ViewData["Success"] != null)
+                    {
+                        <div class="alert alert-success round">
+                            <p><strong>موفقیت ! </strong>@ViewData["Success"]</p>
+                        </div>
+                    }
+                    @if (ViewData["Error"] != null)
+                    {
+                        <div class="alert alert-danger round">
+                            <p><strong>خطا ! </strong>@ViewData["Error"]</p>
+                        </div>
+                    }
+                    <form class="form" asp-action="EditComment" asp-controller="AccountManager" method="post">
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput1">نام کاربری</label>
+                                        <a class="form-control" asp-action="EditUser" asp-controller="AccountManager" asp-route-userId="@Model.UserId">
+                                            @Model.UserName
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2">ایمیل</label>
+                                        <a class="form-control" asp-action="EditUser" asp-controller="AccountManager" asp-route-userId="@Model.UserId">
+                                            @Model.UserEmail
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="col-md-12" for="projectinput2">عکس و نام محصول</label>
+                                        <a asp-action="EditProduct" asp-controller="ProductManager" asp-route-productId="@Model.ProductId">
+                                            <img src="~/Images/ProductImages/@Model.ProductImage" style="width:90px;height:90px" />
+                                        </a>
+                                        <a class="form-control" asp-action="EditProduct" asp-controller="ProductManager" asp-route-productId="@Model.ProductId">
+                                            @Model.ProductName
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <label for="projectinput2" class="col-md-12">نقاط قوت و نقاط ضعف</label>
+                                        @if (Model.Goodness == null)
+                                        {
+                                            <div class="col-md-3">
+                                                <p>کاربر نقطه قوتی درباره محصول ثبت نکرده است !!!</p>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-md-3">
+                                                @foreach (var good in Model.Goodness)
+                                                {
+                                                    <p class="green">@good</p>
+                                                }
+                                            </div>
+                                        }
+                                        @if (Model.Bads == null)
+                                        {
+                                            <div class="col-md-3">
+                                                <p>کاربر نقطه ضعفی درباره محصول ثبت نکرده است !!!</p>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-md-3">
+                                                @foreach (var bad in Model.Bads)
+                                                {
+                                                    <p class="red">@bad</p>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2">موضوع</label>
+                                        <input asp-for="CommentTopic" required class="form-control" />
+                                        <span class="red" asp-validation-for="CommentTopic"> </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2">نطر</label>
+                                        <textarea asp-for="CommentText" rows="10" required class="form-control"></textarea>
+                                        <span class="red" asp-validation-for="CommentText"> </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2" class="col-md-12">خرید محصول را پیشنهاد میکند ؟</label>
+                                        @if (Model.Suggest)
+                                        {
+                                            <text>کاربر خرید محصول را پیشنهاد کرده است ...</text>
+                                        }
+                                        else
+                                        {
+                                            <text>کاربر خرید محصول را پیشنهاد نمی کند !!!</text>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <input type="hidden" class="hide" readonly asp-for="CommentId" />
+                                <button type="submit" class="btn btn-success">
+                                    <i class="icon-pencil"></i> ویرایش و نمایش در سایت
+                                </button>
+                                <a asp-action="Index" asp-controller="AccountManager" class="btn btn-primary">
+                                    برگشت به لیست
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

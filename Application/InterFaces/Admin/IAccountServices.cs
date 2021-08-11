@@ -1,4 +1,5 @@
-﻿using Application.ViewModels.Admin;
+﻿using Application.ViewModels;
+using Application.ViewModels.Admin;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -57,5 +58,22 @@ namespace Application.InterFaces.Admin
         /// <param name="userLoginId"></param>
         /// <returns>List of selectListItem Of Roles</returns>
         Task<List<SelectListItem>> GetRolesAsync(string userLoginId);
+        /// <summary>
+        /// گرفتن تمامی نظرات
+        /// </summary>
+        /// <returns></returns>
+        Task<IEnumerable<CommentsViewModel>> GetCommentsAsync();
+        /// <summary>
+        /// جزئیات نظر
+        /// </summary>
+        /// <param name="commentId"></param>
+        /// <returns></returns>
+        Task<CommentsViewModel> GetCommentAsync(int commentId);
+        /// <summary>
+        /// ویرایش نظر
+        /// </summary>
+        /// <param name="editComment"></param>
+        /// <returns></returns>
+        Task<ResultDto> EditCommentAsync(CommentsViewModel editComment);
     }
 }

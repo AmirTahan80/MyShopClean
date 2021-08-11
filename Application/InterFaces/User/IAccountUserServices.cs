@@ -1,4 +1,5 @@
-﻿using Application.ViewModels.User;
+﻿using Application.ViewModels;
+using Application.ViewModels.User;
 using System.Threading.Tasks;
 
 namespace Application.InterFaces.User
@@ -105,7 +106,7 @@ namespace Application.InterFaces.User
         /// </summary>
         /// <param name="productId"></param>
         /// <returns>ResultDto</returns>
-        Task<ResultDto> AddOrRemoveToFavotieAsync(int productId,string userId);
+        Task<ResultDto> AddOrRemoveToFavotieAsync(int productId, string userId);
 
         /// <summary>
         /// گرفتن علاقه مندی های کاربر

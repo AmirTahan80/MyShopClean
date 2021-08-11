@@ -23,5 +23,7 @@ namespace Application.ViewModels.User
         public string LastName { get; set; }
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
+
+        public IEnumerable<UserCommentsViewModel> Comments { get; set; }
     }
 }

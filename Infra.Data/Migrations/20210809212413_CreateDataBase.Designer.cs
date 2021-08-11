@@ -4,14 +4,16 @@ using Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infra.Data.Migrations
 {
     [DbContext(typeof(AppWebContext))]
-    partial class AppWebContextModelSnapshot : ModelSnapshot
+    [Migration("20210809212413_CreateDataBase")]
+    partial class CreateDataBase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -162,7 +164,7 @@ namespace Infra.Data.Migrations
 
             modelBuilder.Entity("Domain.Models.Comment", b =>
                 {
-                    b.Property<int>("CommentId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -181,25 +183,16 @@ namespace Infra.Data.Migrations
                     b.Property<bool>("IsShow")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ProductBads")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProductGoodNess")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int?>("ReplayId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("Suggest")
-                        .HasColumnType("bit");
-
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("CommentId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ProductId");
 

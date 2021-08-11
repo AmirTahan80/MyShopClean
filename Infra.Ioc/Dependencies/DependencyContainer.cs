@@ -6,9 +6,11 @@ using Application.Services.Admin;
 using Application.Services.Both;
 using Application.Services.User;
 using Data.Repositories.AdminRepositories;
+using Domain.InterFaces;
 using Domain.InterFaces.AdminInterFaces;
 using Domain.Models;
 using Infra.Data;
+using Infra.Data.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -37,6 +39,9 @@ namespace Infra.Ioc.Dependencies
 
 
             services.AddScoped<ICartRepository, CartRepository>();
+
+            services.AddScoped<ICommentUserServices, CommentUserServices>();
+            services.AddScoped<ICommentRepository, CommentRepository>();
 
 
 

@@ -4,14 +4,16 @@ using Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infra.Data.Migrations
 {
     [DbContext(typeof(AppWebContext))]
-    partial class AppWebContextModelSnapshot : ModelSnapshot
+    [Migration("20210809213906_ChangeCommentId")]
+    partial class ChangeCommentId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -181,20 +183,11 @@ namespace Infra.Data.Migrations
                     b.Property<bool>("IsShow")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ProductBads")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProductGoodNess")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int?>("ReplayId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("Suggest")
-                        .HasColumnType("bit");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");

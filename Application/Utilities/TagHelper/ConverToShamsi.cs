@@ -31,5 +31,16 @@ namespace Application.Utilities.TagHelper
             var curentDate = persianCalendar.ToDateTime(time.Year, time.Month, time.Day, time.Hour, time.Minute, time.Second, time.Millisecond);
             return curentDate;
         }
+        /// <summary>
+        /// Return Year , Month , Day 
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public static DateTime GetDateYeadAndMonthAndDay(DateTime time)
+        {
+            PersianCalendar persianCalendar = new PersianCalendar();
+            var curentDate =Convert.ToDateTime(persianCalendar.GetYear(time) + "/" + persianCalendar.GetMonth(time) + "/" + persianCalendar.GetDayOfMonth(time));
+            return curentDate;
+        }
     }
 }

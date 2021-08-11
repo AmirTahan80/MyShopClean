@@ -1,5 +1,6 @@
 ﻿using Application.InterFaces.Both;
 using Application.InterFaces.User;
+using Application.ViewModels;
 using Application.ViewModels.User;
 using Domain.InterFaces.AdminInterFaces;
 using Domain.Models;
@@ -182,7 +183,7 @@ namespace Application.Services.User
                 Email = findUser.Email,
                 Name = findUser.UserName,
                 RoleName = _userManager.GetRolesAsync(findUser).GetAwaiter().GetResult().FirstOrDefault(),
-                PhoneNumber=findUser.PhoneNumber
+                PhoneNumber = findUser.PhoneNumber
             };
 
             return returnUserDescription;
@@ -825,12 +826,12 @@ namespace Application.Services.User
 
             var favoriteDetail = favorite.UserFavoritesDetails.Select(p => new FavoriteDetailViewModel()
             {
-                Id=p.UserFavoritesDetailId,
-                ProductId=p.ProductId,
-                ProductCount=p.Product.Count,
-                ProductImage=p.Product.ProductImages.FirstOrDefault().ImgFile+"/"+p.Product.ProductImages.FirstOrDefault().ImgSrc,
-                ProductName=p.Product.Name,
-                ProductPrice=p.Product.Price
+                Id = p.UserFavoritesDetailId,
+                ProductId = p.ProductId,
+                ProductCount = p.Product.Count,
+                ProductImage = p.Product.ProductImages.FirstOrDefault().ImgFile + "/" + p.Product.ProductImages.FirstOrDefault().ImgSrc,
+                ProductName = p.Product.Name,
+                ProductPrice = p.Product.Price
             });
 
             var favoriteReturn = new FavoriteViewModel()

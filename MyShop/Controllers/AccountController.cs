@@ -1,4 +1,5 @@
 ﻿using Application.InterFaces.User;
+using Application.Utilities;
 using Application.ViewModels.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +12,18 @@ namespace MyShop.Controllers
     {
         #region Injections
         private readonly IAccountUserServices _accountUserServices;
-        public AccountController(IAccountUserServices accountUserServices)
+        private readonly ICommentUserServices _commentUserServices;
+        private readonly IProductUserServices _productUserServices;
+        public AccountController(IAccountUserServices accountUserServices,
+            ICommentUserServices commentUserServices,
+            IProductUserServices productUserServices)
         {
             _accountUserServices = accountUserServices;
+            _commentUserServices = commentUserServices;
+            _productUserServices = productUserServices;
         }
         #endregion
+
         [HttpGet]
         public IActionResult Register()
         {
@@ -299,7 +307,6 @@ namespace MyShop.Controllers
             return RedirectToAction("ShowCart");
         }
 
-
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> AddToFavorite(int productId = 0, string returnUrl = "")
@@ -340,6 +347,8 @@ namespace MyShop.Controllers
             return View();
         }
 
+        [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ShowFavorite()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -350,6 +359,8 @@ namespace MyShop.Controllers
             return View(result);
         }
 
+        [HttpGet]
+        [Authorize]
         public async Task<IActionResult> RemoveFavorite(int favoriteDetailId = 0)
         {
             if (favoriteDetailId == 0) return NotFound();
@@ -360,5 +371,70 @@ namespace MyShop.Controllers
 
         }
 
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> ProductComment(int id = 0)
+        {
+            if (id == 0) return NotFound();
+
+            var result = await _productUserServices.GetProductDescriptionAsync(id);
+
+            ViewData["Success"] = TempData["Success"];
+            ViewData["Error"] = TempData["Error"];
+
+            return View(result);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> AddComment(GetProductDescriptionViewModel model, string returnUrl = "")
+        {
+            if (model.Comment.ProductId == 0 || string.IsNullOrWhiteSpace(model.Comment.Topic) || string.IsNullOrWhiteSpace(model.Comment.Text))
+                return NotFound();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _commentUserServices.AddUserCommentAsync(model.Comment, userId);
+
+            if (result.Status)
+                TempData["Success"] = result.SuccesMessage;
+            else
+                TempData["Error"] = result.ErrorMessage;
+
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
+            else
+                return View();
+
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetUserComments(int? pageNumber)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return NotFound();
+
+            var result = await _commentUserServices.GetUserComments(userId);
+
+            var paging = new PagingList<UserCommentsViewModel>(result.Comments,5, pageNumber ?? 1);
+            result.Comments = paging.QueryResult;
+
+            #region ViewBagForPaging
+            ViewBag.PageNumber = pageNumber ?? 1;
+            ViewBag.FirstPage = paging.FirstPage;
+            ViewBag.LastPage = paging.LastPage;
+            ViewBag.PrevPage = paging.PreviousPage;
+            ViewBag.NextPage = paging.NextPage;
+            ViewBag.Count = paging.LastPage;
+            ViewBag.Action = "GetUserComments";
+            ViewBag.Controller = "Account";
+            #endregion
+            
+            ViewBag.Class = 4;
+
+            return View(result);        
+        }
     }
 }

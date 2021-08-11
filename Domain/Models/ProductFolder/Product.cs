@@ -32,5 +32,6 @@ namespace Domain.Models
         public ICollection<ProductProperty> Properties { get; set; }
         public ICollection<ProductAttribute> ProductAttributes { get; set; }
         public ICollection<AttributeTemplate> AttributeTemplates { get; set; }
+        public ICollection<Comment> Comments { get; set; }
     }
 }

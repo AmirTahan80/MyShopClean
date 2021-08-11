@@ -1,5 +1,6 @@
 ﻿using Application.InterFaces.User;
 using Application.ViewModels.User;
+using Domain.InterFaces;
 using Domain.InterFaces.AdminInterFaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Identity;
@@ -15,13 +16,16 @@ namespace Application.Services.User
         private readonly IProductRepository _productRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ICartRepository _cartRepository;
+        private readonly ICommentRepository _commentRepository;
         public ProductUserServices(IProductRepository productRepository,
             UserManager<ApplicationUser> userManager,
-            ICartRepository cartRepository)
+            ICartRepository cartRepository,
+            ICommentRepository commentRepository)
         {
             _productRepository = productRepository;
             _userManager = userManager;
             _cartRepository = cartRepository;
+            _commentRepository = commentRepository;
         }
 
         //Implements
@@ -116,7 +120,18 @@ namespace Application.Services.User
                     Template = p.Template,
                     Count = p.AttrinbuteTemplateCount,
                     Price = p.AttrinbuteTemplatePrice
-                })
+                }),
+                Comments=product.Comments.Where(p=>p.IsShow).Select(p=> new ProductCommentViewModel()
+                {
+                    Id=p.CommentId,
+                    Text=p.CommentText,
+                    Topic=p.CommentTopic,
+                    UserName=p.User.UserName,
+                    CustomerSuggestToBuy=p.Suggest,
+                    InsertTime=p.CommentInsertTime,
+                    Bads=p.ProductBads != null ? p.ProductBads.Split(",") : null,
+                    GoodNess=p.ProductGoodNess!=null? p.ProductGoodNess.Split(","):null
+                }).OrderByDescending(p=>p.Id)
             };
 
             if (!string.IsNullOrWhiteSpace(userId))

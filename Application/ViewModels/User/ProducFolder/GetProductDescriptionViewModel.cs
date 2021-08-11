@@ -34,5 +34,9 @@ namespace Application.ViewModels.User
         public IEnumerable<ProductAttributeViewModel> Attributes { get; set; }
         public IEnumerable<ProductImageViewModel> Images { get; set; }
         public IEnumerable<ProductAttributesTemplate> Templates { get; set; }
+        public IEnumerable<ProductCommentViewModel> Comments { get; set; }
+
+        public CommentViewModel Comment { get; set; }
+
     }
 }
