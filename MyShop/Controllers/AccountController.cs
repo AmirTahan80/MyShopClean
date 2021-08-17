@@ -436,5 +436,14 @@ namespace MyShop.Controllers
 
             return View(result);        
         }
+
+        public async Task<IActionResult> GetUserQuestion()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _accountUserServices.GetQuestionsAsync(userId);
+
+            return View(result);
+        }
     }
 }

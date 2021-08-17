@@ -75,5 +75,10 @@ namespace Application.InterFaces.Admin
         /// <param name="editComment"></param>
         /// <returns></returns>
         Task<ResultDto> EditCommentAsync(CommentsViewModel editComment);
+        /// <summary>
+        /// گزفتن سوالات
+        /// </summary>
+        /// <returns></returns>
+        Task<IList<QuestionViewModel>> GetQuestionsAsync();
     }
 }

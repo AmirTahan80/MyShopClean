@@ -1,6 +1,6 @@
 ﻿@model ProfileViewModel
 @{
-    ViewData["Title"] = "نظرات";
+    ViewData["Title"] = "سوالات";
 }
 
 @section Header{
@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/assets/css/vendor/noUISlider.min.css">
     <link rel="stylesheet" href="/assets/css/vendor/nice-select.css">
 }
+
 
 <!-- profile------------------------------->
 <div class="container-main">
@@ -31,43 +32,19 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col"></th>
-                                                <th scope="col">نام محصول</th>
-                                                <th scope="col">نظر</th>
-                                                <th scope="col">وضعیت</th>
+                                                <th scope="col">موضوع</th>
+                                                <th scope="col">سوال</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach (var comment in Model.Comments)
+                                            @foreach (var question in Model.Questions)
                                             {
                                                 <tr>
-                                                    <th scope="row" class="th-img">
-                                                        <div class="thumb-img">
-                                                            <a asp-action="Description" asp-controller="Product" asp-route-productId="@comment.ProductId">
-                                                                <img src="/Images/ProductImages/@comment.ProductImage">
-                                                            </a>
-                                                            @*<div class="product-rate">
-                                                                    <i class="fa fa-star active"></i>
-                                                                    <i class="fa fa-star active"></i>
-                                                                    <i class="fa fa-star active"></i>
-                                                                    <i class="fa fa-star active"></i>
-                                                                    <i class="fa fa-star"></i>
-                                                                </div>*@
-                                                        </div>
-                                                    </th>
+                                                    <td></td>
                                                     <td>
-                                                        @comment.ProductName
+                                                        @question.Topic
                                                     </td>
-                                                    <td>@comment.CommentText</td>
-                                                    <td>
-                                                        @if (comment.IsShow == true)
-                                                        {
-                                                            <span class="profile-comment-status-approved">تایید شده</span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="profile-comment-status-approved" style="color:red">تایید نشده</span>
-                                                        }
-                                                    </td>
+                                                    <td>@question.Text</td>
                                                 </tr>
                                             }
                                         </tbody>

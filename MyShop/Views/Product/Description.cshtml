@@ -1,6 +1,16 @@
 ﻿@model GetProductDescriptionViewModel
 @{ ViewData["Title"] = "جزئیات محصول"; int b = 0, c = 0; }
 
+@section Header{
+    <!-- plugin-------------------------------------->
+    <link rel="stylesheet" href="~/assets/css/vendor/bootstrap.css">
+    <link rel="stylesheet" href="~/assets/css/vendor/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/assets/css/vendor/noUISlider.min.css">
+    <link rel="stylesheet" href="~/assets/css/vendor/lightgallery.css">
+    <link rel="stylesheet" href="~/assets/css/vendor/nice-select.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+}
+
 <!-- arshive-product----------------------->
 <div class="container-main">
     <div class="d-block">
@@ -28,106 +38,11 @@
                                                 <li>
                                                     <a asp-action="AddToFavorite" asp-controller="Account"
                                                        asp-route-productId="@Model.Id"
-                                                       asp-route-returnUrl="@this.Url.Action("Description","Product",Model.Id)"
+                                                       asp-route-returnUrl="@this.Url.Action("Description", "Account", new {productId=Model.Id})"
                                                        class="btn-option add-product-wishes" style="@(Model.IsInUserFavorite==true?"background: antiquewhite;":"")">
                                                         <i class="mdi mdi-heart-outline"></i>
                                                         <span>محبوب</span>
                                                     </a>
-                                                </li>
-                                                <li class="option-social">
-                                                    <a href="#" class="btn-option btn-option-social" data-toggle="modal" data-target="#option-social">
-                                                        <i class="mdi mdi-share"></i>
-                                                        <span>اشتراک</span>
-                                                    </a>
-                                                    <!-- Modal-option-social -->
-                                                    <div class="modal fade" id="option-social" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="exampleModalCenterTitle">اشتراک گذاری</h5>
-                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                        <span aria-hidden="true">&times;</span>
-                                                                    </button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <div class="title">با استفاده از روش‌های زیر می‌توانید این صفحه را با دوستان خود به اشتراک بگذارید.</div>
-                                                                    <form action="#" class="email-sharing">
-                                                                        <h5 class="share-title">ارسال از طریق ایمیل</h5>
-                                                                        <div class="input-group-sharing">
-                                                                            <input type="email" class="share-email-address form-control" id="share-email">
-                                                                            <button class="btn-send-email btn btn-primary" type="submit">ارسال ایمیل</button>
-                                                                        </div>
-                                                                    </form>
-                                                                    <div class="share-options">
-                                                                        <div class="share-social-buttons text-center">
-                                                                            <a href="#" class="share-social share-social-twitter">
-                                                                                <i class="mdi mdi-twitter"></i>
-                                                                            </a>
-                                                                            <a href="#" class="share-social share-social-facebook">
-                                                                                <i class="mdi mdi-facebook"></i>
-                                                                            </a>
-                                                                            <a href="#" class="share-social share-social-whatsapp">
-                                                                                <i class="mdi mdi-whatsapp"></i>
-                                                                            </a>
-                                                                            <a href="#" class="share-social share-social-email-outline">
-                                                                                <i class="mdi mdi-email-outline"></i>
-                                                                            </a>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="form-share-col">
-                                                                        <input class="ui-url-field" type="url" value="https://www.digikala.com/product/dkp-1672478" readonly="">
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li class="option-alarm">
-                                                    <a href="#" class="btn-option btn-option-alarm" data-toggle="modal" data-target="#btn-option-alarm">
-                                                        <i class="mdi mdi-bell-outline"></i>
-                                                        <span>اطلاع‌رسانی</span>
-                                                    </a>
-                                                    <!-- Modal-option-alarm -->
-                                                    <div class="modal fade" id="btn-option-alarm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="exampleModalCenterTitle">به من اطلاع بده</h5>
-                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                        <span aria-hidden="true">&times;</span>
-                                                                    </button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <div class="form-notification-title">از طریق:</div>
-                                                                    <div class="form-auth-row">
-                                                                        <label for="#" class="ui-checkbox mt-1">
-                                                                            <input type="checkbox" value="1" name="login" id="remember">
-                                                                            <span class="ui-checkbox-check"></span>
-                                                                        </label>
-                                                                        <label for="remember" class="remember-me mr-0">ایمیل به info@digismart.com</label>
-                                                                    </div>
-                                                                    <div class="form-auth-row">
-                                                                        <label for="#" class="ui-checkbox mt-1">
-                                                                            <input type="checkbox" value="1" name="login" id="remember">
-                                                                            <span class="ui-checkbox-check"></span>
-                                                                        </label>
-                                                                        <label for="remember" class="remember-me mr-0">پیامک به *******0991</label>
-                                                                    </div>
-                                                                    <div class="form-auth-row">
-                                                                        <label for="#" class="ui-checkbox mt-1">
-                                                                            <input type="checkbox" value="1" name="login" id="remember">
-                                                                            <span class="ui-checkbox-check"></span>
-                                                                        </label>
-                                                                        <label for="remember" class="remember-me mr-0">سیستم پیام شخصی دیجی اسمارت</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-primary ml-2">ثبت</button>
-                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">بازگشت</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                 </li>
                                                 <li class="Three-dimensional">
                                                     <a href="#" class="btn-option btn-Three-dimensional" data-toggle="modal" data-target="#more-product">
@@ -151,35 +66,43 @@
                                                         </div>
                                                     </div>
                                                 </li>
-                                                <li class="Three-dimensional">
-                                                    <a href="product-comparison.html" class="btn-option btn-compare">
-                                                        <i class="mdi mdi-compare"></i>
-                                                        <span>مقایسه</span>
-                                                    </a>
-                                                </li>
                                             </ul>
                                         </div>
                                     </div>
-                                    <div class="gallery-item">
-                                        <div class="gallery-img">
-                                            <a href="#">
-                                                <img class="zoom-img" id="img-product-zoom" src="~/Images/ProductImages/@Model.Images.FirstOrDefault().ImgSrc"
-                                                     data-zoom-image="~/Images/ProductImages/@Model.Images.FirstOrDefault().ImgSrc" width="411" />
-                                                <div id="gallery_01f" style="width:420px;float:right;">
-                                            </a>
-                                            <ul class="gallery-items owl-carousel owl-theme" id="gallery-slider">
-                                                @foreach (var image in Model.Images.Skip(1))
-                                                {
-                                                    <li class="item">
-                                                        <a href="#" class="elevatezoom-gallery active" data-update=""
-                                                           data-image="~/Images/ProductImages/@image.ImgSrc"
-                                                           data-zoom-image="~/Images/ProductImages/@image.ImgSrc">
-                                                            <img src="~/Images/ProductImages/@image.ImgSrc" width="100" />
-                                                        </a>
-                                                    </li>
-                                                }
-                                            </ul>
+                                    <div id="myCarousel" class="carousel slide" data-ride="carousel" style="max-width:420px;max-height:530px">
+                                        <!-- Indicators -->
+                                        <ol class="carousel-indicators">
+                                            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                                            @for (int i = 1; i < Model.Images.Count(); i++)
+                                            {
+                                                <li data-target="#myCarousel" data-slide-to="@i"></li>
+                                            }
+                                        </ol>
+
+                                        <!-- Wrapper for slides -->
+                                        <div class="carousel-inner">
+
+                                            <div class="item active">
+                                                <img src="/Images/ProductImages/@Model.Images.FirstOrDefault().ImgSrc" alt="@Model.Name" style="width:100%;">
+                                            </div>
+                                            @foreach (var image in Model.Images.Skip(1))
+                                            {
+                                                <div class="item">
+                                                    <img src="/Images/ProductImages/@image.ImgSrc" alt="@Model.Name" style="width:100%;">
+                                                </div>
+                                            }
+
                                         </div>
+
+                                        <!-- Left and right controls -->
+                                        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                                            <span class="glyphicon glyphicon-chevron-left"></span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                        <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                                            <span class="glyphicon glyphicon-chevron-right"></span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
                                     </div>
                                 </div>
                             </section>
@@ -311,7 +234,7 @@
                                                     </a>
                                                 </div>
                                                 <form asp-action="AddToCart" asp-controller="Account" method="get" enctype="text/plain">
-                                                    <input type="hidden" name="returnUrl" value="@this.Url.Action("Description","Product")" />
+                                                    <input type="hidden" name="returnUrl" value="@this.Url.Action("Description", "Account", new {productId=Model.Id})" />
                                                     <input type="hidden" asp-for="Id" name="productId" />
                                                     <div class="product-seller-row guarantee">
                                                         <span class="title mt-3"> تعداد:</span>
@@ -437,49 +360,49 @@
                                                 نظر شما بعد از 24 ساعت توسط ادمین اگر تایید شود نشان داده می شود و در صورت تایید نکردن نشان داده نمی شود !!
                                             </p>
                                             @*<ul class="comments-item-rating">
-                                                <li>
-                                                    <span class="cell-title">کیفیت ساخت:</span>
-                                                    <span class="cell-value">خوب</span>
-                                                    <div class="rating-general">
-                                                        <div class="rating-value"></div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <span class="cell-title">ارزش خرید به نسبت قیمت:</span>
-                                                    <span class="cell-value">خوب</span>
-                                                    <div class="rating-general">
-                                                        <div class="rating-value"></div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <span class="cell-title">نوآوری:</span>
-                                                    <span class="cell-value">خوب</span>
-                                                    <div class="rating-general">
-                                                        <div class="rating-value" style="width: 70%;"></div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <span class="cell-title">امکانات و قابلیت ها:</span>
-                                                    <span class="cell-value">متوسط</span>
-                                                    <div class="rating-general">
-                                                        <div class="rating-value" style="width: 65%;"></div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <span class="cell-title">سهولت استفاده:</span>
-                                                    <span class="cell-value">خوب</span>
-                                                    <div class="rating-general">
-                                                        <div class="rating-value" style="width: 75%;"></div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <span class="cell-title">طراحی و ظاهر:</span>
-                                                    <span class="cell-value">خوب</span>
-                                                    <div class="rating-general">
-                                                        <div class="rating-value"></div>
-                                                    </div>
-                                                </li>
-                                            </ul>*@
+                                                    <li>
+                                                        <span class="cell-title">کیفیت ساخت:</span>
+                                                        <span class="cell-value">خوب</span>
+                                                        <div class="rating-general">
+                                                            <div class="rating-value"></div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <span class="cell-title">ارزش خرید به نسبت قیمت:</span>
+                                                        <span class="cell-value">خوب</span>
+                                                        <div class="rating-general">
+                                                            <div class="rating-value"></div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <span class="cell-title">نوآوری:</span>
+                                                        <span class="cell-value">خوب</span>
+                                                        <div class="rating-general">
+                                                            <div class="rating-value" style="width: 70%;"></div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <span class="cell-title">امکانات و قابلیت ها:</span>
+                                                        <span class="cell-value">متوسط</span>
+                                                        <div class="rating-general">
+                                                            <div class="rating-value" style="width: 65%;"></div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <span class="cell-title">سهولت استفاده:</span>
+                                                        <span class="cell-value">خوب</span>
+                                                        <div class="rating-general">
+                                                            <div class="rating-value" style="width: 75%;"></div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <span class="cell-title">طراحی و ظاهر:</span>
+                                                        <span class="cell-value">خوب</span>
+                                                        <div class="rating-general">
+                                                            <div class="rating-value"></div>
+                                                        </div>
+                                                    </li>
+                                                </ul>*@
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-xs-12 pr">
@@ -530,16 +453,16 @@
                                                                 <div class="header">
                                                                     <div>@comment.Topic</div>
                                                                     @*<div class="product-rate pl">
-                                                                        <i class="fa fa-star active"></i>
-                                                                        <i class="fa fa-star active"></i>
-                                                                        <i class="fa fa-star active"></i>
-                                                                        <i class="fa fa-star active"></i>
-                                                                        <i class="fa fa-star active"></i>
-                                                                    </div>*@
+                                                                            <i class="fa fa-star active"></i>
+                                                                            <i class="fa fa-star active"></i>
+                                                                            <i class="fa fa-star active"></i>
+                                                                            <i class="fa fa-star active"></i>
+                                                                            <i class="fa fa-star active"></i>
+                                                                        </div>*@
                                                                     <p>@comment.Text</p>
                                                                 </div>
                                                                 <div class="comments-evaluation">
-                                                                    @if (comment.GoodNess!=null)
+                                                                    @if (comment.GoodNess != null)
                                                                     {
                                                                         <div class="comments-evaluation-positive">
                                                                             <span>نقاط قوت</span>
@@ -551,7 +474,7 @@
                                                                             </ul>
                                                                         </div>
                                                                     }
-                                                                    @if (comment.Bads!=null)
+                                                                    @if (comment.Bads != null)
                                                                     {
                                                                         <div class="comments-evaluation-negative">
                                                                             <span>نقاط ضعف</span>
@@ -564,18 +487,18 @@
                                                                         </div>
                                                                     }
                                                                     @*<div class="footer">
-                                                                        <div class="comments-likes">
-                                                                            آیا این نظر برایتان مفید بود؟
-                                                                            <button class="btn-like js-comment-like" type="submit">
-                                                                                بله
-                                                                                <span class="count">8</span>
-                                                                            </button>
-                                                                            <button class="btn-like js-comment-dislike" type="submit">
-                                                                                خیر
-                                                                                <span class="count">4</span>
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>*@
+                                                                            <div class="comments-likes">
+                                                                                آیا این نظر برایتان مفید بود؟
+                                                                                <button class="btn-like js-comment-like" type="submit">
+                                                                                    بله
+                                                                                    <span class="count">8</span>
+                                                                                </button>
+                                                                                <button class="btn-like js-comment-dislike" type="submit">
+                                                                                    خیر
+                                                                                    <span class="count">4</span>
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>*@
                                                                 </div>
                                                             </ul>
                                                         </div>
@@ -593,145 +516,99 @@
                                     پرسش و پاسخ
                                     <span>پرسش خود را در مورد محصول مطرح نمایید</span>
                                 </h2>
-                                <form action="#" class="form-faq">
+                                <form asp-action="AskQuestion" asp-controller="Product"
+                                      method="post"
+                                      asp-route-returnUrl="@this.Url.Action("Description", "Product", new {productId=Model.Id})" class="form-faq">
                                     <div class="form-faq-row mt-4">
                                         <div class="form-faq-col">
                                             <div class="ui-textarea">
-                                                <textarea name="qa" title="متن سوال" class="ui-textarea-field"></textarea>
+                                                <input id="userEmailQuestion" style="transition:all 2s;" required asp-for="Question.Email" placeholder="ایمیل" class="form-control" />
+                                                <input hidden type="hidden" asp-for="Question.ProductId" value="@Model.Id" class="form-control" />
+                                                <span style="color:red" asp-validation-for="Question.Email"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-faq-row mt-4">
+                                        <div class="form-faq-col">
+                                            <div class="ui-textarea">
+                                                <textarea required asp-for="Question.Text" title="متن سوال" class="ui-textarea-field"></textarea>
+                                                <input value="0" asp-for="Question.ReplayId" type="hidden" id="ReplayId" />
+                                                <span style="color:red" asp-validation-for="Question.Text"></span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="form-faq-row mt-4">
                                         <div class="form-faq-col form-faq-col-submit">
                                             <button class="btn-tertiary btn btn-secondary" type="submit">ثبت پرسش</button>
-                                            <div class="form-faq-col-agreement d-inline-block mr-5">
-                                                <div class="form-auth-row">
-                                                    <label for="#" class="ui-checkbox mt-1">
-                                                        <input type="checkbox" value="1" name="login" id="remember">
-                                                        <span class="ui-checkbox-check"></span>
-                                                    </label>
-                                                    <label for="remember" class="remember-me mr-0">اولین پاسخی که به پرسش من داده شد، از طریق ایمیل به من اطلاع دهید. </label>
+                                            @if (ViewData["Success"] != null)
+                                            {
+                                                <div class="alert alert-success">
+                                                    @ViewData["Success"]
                                                 </div>
-                                            </div>
+                                            }
+                                            @if (ViewData["Error"] != null)
+                                            {
+                                                <div class="alert alert-danger">
+                                                    @ViewData["Error"]
+                                                </div>
+                                            }
                                         </div>
                                     </div>
                                 </form>
                                 <div id="product-questions-list">
-                                    <div class="questions-list">
-                                        <ul class="faq-list">
-                                            <li class="is-question">
-                                                <div class="section">
-                                                    <div class="faq-header">
-                                                        <span class="icon-faq">?</span>
-                                                        <p class="h5">
-                                                            پرسش :
-                                                            <span>جلال</span>
-                                                        </p>
-                                                    </div>
-                                                    <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است</p>
-                                                    <div class="faq-date">
-                                                        <em>۱۴ فروردین ۱۳۹۹</em>
-                                                    </div>
-                                                    <a href="#" class="js-add-answer-btn">
-                                                        به این پرسش پاسخ
-                                                        دهید
-                                                    </a>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="questions-list answer-questions">
-                                        <ul class="faq-list">
-                                            <li class="is-question">
-                                                <div class="section">
-                                                    <div class="faq-header">
-                                                        <span class="icon-faq"><i class="mdi mdi-storefront"></i></span>
-                                                        <p class="h5">
-                                                            پاسخ فروشنده :
-                                                            <span>حسن</span>
-                                                        </p>
-                                                    </div>
-                                                    <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد.</p>
-                                                    <div class="faq-date">
-                                                        <em>۱۴ فروردین ۱۳۹۹</em>
-                                                    </div>
-                                                    <a href="#" class="js-add-answer-btn">
-                                                        به این پرسش پاسخ
-                                                        دهید
-                                                    </a>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="questions-list">
-                                        <ul class="faq-list">
-                                            <li class="is-question">
-                                                <div class="section">
-                                                    <div class="faq-header">
-                                                        <span class="icon-faq">?</span>
-                                                        <p class="h5">
-                                                            پرسش :
-                                                            <span>اشکان</span>
-                                                        </p>
-                                                    </div>
-                                                    <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است</p>
-                                                    <div class="faq-date">
-                                                        <em>۱۴ فروردین ۱۳۹۹</em>
-                                                    </div>
-                                                    <a href="#" class="js-add-answer-btn">
-                                                        به این پرسش پاسخ
-                                                        دهید
-                                                    </a>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="questions-list answer-questions">
-                                        <ul class="faq-list">
-                                            <li class="is-question">
-                                                <div class="section">
-                                                    <div class="faq-header">
-                                                        <span class="icon-faq"><i class="mdi mdi-storefront"></i></span>
-                                                        <p class="h5">
-                                                            پاسخ فروشنده :
-                                                            <span>جواد</span>
-                                                        </p>
-                                                    </div>
-                                                    <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد.</p>
-                                                    <div class="faq-date">
-                                                        <em>۱۴ فروردین ۱۳۹۹</em>
-                                                    </div>
-                                                    <a href="#" class="js-add-answer-btn">
-                                                        به این پرسش پاسخ
-                                                        دهید
-                                                    </a>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="questions-list">
-                                        <ul class="faq-list">
-                                            <li class="is-question">
-                                                <div class="section">
-                                                    <div class="faq-header">
-                                                        <span class="icon-faq">?</span>
-                                                        <p class="h5">
-                                                            پرسش :
-                                                            <span>رضا</span>
-                                                        </p>
-                                                    </div>
-                                                    <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است</p>
-                                                    <div class="faq-date">
-                                                        <em>۱۴ فروردین ۱۳۹۹</em>
-                                                    </div>
-                                                    <a href="#" class="js-add-answer-btn">
-                                                        به این پرسش پاسخ
-                                                        دهید
-                                                    </a>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
+                                    @foreach (var question in Model.Questions)
+                                    {
+                                        @if (question.Counter == 0)
+                                        {
+                                            <div class="questions-list">
+                                                <ul class="faq-list">
+                                                    <li class="is-question">
+                                                        <div class="section">
+                                                            <div class="faq-header">
+                                                                <span class="icon-faq">?</span>
+                                                                <p class="h5">
+                                                                    پرسش :
+                                                                    <span>@question.Email</span>
+                                                                </p>
+                                                            </div>
+                                                            <p>@question.Text</p>
+                                                            <div class="faq-date">
+                                                                @*<em>۱۴ فروردین ۱۳۹۹</em>*@
+                                                            </div>
+                                                            <input value="@question.Id" id="CommentId" type="hidden" />
+                                                            <button id="ReplayButton" class="js-add-answer-btn btn-outline-info">
+                                                                به این پرسش پاسخ
+                                                                دهید
+                                                            </button>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="questions-list answer-questions">
+                                                <ul class="faq-list">
+                                                    <li class="is-question">
+                                                        <div class="section">
+                                                            <div class="faq-header">
+                                                                <span class="icon-faq"><i class="mdi mdi-storefront"></i></span>
+                                                                <p class="h5">
+                                                                    پاسخ :
+                                                                    <span>@question.Email</span>
+                                                                </p>
+                                                            </div>
+                                                            <p>@question.Text</p>
+                                                            <div class="faq-date">
+                                                                @*<em>۱۴ فروردین ۱۳۹۹</em>*@
+                                                            </div>
+                                                            <input value="@question.Id" id="CommentId" type="hidden" />
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        }
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -744,7 +621,18 @@
 <!-- arshive-product----------------------->
 @section Scripts{
 
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
     <script src="~/Vendors/ckeditor5/build/ckeditor.js"></script>
+
+    <!-- plugin----------------------------------------------------->
+    <script src="~/assets/js/vendor/owl.carousel.min.js"></script>
+    <script src="~/assets/js/vendor/jquery.countdown.js"></script>
+    <script src="~/assets/js/vendor/lightgallery-all.js"></script>
+    <script src="~/assets/js/vendor/jquery.ez-plus.js"></script>
+    <script src="~/assets/js/vendor/jquery.nice-select.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
     <script type="text/javascript">
 
@@ -838,6 +726,25 @@
                 }
             }
         }
+    </script>
+
+    <script>
+
+        $(document).on("click", "#ReplayButton",
+            function getFocus() {
+
+                document.getElementById("userEmailQuestion").focus({ preventScroll: false });
+
+                var commentId = $(this).prev().val();
+
+                if (commentId !== undefined) {
+                    document.getElementById("ReplayId").value = commentId;
+                    document.getElementById("userEmailQuestion").style.borderColor = "red";
+                }
+
+            }
+        )
+
     </script>
 
 }

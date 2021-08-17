@@ -30,6 +30,7 @@ namespace Data.Repositories.AdminRepositories
                 .Include(p=>p.ProductAttributes).ThenInclude(p=>p.AttributeValues).Include(p=>p.AttributeTemplates)
                 .Include(p=>p.Category)
                 .Include(p=>p.Comments).ThenInclude(p=>p.User)
+                .Include(p=>p.Questions).ThenInclude(p=>p.User)
                 .SingleOrDefaultAsync(p => p.Id == productId);
             return product;
         }

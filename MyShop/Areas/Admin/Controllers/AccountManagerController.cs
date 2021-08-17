@@ -261,5 +261,13 @@ namespace MyShop.Areas.Admin.Controllers
 
             return View(model);
         }
+    
+        [HttpGet]
+        public async Task<IActionResult> GetQuestions()
+        {
+            var questions = await _accountServices.GetQuestionsAsync();
+
+            return View(questions);
+        }
     }
 }

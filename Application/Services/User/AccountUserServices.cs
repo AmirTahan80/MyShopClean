@@ -2,6 +2,7 @@
 using Application.InterFaces.User;
 using Application.ViewModels;
 using Application.ViewModels.User;
+using Domain.InterFaces;
 using Domain.InterFaces.AdminInterFaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,11 +29,12 @@ namespace Application.Services.User
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IProductRepository _productRepository;
         private readonly ICartRepository _cartRepository;
+        private readonly IQuestionRepository _questionReposiotry;
 
         public AccountUserServices(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor,
             IHostingEnvironment env, LinkGenerator linkGenerator, IMessageSenderServices messageSender,
             SignInManager<ApplicationUser> signInManager, IProductRepository productRepository,
-            ICartRepository cartRepository)
+            ICartRepository cartRepository, IQuestionRepository questionReposiotry)
         {
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
@@ -41,6 +44,7 @@ namespace Application.Services.User
             _signInManager = signInManager;
             _productRepository = productRepository;
             _cartRepository = cartRepository;
+            _questionReposiotry = questionReposiotry;
         }
         #endregion
 
@@ -437,6 +441,7 @@ namespace Application.Services.User
                         };
                         return returnResult;
                     }
+                    template = null;
                     productPrice = product.Price;
                 }
                 else
@@ -488,7 +493,7 @@ namespace Application.Services.User
                         Product = product,
                         ProductPrice = productPrice,
                         TotalPrice = Convert.ToInt32(productPrice * count),
-                        Templates = template,
+                        Templates = template
                     };
 
                     await _cartRepository.AddCartDetail(cartDetailCreate);
@@ -864,6 +869,110 @@ namespace Application.Services.User
             }
         }
 
+        public async Task<ResultDto> AskQuestionAsync(QuestionViewModel question)
+        {
+            try
+            {
+                var returnResult = new ResultDto();
+
+                var user = await _userManager.FindByEmailAsync(question.Email);
+                if (user == null)
+                {
+                    returnResult.ErrorMessage = "کاربری با این ایمیل یافت نشد !!!";
+                    returnResult.Status = false;
+                    return returnResult;
+                }
+
+                if (question.ProductId == 0)
+                {
+                    returnResult.ErrorMessage = "مشکلی در ثبت سوال پیش آمده است لطفا دوباره تلاش کنید !!!";
+                    returnResult.Status = false;
+                    return returnResult;
+                }
+                var product = await _productRepository.GetProductAsync(question.ProductId);
+                if (product == null)
+                {
+                    returnResult.ErrorMessage = "مشکلی در ثبت سوال پیش آمده است لطفا دوباره تلاش کنید !!!";
+                    returnResult.Status = false;
+                    return returnResult;
+                }
+
+                var parent = new Question();
+                if (question.ReplayId != 0)
+                {
+                    parent = await _questionReposiotry.GetQuestionAsync(question.ReplayId);
+                    if (parent == null)
+                    {
+                        returnResult.ErrorMessage = "مشکلی در ثبت سوال پیش آمده است لطفا دوباره تلاش کنید !!!";
+                        returnResult.Status = false;
+                        return returnResult;
+                    }
+                }
+                else
+                {
+                    parent = null;
+                }
+
+                var quesTionCreate = new Question()
+                {
+                    QuestionText = question.Text,
+                    Topic = question.Topic,
+                    User = user,
+                    Product = product,
+                    ReplayOn = parent != null ? parent : null
+                };
+
+                await _questionReposiotry.AddQuestionAsync(quesTionCreate);
+
+                await _questionReposiotry.SaveAsync();
+
+                returnResult.SuccesMessage = "سوال شما با موفقیت ثبت شد در صورت جواب دادن از طریق ایمیل به شما اعلام خواهیم کرد ...";
+                returnResult.Status = true;
+
+                return returnResult;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                var returnResult = new ResultDto()
+                {
+                    ErrorMessage = "مشکلی پیش آمده است و سوال شما ثبت نشسده است لطفا دوباره تلاش کنید !!! در صورت بروز مشکل با پشتیبانی تماس بگیرید ...",
+                    Status = false
+                };
+                return returnResult;
+            }
+        }
+        public async Task<ProfileViewModel> GetQuestionsAsync(string userId)
+        {
+            var questions = await _questionReposiotry.GetQuestionsAsync();
+            if (questions == null)
+                return null;
+
+            var userQuestions = questions.Where(p => p.User.Id == userId);
+            if (userQuestions == null)
+                return null;
+
+            var user = await _userManager.FindByIdAsync(userId);
+            var getQuestions = userQuestions.Select(p => new QuestionViewModel()
+            {
+                Id = p.Id,
+                Text = p.QuestionText,
+                Topic = p.Topic,
+                ProductId = p.Product.Id,
+                ReplayId = p.ReplayOn!=null? p.ReplayOn.Id:0
+            }).ToList();
+
+            var addToProfile = new ProfileViewModel()
+            {
+                Id=user.Id,
+                Name=user.UserName,
+                Email=user.Email,
+                PhoneNumber=user.PhoneNumber,
+                Questions= getQuestions
+            };
+
+            return addToProfile;
+        }
 
         //Private Mehode
         private async Task<bool> IsUserEmailExist(string userEmail)

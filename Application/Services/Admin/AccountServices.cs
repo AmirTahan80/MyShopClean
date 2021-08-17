@@ -29,12 +29,14 @@ namespace Application.Services.Admin
         private readonly LinkGenerator _linkGenerator;
         private readonly RoleManager<RoleModel> _roleManager;
         private readonly ICommentRepository _commentRepository;
+        private readonly IQuestionRepository _questionRepository;
         public AccountServices(SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
             IMessageSenderServices messageSender, IHostingEnvironment env,
             IHttpContextAccessor httpContextAccessor,
             LinkGenerator linkGenerator, RoleManager<RoleModel> roleManager,
-            ICommentRepository commentRepository)
+            ICommentRepository commentRepository,
+            IQuestionRepository questionRepository)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -44,6 +46,7 @@ namespace Application.Services.Admin
             _linkGenerator = linkGenerator;
             _roleManager = roleManager;
             _commentRepository = commentRepository;
+            _questionRepository = questionRepository;
         }
         #endregion
 
@@ -314,7 +317,7 @@ namespace Application.Services.Admin
                 var returnResultDto = new ResultDto();
 
                 var comment = await _commentRepository.GetCommentAsync(editComment.CommentId);
-                if(comment==null)
+                if (comment == null)
                 {
                     returnResultDto.ErrorMessage = "ویرایش کامنت با شکست مواجه شد !!! صفحه را رفرش کنید و دوباره سعی کنید !!!";
                     returnResultDto.Status = false;
@@ -343,6 +346,25 @@ namespace Application.Services.Admin
                 };
                 return returnResultDto;
             }
+        }
+        
+        public async Task<IList<QuestionViewModel>> GetQuestionsAsync()
+        {
+            var questions = await _questionRepository.GetQuestionsAsync();
+
+            var retunrQuestions = questions.Select(p => new QuestionViewModel()
+            {
+                Id=p.Id,
+                Email=p.User.Email,
+                UserId=p.User.Id,
+                ProductName=p.Product.Name,
+                ProductImage=p.Product.ProductImages.FirstOrDefault().ImgFile+"/"+p.Product.ProductImages.FirstOrDefault().ImgSrc,
+                ProductId=p.Product.Id,
+                Text=p.QuestionText,
+                Topic=p.Topic
+            }).ToList();
+
+            return retunrQuestions;
         }
 
         //Tag Helpers

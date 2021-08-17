@@ -4,20 +4,55 @@ using Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infra.Data.Migrations
 {
     [DbContext(typeof(AppWebContext))]
-    partial class AppWebContextModelSnapshot : ModelSnapshot
+    [Migration("20210812064957_CreateQuestionModel")]
+    partial class CreateQuestionModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.6")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("Domain.Models.Account.Question", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("QuestionText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ReplayOnId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Topic")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ReplayOnId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Question");
+                });
 
             modelBuilder.Entity("Domain.Models.AttributeTemplate", b =>
                 {
@@ -86,7 +121,6 @@ namespace Infra.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("CartId");
@@ -321,42 +355,6 @@ namespace Infra.Data.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductProperties");
-                });
-
-            modelBuilder.Entity("Domain.Models.Question", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("QuestionText")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int?>("ReplayOnId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Topic")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("ReplayOnId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Question");
                 });
 
             modelBuilder.Entity("Domain.Models.UserDetail", b =>
@@ -674,6 +672,27 @@ namespace Infra.Data.Migrations
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 
+            modelBuilder.Entity("Domain.Models.Account.Question", b =>
+                {
+                    b.HasOne("Domain.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId");
+
+                    b.HasOne("Domain.Models.Account.Question", "ReplayOn")
+                        .WithMany("Replais")
+                        .HasForeignKey("ReplayOnId");
+
+                    b.HasOne("Domain.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("ReplayOn");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Models.AttributeTemplate", b =>
                 {
                     b.HasOne("Domain.Models.Product", "Product")
@@ -699,10 +718,8 @@ namespace Infra.Data.Migrations
             modelBuilder.Entity("Domain.Models.Cart", b =>
                 {
                     b.HasOne("Domain.Models.ApplicationUser", "User")
-                        .WithMany("Carts")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -808,27 +825,6 @@ namespace Infra.Data.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Domain.Models.Question", b =>
-                {
-                    b.HasOne("Domain.Models.Product", "Product")
-                        .WithMany("Questions")
-                        .HasForeignKey("ProductId");
-
-                    b.HasOne("Domain.Models.Question", "ReplayOn")
-                        .WithMany("Replais")
-                        .HasForeignKey("ReplayOnId");
-
-                    b.HasOne("Domain.Models.ApplicationUser", "User")
-                        .WithMany("Questions")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("ReplayOn");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Domain.Models.UserFavorite", b =>
                 {
                     b.HasOne("Domain.Models.ApplicationUser", "User")
@@ -921,6 +917,11 @@ namespace Infra.Data.Migrations
                     b.Navigation("UserDetail");
                 });
 
+            modelBuilder.Entity("Domain.Models.Account.Question", b =>
+                {
+                    b.Navigation("Replais");
+                });
+
             modelBuilder.Entity("Domain.Models.Cart", b =>
                 {
                     b.Navigation("CartDetails");
@@ -949,18 +950,11 @@ namespace Infra.Data.Migrations
                     b.Navigation("ProductImages");
 
                     b.Navigation("Properties");
-
-                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("Domain.Models.ProductAttribute", b =>
                 {
                     b.Navigation("AttributeValues");
-                });
-
-            modelBuilder.Entity("Domain.Models.Question", b =>
-                {
-                    b.Navigation("Replais");
                 });
 
             modelBuilder.Entity("Domain.Models.UserFavorite", b =>
@@ -970,11 +964,7 @@ namespace Infra.Data.Migrations
 
             modelBuilder.Entity("Domain.Models.ApplicationUser", b =>
                 {
-                    b.Navigation("Carts");
-
                     b.Navigation("Comments");
-
-                    b.Navigation("Questions");
 
                     b.Navigation("UserFavorite");
                 });

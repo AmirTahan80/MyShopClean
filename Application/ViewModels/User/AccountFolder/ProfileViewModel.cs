@@ -25,5 +25,6 @@ namespace Application.ViewModels.User
         public string PhoneNumber { get; set; }
 
         public IEnumerable<UserCommentsViewModel> Comments { get; set; }
+        public IEnumerable<QuestionViewModel> Questions { get; set; }
     }
 }

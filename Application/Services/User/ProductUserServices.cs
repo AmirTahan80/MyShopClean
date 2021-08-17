@@ -83,11 +83,65 @@ namespace Application.Services.User
             return returnCorrentProduct;
         }
 
-        public async Task<GetProductDescriptionViewModel> GetProductDescriptionAsync(int productId, string userId="")
+        public async Task<GetProductDescriptionViewModel> GetProductDescriptionAsync(int productId, string userId = "")
         {
             var product = await _productRepository.GetProductAsync(productId);
             if (product == null)
                 return null;
+
+            var questionsTreeView = new List<QuestionViewModel>();
+
+            if (product.Questions != null)
+            {
+                var parentQuestion = product.Questions.Where(p => p.ReplayOn == null).OrderByDescending(p=>p.Id).ToList();
+
+                foreach (var parent in parentQuestion)
+                {
+                    var item = new QuestionViewModel()
+                    {
+                        Email = parent.User.UserName,
+                        Id = parent.Id,
+                        Text = parent.QuestionText,
+                        ReplayId = 0,
+                        Counter=0
+                    };
+
+                    questionsTreeView.Add(item);
+
+                    if (parent.Replais != null)
+                        GetQuesTionsReplay(parent, 1);
+
+                }
+
+                void GetQuesTionsReplay(Question question, int counter)
+                {
+
+                    foreach (var replay in question.Replais)
+                    {
+
+                        var item = new QuestionViewModel()
+                        {
+                            Id = replay.Id,
+                            Email = replay.User.UserName,
+                            ReplayId = replay.ReplayOn.Id,
+                            Text = replay.QuestionText,
+                            ProductId = replay.Product.Id,
+                            Counter=counter*2
+                        };
+
+                        questionsTreeView.Add(item);
+
+                        if(replay.Replais!=null)
+                        {
+                            counter++;
+                            GetQuesTionsReplay(replay, counter);
+                            counter--;
+                        }
+
+                    }
+
+                }
+            }
 
             var productReturn = new GetProductDescriptionViewModel()
             {
@@ -121,17 +175,18 @@ namespace Application.Services.User
                     Count = p.AttrinbuteTemplateCount,
                     Price = p.AttrinbuteTemplatePrice
                 }),
-                Comments=product.Comments.Where(p=>p.IsShow).Select(p=> new ProductCommentViewModel()
+                Comments = product.Comments.Where(p => p.IsShow).Select(p => new ProductCommentViewModel()
                 {
-                    Id=p.CommentId,
-                    Text=p.CommentText,
-                    Topic=p.CommentTopic,
-                    UserName=p.User.UserName,
-                    CustomerSuggestToBuy=p.Suggest,
-                    InsertTime=p.CommentInsertTime,
-                    Bads=p.ProductBads != null ? p.ProductBads.Split(",") : null,
-                    GoodNess=p.ProductGoodNess!=null? p.ProductGoodNess.Split(","):null
-                }).OrderByDescending(p=>p.Id)
+                    Id = p.CommentId,
+                    Text = p.CommentText,
+                    Topic = p.CommentTopic,
+                    UserName = p.User.UserName,
+                    CustomerSuggestToBuy = p.Suggest,
+                    InsertTime = p.CommentInsertTime,
+                    Bads = p.ProductBads != null ? p.ProductBads.Split(",") : null,
+                    GoodNess = p.ProductGoodNess != null ? p.ProductGoodNess.Split(",") : null
+                }).OrderByDescending(p => p.Id),
+                Questions = questionsTreeView
             };
 
             if (!string.IsNullOrWhiteSpace(userId))

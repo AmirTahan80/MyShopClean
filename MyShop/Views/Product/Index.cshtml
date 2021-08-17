@@ -3,44 +3,201 @@
     ViewData["Title"] = "لیست محصولات";
 }
 
-    <div class="col-md-12 " >
-        <form class="form-group row border-bottom" enctype="text/plain"
-              style="justify-content:center"
-              method="get" asp-action="Index" asp-controller="Product">
-            <input type="hidden" hidden value="@ViewBag.CategoryId" name="categoryId" />
-            <input type="text" class="form-control m-1 col-md-4" placeholder="نام محصول را وارد کنید ..." value="@ViewBag.SearchProduct" name="searchProduct" />
-            <select class="form-control col-md-4 m-1" name="filter">
-                <option class="bg-blue white" value="@ViewBag.FilterValue">@ViewBag.Filter</option>
-                <option value="newest">جدید ترین</option>
-                <option value="older">قدیمی ترین</option>
-                <option value="expensive">گران ترین</option>
-                <option value="cheaper">ارزان ترین</option>
-            </select>
-            <button type="submit" class="btn btn-outline-info m-1"><i class="icon-magnifier"></i> جست و جو</button>
-        </form>
-    </div>
-<div class="row" style="justify-content:center">
-    @foreach (var item in Model)
-    {
-        <div class="card bg-white col-md-3 m-1 p-1" style="width: 20rem; height:20rem">
-            <a asp-action="Description" asp-controller="Product" asp-route-productId="@item.Id">
-                <img class="card-img-top" style="max-height:12rem;" src="~/Images/ProductImages/@item.ImageSrc" alt="@item.Name">
-            </a>
-            <div class="card-body" style="text-align:center">
-                <a asp-action="Description" asp-controller="Product" asp-route-productId="@item.Id">
-                    <h5 class="card-title" style="text-align:center;color:black">@item.Name</h5>
-                </a>
-                <br />
-                <a asp-action="Description" asp-controller="Product" asp-route-productId="@item.Id"
-                   style="text-align:center"
-                   class="price center">@item.Price <span>تومان</span></a>
+@section Header{
+    <!-- plugin-------------------------------------->
+    <link rel="stylesheet" href="/assets/css/vendor/bootstrap.css">
+    <link rel="stylesheet" href="/assets/css/vendor/owl.carousel.min.css">
+    <link rel="stylesheet" href="/assets/css/vendor/noUISlider.min.css">
+    <link rel="stylesheet" href="/assets/css/vendor/nice-select.css">
+}
+
+<!-- arshive-product----------------------->
+<div class="container-main">
+    <div class="d-block">
+        <div class="page-content page-row">
+            <div class="main-row">
+                <div id="breadcrumb">
+                    <i class="mdi mdi-home"></i>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#">خانه</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">آرشیو محصولات</li>
+                        </ol>
+                    </nav>
+                </div>
+
+                <!-- start sidebar--------------------->
+                <div class="col-lg-3 col-md-3 col-xs-12 pr sticky-sidebar">
+                    <div class="shop-archive-sidebar">
+                        <div class="sidebar-archive mb-3">
+                            <section class="widget-product-categories">
+                                <header class="cat-header">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-block text-right" data-toggle="collapse" href="#headingOne" role="button" aria-expanded="false" aria-controls="headingOne">
+                                            دسته بندی محصولات
+                                            <i class="mdi mdi-chevron-down"></i>
+                                        </button>
+                                    </h2>
+                                </header>
+                                <div class="product-filter">
+                                    <div class="card">
+                                        <div class="collapse show" id="headingOne">
+                                            <div class="card-main mb-0">
+                                                <div class="form-auth-row">
+                                                    <label for="#" class="ui-checkbox">
+                                                        <input type="checkbox" value="1" name="login" id="remember">
+                                                        <span class="ui-checkbox-check"></span>
+                                                    </label>
+                                                    <label for="remember" class="remember-me">همه</label>
+                                                </div>
+                                                <div class="form-auth-row">
+                                                    <label for="#" class="ui-checkbox">
+                                                        <input type="checkbox" value="1" name="login" id="remember">
+                                                        <span class="ui-checkbox-check"></span>
+                                                    </label>
+                                                    <label for="remember" class="remember-me">کالای دیجیتال</label>
+                                                </div>
+                                                <div class="form-auth-row">
+                                                    <label for="#" class="ui-checkbox">
+                                                        <input type="checkbox" value="1" name="login" id="remember">
+                                                        <span class="ui-checkbox-check"></span>
+                                                    </label>
+                                                    <label for="remember" class="remember-me">آرایشی، بهداشتی و سلامت</label>
+                                                </div>
+                                                <div class="form-auth-row">
+                                                    <label for="#" class="ui-checkbox">
+                                                        <input type="checkbox" value="1" name="login" id="remember">
+                                                        <span class="ui-checkbox-check"></span>
+                                                    </label>
+                                                    <label for="remember" class="remember-me">مد و پوشاک</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <section class="widget-product-categories">
+                                <header class="cat-header">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-block text-right collapsed" data-toggle="collapse" href="#headingThree" role="button" aria-expanded="false" aria-controls="headingThree">
+                                            محدوده قیمت
+                                            <i class="mdi mdi-chevron-down"></i>
+                                        </button>
+                                    </h2>
+                                </header>
+                                <div class="product-filter">
+                                    <div class="card">
+                                        <div class="collapse show" id="headingThree">
+                                            <div class="card-main mb-0">
+                                                <div class="box-data">
+                                                    <form action="">
+                                                        <div class="mt-5 mb-4">
+                                                            <div id="slider-non-linear-step"></div>
+                                                        </div>
+                                                        <div class="filter-range mt-2 mb-2 pr">
+                                                            <span>قیمت: </span>
+                                                            <span class="example-val" id="slider-non-linear-step-value"></span> تومان
+                                                        </div>
+                                                        <div class="mt-2 pl">
+                                                            <button class="btn btn-range">
+                                                                اعمال
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-9 col-xs-12 pl">
+                    <div class="shop-archive-content mt-3 d-block">
+                        <div class="archive-header">
+                            <h2 class="archive-header-title">آرشیو محصولات</h2>
+                            <div class="sort-tabs mt-0 d-inline-block pr">
+                                <h4>مرتب‌سازی بر اساس :</h4>
+                            </div>
+                            <div class="nav-sort-tabs-res">
+                                <ul class="nav sort-tabs-options" id="myTab" role="tablist">
+                                    <li class="nav-item">
+                                        <a asp-action="Index" asp-controller="Product" asp-route-filter="New" class="nav-link @(ViewData["Filter"].ToString()=="1"?"active":"")" >جدیدترین</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a asp-action="Index" asp-controller="Product" asp-route-filter="Cheaper" class="nav-link @(ViewData["Filter"].ToString()=="3"?"active":"")">ارزان‌ترین</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a asp-action="Index" asp-controller="Product" asp-route-filter="Expensive" class="nav-link @(ViewData["Filter"].ToString()=="2"?"active":"")">گران‌ترین</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="product-items">
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="Most-visited" role="tabpanel" aria-labelledby="Most-visited-tab">
+                                    <div class="row">
+                                        @foreach (var product in Model)
+                                        {
+                                            <div class="col-lg-3 col-md-3 col-xs-12 order-1 d-block mb-3">
+                                                <section class="product-box product product-type-simple">
+                                                    <div class="thumb">
+                                                        <a asp-action="Description" asp-controller="Product" asp-route-productId="@product.Id" class="d-block">
+                                                            @*<div class="promotion-badge">فروش ویژه</div>
+                                                                <div class="product-rate">
+                                                                    <i class="fa fa-star active"></i>
+                                                                    <i class="fa fa-star active"></i>
+                                                                    <i class="fa fa-star active"></i>
+                                                                    <i class="fa fa-star active"></i>
+                                                                    <i class="fa fa-star"></i>
+                                                                </div>
+                                                                <div class="discount-d">
+                                                                    <span>20%</span>
+                                                                </div>*@
+                                                            <img src="/Images/ProductImages/@product.ImageSrc">
+                                                        </a>
+                                                    </div>
+                                                    <div class="title">
+                                                        <a asp-action="Description" asp-controller="Product" asp-route-productId="@product.Id">@product.Name</a>
+                                                    </div>
+                                                    <div class="price">
+                                                        <span class="amount">
+                                                            @product.Price
+                                                            <span>تومان</span>
+                                                        </span>
+                                                    </div>
+                                                </section>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 row" style="justify-content:center">
+                            <partial name="_PagingParitial"></partial>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    }
+    </div>
 </div>
-<div class="col-md-12 row" style="justify-content:center">
-    <partial name="_PagingParitial"></partial>
-</div>
+<!-- arshive-product----------------------->
 
+
+@section Scripts{
+
+
+    <!-- plugin----------------------------------------------------->
+    <script src="/assets/js/vendor/owl.carousel.min.js"></script>
+    <script src="/assets/js/vendor/jquery.countdown.js"></script>
+    <script src="/assets/js/vendor/ResizeSensor.min.js"></script>
+    <script src="/assets/js/vendor/theia-sticky-sidebar.min.js"></script>
+    <script src="/assets/js/vendor/wNumb.js"></script>
+    <script src="/assets/js/vendor/nouislider.min.js"></script>
+    <script src="/assets/js/vendor/jquery.nice-select.min.js"></script>
+
+}
 
 

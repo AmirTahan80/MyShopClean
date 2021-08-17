@@ -1,5 +1,6 @@
 ﻿using Application.ViewModels;
 using Application.ViewModels.User;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Application.InterFaces.User
@@ -120,6 +121,18 @@ namespace Application.InterFaces.User
         /// <param name="favoriteDetailId"></param>
         /// <returns></returns>
         Task<bool> RemoveFavoriteDetailAsync(int favoriteDetailId);
-
+        /// <summary>
+        /// پرسش و پاسخ
+        /// </summary>
+        /// <param name="topic"></param>
+        /// <param name="question"></param>
+        /// <returns>ResultDto</returns>
+        Task<ResultDto> AskQuestionAsync(QuestionViewModel question);
+        /// <summary>
+        /// گرفتن سوالات و نمایش آنها
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ProfileViewModel> GetQuestionsAsync(string userId);
     }
 }

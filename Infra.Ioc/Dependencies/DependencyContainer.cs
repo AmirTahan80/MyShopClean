@@ -43,6 +43,8 @@ namespace Infra.Ioc.Dependencies
             services.AddScoped<ICommentUserServices, CommentUserServices>();
             services.AddScoped<ICommentRepository, CommentRepository>();
 
+            services.AddScoped<IQuestionRepository, QuestionRepository>();
+
 
 
 

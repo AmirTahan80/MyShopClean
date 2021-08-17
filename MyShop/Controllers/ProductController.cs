@@ -12,9 +12,12 @@ namespace MyShop.Controllers
     {
         #region Injections
         private readonly IProductUserServices _productUserServices;
-        public ProductController(IProductUserServices productUserServices)
+        private readonly IAccountUserServices _accountServices;
+        public ProductController(IProductUserServices productUserServices,
+            IAccountUserServices accountServices)
         {
             _productUserServices = productUserServices;
+            _accountServices = accountServices;
         }
         #endregion
 
@@ -29,30 +32,24 @@ namespace MyShop.Controllers
                 ViewBag.SearchProduct = searchProduct;
             }
 
-            ViewBag.Filter = "جدید ترین";
-            ViewBag.FilterValue = "newest";
+            ViewData["Filter"] = "1";
             if (!string.IsNullOrWhiteSpace(filter))
             {
                 switch (filter)
                 {
-                    case "newest":
+                    case "New":
                         products = products.OrderByDescending(p => p.Id);
-                        ViewBag.Filter = "جدید ترین";
+                        ViewData["Filter"] = "1";
                         break;
-                    case "older":
-                        products = products.OrderBy(p => p.Id);
-                        ViewBag.Filter = "قدیمی ترین";
-                        break;
-                    case "expensive":
+                    case "Expensive":
                         products = products.OrderByDescending(p => p.Price);
-                        ViewBag.Filter = "گران ترین";
+                        ViewData["Filter"] = "2";
                         break;
-                    case "cheaper":
+                    case "Cheaper":
                         products = products.OrderBy(p => p.Price);
-                        ViewBag.Filter = "ارزان ترین";
+                        ViewData["Filter"] = "3";
                         break;
                 }
-                ViewBag.FilterValue = filter;
             }
 
             var paging = new Paging<GetListOfProductViewModel>(products, 6, pageNumber ?? 1);
@@ -70,7 +67,9 @@ namespace MyShop.Controllers
             ViewBag.Controller = "Product";
             #endregion
 
-            ViewBag.CategoryId = categoryId;
+            ViewData["CategoryId"]= categoryId;
+
+
 
             return View(productsPaging);
         }
@@ -82,10 +81,41 @@ namespace MyShop.Controllers
 
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var result = await _productUserServices.GetProductDescriptionAsync(productId,userId);
+            var result = await _productUserServices.GetProductDescriptionAsync(productId, userId);
             if (result == null) return NotFound();
 
+            ViewData["Success"] = TempData["Success"];
+            ViewData["Error"] = TempData["Error"];
+
             return View(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AskQuestion(GetProductDescriptionViewModel model, string returnUrl = "")
+        {
+            if (string.IsNullOrEmpty(model.Question.Email) || string.IsNullOrEmpty(model.Question.Text))
+            {
+                if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+                else
+                    return NotFound();
+            }
+
+            var result = await _accountServices.AskQuestionAsync(model.Question);
+
+            if (result.Status)
+            {
+                TempData["Success"] = result.SuccesMessage;
+            }
+            else
+            {
+                TempData["Error"] = result.ErrorMessage;
+            }
+
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
+            else
+                return View();
         }
     }
 }

@@ -12,9 +12,9 @@ namespace Domain.Models
         [ForeignKey("UserDetailId")]
         public UserDetail UserDetail { get; set; }
         public IEnumerable<Comment> Comments { get; set; }
+        public IEnumerable<Cart> Carts { get; set; }
+        public IEnumerable<Question> Questions { get; set; }
 
-
-        //public ICollection<Cart> Carts { get; set; }
         //public ICollection<RequestForPay> RequestPaies { get; set; }
         //public ICollection<Factor> Factors { get; set; }
     }

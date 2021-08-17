@@ -1,9 +1,6 @@
-using System.Collections.Immutable;
-using System.Runtime.InteropServices;
-using System;
+using Domain.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Domain.Models;
 
 namespace Infra.Data
 {
@@ -22,18 +19,19 @@ namespace Infra.Data
         public DbSet<AttributeValue> AttributeValues { get; set; }
         public DbSet<AttributeTemplate> AttributeTemplates { get; set; }
 
-        public DbSet<Category> Categories { get; set; }     
-        
-        public DbSet<ApplicationUser> ApplicationUsers { get; set; }       
+        public DbSet<Category> Categories { get; set; }
+
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<RoleModel> RoleModels { get; set; }
-        public DbSet<UserDetail> UserDetails { get; set; }       
-        public DbSet<UserFavorite> UserFavorites { get; set; }       
-        public DbSet<UserFavoritesDetail> UserFavoritesDetails { get; set; }       
+        public DbSet<UserDetail> UserDetails { get; set; }
+        public DbSet<UserFavorite> UserFavorites { get; set; }
+        public DbSet<UserFavoritesDetail> UserFavoritesDetails { get; set; }
 
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartDetail> CartDetails { get; set; }
 
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Question> Question { get; set; }
 
         #endregion
         #region ModelCreating

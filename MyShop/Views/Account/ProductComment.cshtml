@@ -3,6 +3,15 @@
     ViewData["Title"] = "ثبت نظر";
 }
 
+@section Header{
+    <!-- plugin-------------------------------------->
+    <link rel="stylesheet" href="/assets/css/vendor/bootstrap.css">
+    <link rel="stylesheet" href="/assets/css/vendor/owl.carousel.min.css">
+    <link rel="stylesheet" href="/assets/css/vendor/noUISlider.min.css">
+    <link rel="stylesheet" href="/assets/css/vendor/bootstrap-slider.min.css">
+    <link rel="stylesheet" href="/assets/css/vendor/nice-select.css">
+}
+
 <!-- product-comment----------------------->
 <div class="container-main">
     <div class="col-12">
@@ -204,6 +213,17 @@
 @section Scripts{
 
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <!-- plugin----------------------------------------------------->
+    <script src="/assets/js/vendor/owl.carousel.min.js"></script>
+    <script src="/assets/js/vendor/jquery.countdown.js"></script>
+    <script src="/assets/js/vendor/ResizeSensor.min.js"></script>
+    <script src="/assets/js/vendor/theia-sticky-sidebar.min.js"></script>
+    <script src="/assets/js/vendor/wNumb.js"></script>
+    <script src="/assets/js/vendor/nouislider.min.js"></script>
+    <script src="/assets/js/vendor/bootstrap-slider.min.js"></script>
+    <script src="/assets/js/vendor/jquery.nice-select.min.js"></script>
+
     <script>
 
         //Add Informations Button Scripts
