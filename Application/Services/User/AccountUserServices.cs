@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -93,9 +92,11 @@ namespace Application.Services.User
             {
                 var findUser = await _userManager.FindByEmailAsync(userEmail);
                 if (findUser == null) return false;
+
                 var result = await _userManager.ConfirmEmailAsync(findUser, token);
                 if (!result.Succeeded) return false;
-                await _userManager.AddToRoleAsync(findUser, "Customer");
+
+                await _userManager.AddToRoleAsync(findUser, "CUSTOMER");
 
                 await _signInManager.SignInAsync(findUser, false);
 
@@ -924,6 +925,12 @@ namespace Application.Services.User
 
                 await _questionReposiotry.AddQuestionAsync(quesTionCreate);
 
+                if (parent != null)
+                {
+                    var userReplayOn = parent.User;
+                    await Sendemail(userReplayOn,product.Id);
+                }
+
                 await _questionReposiotry.SaveAsync();
 
                 returnResult.SuccesMessage = "سوال شما با موفقیت ثبت شد در صورت جواب دادن از طریق ایمیل به شما اعلام خواهیم کرد ...";
@@ -957,18 +964,21 @@ namespace Application.Services.User
             {
                 Id = p.Id,
                 Text = p.QuestionText,
-                Topic = p.Topic,
+                Topic = p.Topic != null ? p.Topic : "موضوعی ثبت نشده است",
                 ProductId = p.Product.Id,
-                ReplayId = p.ReplayOn!=null? p.ReplayOn.Id:0
+                ReplayId = p.ReplayOn != null ? p.ReplayOn.Id : 0,
+                IsQuestionHaveAwnser = p.Replais.Count() > 0 ? true : false,
+                ProductImage = p.Product.ProductImages.FirstOrDefault().ImgFile + "/" + p.Product.ProductImages.FirstOrDefault().ImgSrc,
+                ProductName = p.Product.Name
             }).ToList();
 
             var addToProfile = new ProfileViewModel()
             {
-                Id=user.Id,
-                Name=user.UserName,
-                Email=user.Email,
-                PhoneNumber=user.PhoneNumber,
-                Questions= getQuestions
+                Id = user.Id,
+                Name = user.UserName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Questions = getQuestions
             };
 
             return addToProfile;
@@ -1082,6 +1092,55 @@ namespace Application.Services.User
             //builder = builder.Replace("{userName}", user.UserName);
             //builder = builder.Replace("{userEmail}", user.Email);
             builder = builder.Replace("{linkForChangePassword}", message);
+            builder = builder.Replace("{link}", callBackUrl);
+            builder = builder.Replace("{userName}", user.UserName);
+            builder = builder.Replace("{userEmail}", user.Email);
+            await _messageSender.SendEmailAsync(user.Email, "ResetPassword", builder, true);
+
+            return true;
+        }
+
+        private async Task<bool> Sendemail(ApplicationUser user, int productId)
+        {
+
+            var callBackUrl = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext,
+        action: "Description", "Product",
+        new {productId = productId }, _httpContextAccessor.HttpContext.Request.Scheme);
+
+            string message = "<a href=\"" + callBackUrl + "\" target='_blank' style='font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #FFA73B; display: inline-block;'>مشاهده سوال</a>";
+            //Get TemplateFile located at wwwroot/Templates/EmailTemplate/Register_EmailTemplate.html  
+            var pathToFile = _env.WebRootPath
+                    + Path.DirectorySeparatorChar.ToString()
+                    + "Templates"
+                    + Path.DirectorySeparatorChar.ToString()
+                    + "EmailTemplate"
+                    + Path.DirectorySeparatorChar.ToString()
+                    + "SendEmailTemplate.html";
+            string builder;
+            using (StreamReader SourceReader = System.IO.File.OpenText(pathToFile))
+            {
+                builder = SourceReader.ReadToEnd();
+            }
+            //{0} : Subject  
+            //{1} : Current DateTime  
+            //{2} : Email  
+            //{3} : Username  
+            //{4} : Password  
+            //{5} : Message  
+            //{6} : callbackURL  
+            //string messageBody = string.Format(builder.HtmlBody,
+            //            passForReturn,
+            //            String.Format(ConverToShamsi.GetDate(DateTime.Now).ToString()),
+            //            user.UserName,
+            //            user.Email,
+            //            message,
+            //            callBackUrl
+            //           );
+            //builder = builder.Replace("{subject}", passForReturn);
+            //builder = builder.Replace("{dateTime}", ConverToShamsi.GetDate(DateTime.Now).ToString());
+            //builder = builder.Replace("{userName}", user.UserName);
+            //builder = builder.Replace("{userEmail}", user.Email);
+            builder = builder.Replace("{linkQuestion}", message);
             builder = builder.Replace("{link}", callBackUrl);
             builder = builder.Replace("{userName}", user.UserName);
             builder = builder.Replace("{userEmail}", user.Email);

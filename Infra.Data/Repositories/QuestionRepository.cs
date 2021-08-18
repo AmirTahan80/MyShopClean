@@ -27,8 +27,9 @@ namespace Infra.Data.Repositories
 
         public async Task<IEnumerable<Question>> GetQuestionsAsync()
         {
-            var questions = await _context.Question.Include(p=>p.User)
-                .Include(p=>p.Product).ThenInclude(p=>p.ProductImages).ToListAsync();
+            var questions = await _context.Question.Include(p => p.User)
+                .Include(p => p.Product).ThenInclude(p => p.ProductImages)
+                .Include(p => p.Replais).ToListAsync();
 
             return questions;
         }

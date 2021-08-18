@@ -1,6 +1,7 @@
 ﻿@model ProfileViewModel
 @{
     ViewData["Title"] = "نظرات";
+    int i = 1;
 }
 
 @section Header{
@@ -12,77 +13,112 @@
     <link rel="stylesheet" href="/assets/css/vendor/nice-select.css">
 }
 
-<!-- profile------------------------------->
-<div class="container-main">
-    <div class="d-block">
-        <section class="profile-home">
-            <div class="col-lg">
-                <div class="post-item-profile order-1 d-block">
-                    <div class="col-lg-3 col-md-3 col-xs-12 pr">
-                        <div class="sidebar-profile sidebar-navigation">
-                            <partial name="_SidebarProfilePartial"></partial>
+@if (Model.Comments == null)
+{
+    <!-- profile------------------------------->
+    <div class="container-main">
+        <div class="d-block">
+            <section class="profile-home">
+                <div class="col-lg">
+                    <div class="post-item-profile order-1 d-block">
+                        <div class="col-lg-3 col-md-3 col-xs-12 pr">
+                            <div class="sidebar-profile sidebar-navigation">
+                                <partial name="_SidebarProfilePartial"></partial>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-lg-9 col-md-9 col-xs-12 pl">
-                        <div class="profile-content">
-                            <div class="profile-stats">
-                                <div class="profile-comment">
-                                    <table class="table table-borderless table-profile-comment">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col"></th>
-                                                <th scope="col">نام محصول</th>
-                                                <th scope="col">نظر</th>
-                                                <th scope="col">وضعیت</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var comment in Model.Comments)
-                                            {
+                        <div class="col-lg-9 col-md-9 col-xs-12 pl">
+                            <div class="profile-content">
+                                <div class="profile-stats">
+                                    <div class="profile-comment">
+                                        <table class="table table-borderless table-profile-comment">
+                                            <thead>
                                                 <tr>
-                                                    <th scope="row" class="th-img">
-                                                        <div class="thumb-img">
-                                                            <a asp-action="Description" asp-controller="Product" asp-route-productId="@comment.ProductId">
-                                                                <img src="/Images/ProductImages/@comment.ProductImage">
-                                                            </a>
-                                                            @*<div class="product-rate">
-                                                                    <i class="fa fa-star active"></i>
-                                                                    <i class="fa fa-star active"></i>
-                                                                    <i class="fa fa-star active"></i>
-                                                                    <i class="fa fa-star active"></i>
-                                                                    <i class="fa fa-star"></i>
-                                                                </div>*@
-                                                        </div>
-                                                    </th>
-                                                    <td>
-                                                        @comment.ProductName
-                                                    </td>
-                                                    <td>@comment.CommentText</td>
-                                                    <td>
-                                                        @if (comment.IsShow == true)
-                                                        {
-                                                            <span class="profile-comment-status-approved">تایید شده</span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="profile-comment-status-approved" style="color:red">تایید نشده</span>
-                                                        }
-                                                    </td>
+                                                    <th scope="col"></th>
+                                                    <th scope="col"></th>
+                                                    <th scope="col">نام محصول</th>
+                                                    <th scope="col">نظر</th>
+                                                    <th scope="col">وضعیت</th>
                                                 </tr>
-                                            }
-                                        </tbody>
-                                    </table>
-                                    <partial name="_PagingParitial"></partial>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var comment in Model.Comments)
+                                                {
+                                                    <tr>
+                                                        <th>@i</th>
+                                                        <th scope="row" class="th-img">
+                                                            <div class="thumb-img">
+                                                                <a asp-action="Description" asp-controller="Product" asp-route-productId="@comment.ProductId">
+                                                                    <img src="/Images/ProductImages/@comment.ProductImage">
+                                                                </a>
+                                                                @*<div class="product-rate">
+                                                                        <i class="fa fa-star active"></i>
+                                                                        <i class="fa fa-star active"></i>
+                                                                        <i class="fa fa-star active"></i>
+                                                                        <i class="fa fa-star active"></i>
+                                                                        <i class="fa fa-star"></i>
+                                                                    </div>*@
+                                                            </div>
+                                                        </th>
+                                                        <td>
+                                                            @comment.ProductName
+                                                        </td>
+                                                        <td>@comment.CommentText</td>
+                                                        <td>
+                                                            @if (comment.IsShow == true)
+                                                            {
+                                                                <span class="profile-comment-status-approved">تایید شده</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="profile-comment-status-approved" style="color:red">تایید نشده</span>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                    i++;
+                                                }
+                                            </tbody>
+                                        </table>
+                                        <partial name="_PagingParitial"></partial>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
     </div>
-</div>
-<!-- profile------------------------------->
+    <!-- profile------------------------------->
+}
+else
+{
+    <!-- profile------------------------------->
+    <div class="container-main">
+        <div class="d-block">
+            <section class="profile-home">
+                <div class="col-lg">
+                    <div class="post-item-profile order-1 d-block">
+                        <div class="col-lg-3 col-md-3 col-xs-12 pr">
+                            <div class="sidebar-profile sidebar-navigation">
+                                <partial name="_SidebarProfilePartial"></partial>
+                            </div>
+                        </div>
+                        <div class="col-lg-9 col-md-9 col-xs-12 pl">
+                            <div class="profile-content">
+                                <div class="profile-stats">
+                                    <div class="profile-comment">
+                                        <div class="alert alert-danger">نظری ثبت نکرده اید !!!</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <!-- profile------------------------------->
+}
 
 @section Scripts{
 

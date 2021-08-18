@@ -17,9 +17,14 @@ namespace Application.ViewModels.User
         [Display(Name = "ایمیل")]
         public string Email { get; set; }
 
+        public string ProductName { get; set; }
+        public string ProductImage { get; set; }
+
         public int ProductId { get; set; } = 0;
         public int ReplayId { get; set; } = 0;
 
         public int Counter { get; set; }
+
+        public bool IsQuestionHaveAwnser { get; set; }
     }
 }

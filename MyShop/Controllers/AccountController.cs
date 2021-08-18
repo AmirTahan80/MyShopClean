@@ -95,7 +95,7 @@ namespace MyShop.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userPersonalInfo = await _accountUserServices.GetPersonalInformationAsync(userId);
 
-            ViewBag.Class = 5;
+            ViewBag.Class = 6;
 
             if (userPersonalInfo == null)
                 return NotFound();
@@ -437,11 +437,31 @@ namespace MyShop.Controllers
             return View(result);        
         }
 
-        public async Task<IActionResult> GetUserQuestion()
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetUserQuestion(int? pageNumber)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return NotFound();
 
             var result = await _accountUserServices.GetQuestionsAsync(userId);
+
+            var paging = new PagingList<QuestionViewModel>(result.Questions, 5, pageNumber ?? 1);
+            result.Questions = paging.QueryResult;
+
+            #region ViewBagForPaging
+            ViewBag.PageNumber = pageNumber ?? 1;
+            ViewBag.FirstPage = paging.FirstPage;
+            ViewBag.LastPage = paging.LastPage;
+            ViewBag.PrevPage = paging.PreviousPage;
+            ViewBag.NextPage = paging.NextPage;
+            ViewBag.Count = paging.LastPage;
+            ViewBag.Action = "GetUserQuestion";
+            ViewBag.Controller = "Account";
+            #endregion
+
+            ViewBag.Class = 5;
 
             return View(result);
         }

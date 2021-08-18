@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="~/assets/css/vendor/noUISlider.min.css">
     <link rel="stylesheet" href="~/assets/css/vendor/lightgallery.css">
     <link rel="stylesheet" href="~/assets/css/vendor/nice-select.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 }
 
 <!-- arshive-product----------------------->
@@ -20,9 +19,9 @@
                     <i class="mdi mdi-home"></i>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="#">خانه</a></li>
-                            <li class="breadcrumb-item"><a href="#">محصولات</a></li>
-                            <li class="breadcrumb-item"><a href="#">@Model.CategoryName</a></li>
+                            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">خانه</a></li>
+                            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Product">محصولات</a></li>
+                            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Product" asp-route-categoryId="@Model.CategoryId">@Model.CategoryName</a></li>
                             <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
                         </ol>
                     </nav>
@@ -69,211 +68,238 @@
                                             </ul>
                                         </div>
                                     </div>
-                                    <div id="myCarousel" class="carousel slide" data-ride="carousel" style="max-width:420px;max-height:530px">
-                                        <!-- Indicators -->
-                                        <ol class="carousel-indicators">
-                                            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                                            @for (int i = 1; i < Model.Images.Count(); i++)
-                                            {
-                                                <li data-target="#myCarousel" data-slide-to="@i"></li>
-                                            }
-                                        </ol>
-
-                                        <!-- Wrapper for slides -->
-                                        <div class="carousel-inner">
-
-                                            <div class="item active">
-                                                <img src="/Images/ProductImages/@Model.Images.FirstOrDefault().ImgSrc" alt="@Model.Name" style="width:100%;">
-                                            </div>
-                                            @foreach (var image in Model.Images.Skip(1))
-                                            {
-                                                <div class="item">
-                                                    <img src="/Images/ProductImages/@image.ImgSrc" alt="@Model.Name" style="width:100%;">
-                                                </div>
-                                            }
-
+                                    <div class="gallery-item">
+                                        <div class="gallery-img">
+                                            <a href="/Images/ProductImages/@Model.Images.FirstOrDefault().ImgSrc">
+                                                <img class="zoom-img" id="img-product-zoom" src="/Images/ProductImages/@Model.Images.FirstOrDefault().ImgSrc"
+                                                     data-zoom-image="/Images/ProductImages/@Model.Images.FirstOrDefault().ImgSrc" width="411" />
+                                                <div id="gallery_01f" style="width:420px;float:right;">
+                                            </a>
+                                            <ul class="gallery-items owl-carousel owl-theme" id="gallery-slider">
+                                                @foreach (var image in Model.Images)
+                                                {
+                                                    <li class="item">
+                                                        <a href="/Images/ProductImages/@image.ImgSrc"
+                                                           class="elevatezoom-gallery @(b<5?"active":"")" data-update=""
+                                                           data-image="/Images/ProductImages/@image.ImgSrc"
+                                                           data-zoom-image="/Images/ProductImages/@image.ImgSrc">
+                                                            <img src="/Images/ProductImages/@image.ImgSrc" width="100" />
+                                                        </a>
+                                                    </li>
+                                                }
+                                            </ul>
                                         </div>
-
-                                        <!-- Left and right controls -->
-                                        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
-                                            <span class="glyphicon glyphicon-chevron-left"></span>
-                                            <span class="sr-only">Previous</span>
-                                        </a>
-                                        <a class="right carousel-control" href="#myCarousel" data-slide="next">
-                                            <span class="glyphicon glyphicon-chevron-right"></span>
-                                            <span class="sr-only">Next</span>
-                                        </a>
                                     </div>
                                 </div>
-                            </section>
                         </div>
-                        <div class="col-lg-7 col-xs-12 pl mt-5 d-block">
-                            <section class="product-info">
-                                <div class="product-headline">
-                                    <h1 class="product-title">
-                                        @Model.Name
-                                    </h1>
-                                    <div class="product-guaranteed text-success">
-                                        0
-                                        <span>فروش موفق</span>
+                        </section>
+                    </div>
+                    <div class="col-lg-7 col-xs-12 pl mt-5 d-block">
+                        <section class="product-info">
+                            <div class="product-headline">
+                                <h1 class="product-title">
+                                    @Model.Name
+                                </h1>
+                                <div class="product-guaranteed text-success">
+                                    12
+                                    <span>فروش موفق</span>
+                                </div>
+                            </div>
+                            <div class="product-attributes">
+                                <div class="product-config">
+                                    <span class="product-title-en">@Model.Name</span>
+                                    <div class="product-rate">
+                                        <i class="fa fa-star active"></i>
+                                        <i class="fa fa-star active"></i>
+                                        <i class="fa fa-star active"></i>
+                                        <i class="fa fa-star active"></i>
+                                        <i class="fa fa-star active"></i>
                                     </div>
                                 </div>
-                                <div class="product-attributes">
-                                    <div class="product-config">
-                                        <span class="product-title-en">@Model.Name</span>
-                                        @*<div class="product-rate">
-                                                <i class="fa fa-star active"></i>
-                                                    <i class="fa fa-star active"></i>
-                                                    <i class="fa fa-star active"></i>
-                                                    <i class="fa fa-star active"></i>
-                                                    <i class="fa fa-star active"></i>
-                                            </div>*@
-                                    </div>
+                            </div>
+                            <div class="product-config-wrapper">
+                                <div class="product-directory">
+                                    <ul>
+                                        <li>
+                                            <span>
+                                                <i class="fa fa-archive"></i> دسته:
+                                            </span>
+                                            <a href="#" class="product-link product-cat-title">@Model.CategoryName</a>
+                                        </li>
+                                        <li>
+                                            <span>
+                                                <i class="fa fa-tags"></i> برچسب:
+                                            </span>
+                                            <a href="#" class="product-link product-tag-title">سامسونگ</a>
+                                        </li>
+                                        <li>
+                                            <span>
+                                                برند:
+                                            </span>
+                                            <a href="#" class="product-link product-tag-title">سامسونگ</a>
+                                        </li>
+                                    </ul>
                                 </div>
-                                <div class="product-config-wrapper">
-                                    <div class="product-directory">
-                                        <ul>
-                                            <li>
-                                                <span>
-                                                    <i class="fa fa-archive"></i> دسته:
-                                                </span>
-                                                <a href="#" class="product-link product-cat-title">محصولات</a>
-                                                ,
-                                                <a href="#" class="product-link product-cat-title">@Model.CategoryName</a>
-                                            </li>
-                                            @*<li>
-                                                    <span>
-                                                        <i class="fa fa-tags"></i> برچسب:
-                                                    </span>
-                                                    <a href="#" class="product-link product-tag-title">سامسونگ</a>
-                                                </li>*@
-                                            @*<li>
-                                                    <span>
-                                                        برند:
-                                                    </span>
-                                                    <a href="#" class="product-link product-tag-title">سامسونگ</a>
-                                                </li>*@
-                                        </ul>
-                                    </div>
-                                    <div class="col=lg-6 col-md-6 col-xs-12 pr">
-                                        @if (Model.IsProductHaveAttributes)
-                                        {
-                                            <div class="product-variants">
-                                                @foreach (var item in Model.Attributes)
-                                                {
+                                <div class="col=lg-6 col-md-6 col-xs-12 pr">
+                                    @if (Model.IsProductHaveAttributes)
+                                    {
+                                        <div class="product-variants">
+                                            @foreach (var item in Model.Attributes)
+                                            {
+                                                <div>
+                                                    <span>@item.AttributesName: </span>
                                                     <div>
-                                                        <span>@item.AttributesName: </span>
-                                                        <div>
-                                                            <select id="selectAttributeValue@(c)" class="form-control m-1" asp-items="item.AttributesValue" onchange="CkeckTemplate(this)">
-                                                                <option value="0">لطفا انتخاب کنید !</option>
-                                                            </select>
-                                                        </div>
+                                                        <select id="selectAttributeValue@(c)" class="form-control m-1" asp-items="item.AttributesValue" onchange="CkeckTemplate(this)">
+                                                            <option value="0">لطفا انتخاب کنید !</option>
+                                                        </select>
                                                     </div>
-                                                    c++;
-                                                }
-                                                <input id="attributeNameCountInput" value="@Model.Attributes.Count()" type="hidden" />
-                                                @foreach (var template in Model.Templates)
-                                                {
-                                                    <input id="templateId@(b)" value="@template.Id" type="hidden" />
-                                                    <input id="template@(b)" value="@template.Template" type="hidden" />
-                                                    <input id="templateprice@(b)" value="@template.Price" type="hidden" />
-                                                    <input id="templatecount@(b)" value="@template.Count" type="hidden" />
-                                                    b++;
-                                                }
-                                                <input id="templateCountInput" value="@Model.Templates.Count()" type="hidden" />
-                                            </div>
-                                        }
-                                        @if (Model.PropertyName.Count > 0)
-                                        {
-                                            <div class="product-params pt-3">
-                                                <ul data-title="ویژگی‌های محصول">
-                                                    @if (Model.PropertyName.Count >= 2)
-                                                        @for (int i = 0; i < 2; i++)
-                                                        {
-                                                            <li>
-                                                                <span>@Model.PropertyValue[i]: </span>
-                                                                <span>@Model.PropertyName[i]</span>
-                                                            </li>
-                                                        }
-                                                </ul>
-                                            </div>
-                                        }
-                                        @*<div class="product-price-survey-question">
-                                                آیا قیمت مناسب‌تری سراغ دارید؟
-                                                <div class="answers">
-                                                    <a href="#" class="product-price-survery-answer price-yes btn btn-secondary">بلی</a>
-                                                    <a href="#" class="product-price-survery-answer price-no btn btn-secondary">خیر</a>
                                                 </div>
-                                            </div>*@
-                                    </div>
-                                    <div class="col=lg-6 col-md-6 col-xs-12 pr">
-                                        <div class="product-seller-info">
-                                            <div class="seller-info-changable">
-                                                <div class="product-seller-row vendor">
-                                                    <span class="title"> فروشنده:</span>
-                                                    <a href="#" class="product-name">فروشگاه من</a>
-                                                </div>
-                                                <div class="product-seller-row guarantee">
-                                                    <span class="title"> گارانتی:</span>
-                                                    <a href="#" class="product-name">ندارد</a>
-                                                </div>
-                                                <div class="product-seller-row price">
-                                                    <span class="title"> قیمت:</span>
-                                                    <a href="#" class="product-name">
-                                                        <span class="amount">
-                                                            @if (Model.IsProductHaveAttributes == false)
-                                                            {
-                                                                <text>@Model.Price</text>
-                                                            }
-                                                            else
-                                                            {
-                                                                <span id="templatePrice"></span>
-                                                            }
-                                                            <span>تومان</span>
-                                                        </span>
-                                                    </a>
-                                                </div>
-                                                <form asp-action="AddToCart" asp-controller="Account" method="get" enctype="text/plain">
-                                                    <input type="hidden" name="returnUrl" value="@this.Url.Action("Description", "Account", new {productId=Model.Id})" />
-                                                    <input type="hidden" asp-for="Id" name="productId" />
-                                                    <div class="product-seller-row guarantee">
-                                                        <span class="title mt-3"> تعداد:</span>
-                                                        <div class="quantity pl">
-                                                            @if (Model.IsProductHaveAttributes == false)
-                                                            {
-                                                                <input name="count" type="number" min="1" max="@Model.Count" step="1" value="1">
-                                                            }
-                                                            else
-                                                            {
-                                                                <div id="insertCounter"></div>
-                                                            }
-                                                        </div>
-                                                    </div>
-                                                    <div class="product-seller-row add-to-cart">
-                                                        <input type="hidden" id="templateId" asp-for="TemplateId" name="templateId" value="0" />
-                                                        <button class="btn-add-to-cart btn btn-primary @(Model.IsProductHaveAttributes==true?"disabled":"")"
-                                                                id="btnAddTocart">
-                                                            <span class="btn-add-to-cart-txt">افزودن به سبد خرید</span>
-                                                        </button>
-                                                        @if (ViewData["Error"] != null)
-                                                        {
-                                                            <div class="alert alert-danger">
-                                                                خطا ! @ViewData["Error"]
-                                                            </div>
-                                                        }
-                                                        @if (ViewData["Success"] != null)
-                                                        {
-                                                            <div class="alert alert-success">
-                                                                موفقیت ! @ViewData["Success"]
-                                                            </div>
-                                                        }
-                                                    </div>
-                                                </form>
-                                            </div>
+                                                c++;
+                                            }
+                                            <input id="attributeNameCountInput" value="@Model.Attributes.Count()" type="hidden" />
+                                            @foreach (var template in Model.Templates)
+                                            {
+                                                <input id="templateId@(b)" value="@template.Id" type="hidden" />
+                                                <input id="template@(b)" value="@template.Template" type="hidden" />
+                                                <input id="templateprice@(b)" value="@template.Price" type="hidden" />
+                                                <input id="templatecount@(b)" value="@template.Count" type="hidden" />
+                                                b++;
+                                            }
+                                            <input id="templateCountInput" value="@Model.Templates.Count()" type="hidden" />
+                                        </div>
+                                    }
+                                    @if (Model.PropertyName.Count > 0)
+                                    {
+                                        <div class="product-params pt-3">
+                                            <ul data-title="ویژگی‌های محصول">
+                                                @if (Model.PropertyName.Count >= 2)
+                                                    @for (int i = 0; i < 2; i++)
+                                                    {
+                                                        <li>
+                                                            <span>@Model.PropertyValue[i]: </span>
+                                                            <span>@Model.PropertyName[i]</span>
+                                                        </li>
+                                                    }
+                                            </ul>
+                                        </div>
+                                    }
+                                    <div class="product-price-survey-question">
+                                        آیا قیمت مناسب‌تری سراغ دارید؟
+                                        <div class="answers">
+                                            <a href="#" class="product-price-survery-answer price-yes btn btn-secondary">بلی</a>
+                                            <a href="#" class="product-price-survery-answer price-no btn btn-secondary">خیر</a>
                                         </div>
                                     </div>
                                 </div>
-                            </section>
+                                <div class="col=lg-6 col-md-6 col-xs-12 pr">
+                                    <div class="product-seller-info">
+                                        <div class="seller-info-changable">
+                                            <div class="product-seller-row vendor">
+                                                <span class="title"> فروشنده:</span>
+                                                <a href="#" class="product-name">فروشگاه من</a>
+                                            </div>
+                                            <div class="product-seller-row guarantee">
+                                                <span class="title"> گارانتی:</span>
+                                                <a href="#" class="product-name">۱۸ ماهه دیجی اسمارت</a>
+                                            </div>
+                                            <div class="product-seller-row price">
+                                                <span class="title"> قیمت:</span>
+                                                <a href="#" class="product-name">
+                                                    <span class="amount">
+                                                        @if (Model.IsProductHaveAttributes == false)
+                                                        {
+                                                            <text>@Model.Price</text>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span id="templatePrice"></span>
+                                                        }
+                                                        <span>تومان</span>
+                                                    </span>
+                                                </a>
+                                            </div>
+                                            <form asp-action="AddToCart" asp-controller="Account" method="get" enctype="text/plain">
+                                                <input type="hidden" name="returnUrl" value="@this.Url.Action("Description", "Account", new {productId=Model.Id})" />
+                                                <input type="hidden" asp-for="Id" name="productId" />
+                                                <div class="product-seller-row guarantee">
+                                                    <span class="title mt-3"> تعداد:</span>
+                                                    <div class="quantity pl">
+                                                        @if (Model.IsProductHaveAttributes == false)
+                                                        {
+                                                            <input name="count" type="number" min="1" max="@Model.Count" step="1" value="1">
+                                                        }
+                                                        else
+                                                        {
+                                                            <div id="insertCounter"></div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="product-seller-row add-to-cart">
+                                                    <input type="hidden" id="templateId" asp-for="TemplateId" name="templateId" value="0" />
+                                                    <button class="btn-add-to-cart btn btn-primary @(Model.IsProductHaveAttributes==true?"disabled":"")"
+                                                            id="btnAddTocart">
+                                                        <span class="btn-add-to-cart-txt">افزودن به سبد خرید</span>
+                                                    </button>
+                                                    @if (ViewData["Error"] != null)
+                                                    {
+                                                        <div class="alert alert-danger">
+                                                            خطا ! @ViewData["Error"]
+                                                        </div>
+                                                    }
+                                                    @if (ViewData["Success"] != null)
+                                                    {
+                                                        <div class="alert alert-success">
+                                                            موفقیت ! @ViewData["Success"]
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="product-usp">
+                        <div class="product-feature">
+                            <div class="product-feature-col">
+                                <a href="#" class="product-feature-item">
+                                    <img src="/assets/images/page-single-product/delivery.svg">
+                                    امکان تحویل
+                                    <br>
+                                    اکسپرس
+                                </a>
+                            </div>
+                            <div class="product-feature-col">
+                                <a href="#" class="product-feature-item">
+                                    <img src="/assets/images/page-single-product/contact-us.svg">
+                                    ۷ روز هفته
+                                    <br>
+                                    ۲۴ ساعته
+                                </a>
+                            </div>
+                            <div class="product-feature-col">
+                                <a href="#" class="product-feature-item">
+                                    <img src="/assets/images/page-single-product/payment-terms.svg">
+                                    امکان
+                                    <br>
+                                    پرداخت در محل
+                                </a>
+                            </div>
+                            <div class="product-feature-col">
+                                <a href="#" class="product-feature-item">
+                                    <img src="/assets/images/page-single-product/return-policy.svg">
+                                    هفت روز ضمانت بازگشت کالا
+                                </a>
+                            </div>
+                            <div class="product-feature-col">
+                                <a href="#" class="product-feature-item">
+                                    <img src="/assets/images/page-single-product/origin-guarantee.svg">
+                                    ضمانت
+                                    <br>
+                                    اصل بودن کالا
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -360,49 +386,49 @@
                                                 نظر شما بعد از 24 ساعت توسط ادمین اگر تایید شود نشان داده می شود و در صورت تایید نکردن نشان داده نمی شود !!
                                             </p>
                                             @*<ul class="comments-item-rating">
-                                                    <li>
-                                                        <span class="cell-title">کیفیت ساخت:</span>
-                                                        <span class="cell-value">خوب</span>
-                                                        <div class="rating-general">
-                                                            <div class="rating-value"></div>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <span class="cell-title">ارزش خرید به نسبت قیمت:</span>
-                                                        <span class="cell-value">خوب</span>
-                                                        <div class="rating-general">
-                                                            <div class="rating-value"></div>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <span class="cell-title">نوآوری:</span>
-                                                        <span class="cell-value">خوب</span>
-                                                        <div class="rating-general">
-                                                            <div class="rating-value" style="width: 70%;"></div>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <span class="cell-title">امکانات و قابلیت ها:</span>
-                                                        <span class="cell-value">متوسط</span>
-                                                        <div class="rating-general">
-                                                            <div class="rating-value" style="width: 65%;"></div>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <span class="cell-title">سهولت استفاده:</span>
-                                                        <span class="cell-value">خوب</span>
-                                                        <div class="rating-general">
-                                                            <div class="rating-value" style="width: 75%;"></div>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <span class="cell-title">طراحی و ظاهر:</span>
-                                                        <span class="cell-value">خوب</span>
-                                                        <div class="rating-general">
-                                                            <div class="rating-value"></div>
-                                                        </div>
-                                                    </li>
-                                                </ul>*@
+                                <li>
+                                    <span class="cell-title">کیفیت ساخت:</span>
+                                    <span class="cell-value">خوب</span>
+                                    <div class="rating-general">
+                                        <div class="rating-value"></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="cell-title">ارزش خرید به نسبت قیمت:</span>
+                                    <span class="cell-value">خوب</span>
+                                    <div class="rating-general">
+                                        <div class="rating-value"></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="cell-title">نوآوری:</span>
+                                    <span class="cell-value">خوب</span>
+                                    <div class="rating-general">
+                                        <div class="rating-value" style="width: 70%;"></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="cell-title">امکانات و قابلیت ها:</span>
+                                    <span class="cell-value">متوسط</span>
+                                    <div class="rating-general">
+                                        <div class="rating-value" style="width: 65%;"></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="cell-title">سهولت استفاده:</span>
+                                    <span class="cell-value">خوب</span>
+                                    <div class="rating-general">
+                                        <div class="rating-value" style="width: 75%;"></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="cell-title">طراحی و ظاهر:</span>
+                                    <span class="cell-value">خوب</span>
+                                    <div class="rating-general">
+                                        <div class="rating-value"></div>
+                                    </div>
+                                </li>
+                            </ul>*@
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-xs-12 pr">
@@ -453,12 +479,12 @@
                                                                 <div class="header">
                                                                     <div>@comment.Topic</div>
                                                                     @*<div class="product-rate pl">
-                                                                            <i class="fa fa-star active"></i>
-                                                                            <i class="fa fa-star active"></i>
-                                                                            <i class="fa fa-star active"></i>
-                                                                            <i class="fa fa-star active"></i>
-                                                                            <i class="fa fa-star active"></i>
-                                                                        </div>*@
+                                                        <i class="fa fa-star active"></i>
+                                                        <i class="fa fa-star active"></i>
+                                                        <i class="fa fa-star active"></i>
+                                                        <i class="fa fa-star active"></i>
+                                                        <i class="fa fa-star active"></i>
+                                                    </div>*@
                                                                     <p>@comment.Text</p>
                                                                 </div>
                                                                 <div class="comments-evaluation">
@@ -487,18 +513,18 @@
                                                                         </div>
                                                                     }
                                                                     @*<div class="footer">
-                                                                            <div class="comments-likes">
-                                                                                آیا این نظر برایتان مفید بود؟
-                                                                                <button class="btn-like js-comment-like" type="submit">
-                                                                                    بله
-                                                                                    <span class="count">8</span>
-                                                                                </button>
-                                                                                <button class="btn-like js-comment-dislike" type="submit">
-                                                                                    خیر
-                                                                                    <span class="count">4</span>
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>*@
+                                                        <div class="comments-likes">
+                                                            آیا این نظر برایتان مفید بود؟
+                                                            <button class="btn-like js-comment-like" type="submit">
+                                                                بله
+                                                                <span class="count">8</span>
+                                                            </button>
+                                                            <button class="btn-like js-comment-dislike" type="submit">
+                                                                خیر
+                                                                <span class="count">4</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>*@
                                                                 </div>
                                                             </ul>
                                                         </div>
@@ -618,7 +644,10 @@
         </div>
     </div>
 </div>
+</div>
 <!-- arshive-product----------------------->
+
+
 @section Scripts{
 
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
@@ -626,13 +655,11 @@
     <script src="~/Vendors/ckeditor5/build/ckeditor.js"></script>
 
     <!-- plugin----------------------------------------------------->
-    <script src="~/assets/js/vendor/owl.carousel.min.js"></script>
-    <script src="~/assets/js/vendor/jquery.countdown.js"></script>
-    <script src="~/assets/js/vendor/lightgallery-all.js"></script>
-    <script src="~/assets/js/vendor/jquery.ez-plus.js"></script>
-    <script src="~/assets/js/vendor/jquery.nice-select.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="/assets/js/vendor/owl.carousel.min.js"></script>
+    <script src="/assets/js/vendor/jquery.countdown.js"></script>
+    <script src="/assets/js/vendor/lightgallery-all.js"></script>
+    <script src="/assets/js/vendor/jquery.ez-plus.js"></script>
+    <script src="/assets/js/vendor/jquery.nice-select.min.js"></script>
 
     <script type="text/javascript">
 

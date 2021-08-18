@@ -55,14 +55,20 @@
             </a>
         </li>
         <li class="profile-account-nav-item navigation-link-dashboard">
-            <a asp-action="PersonalInfo" asp-controller="Account" class="@(ViewBag.Class==5?"active" : "")">
+            <a asp-action="GetUserQuestion" asp-controller="Account" class="@(ViewBag.Class==5?"active" : "")">
+                <i class="icon icon-question"></i>
+                سوالات
+            </a>
+        </li>
+        <li class="profile-account-nav-item navigation-link-dashboard">
+            <a asp-action="PersonalInfo" asp-controller="Account" class="@(ViewBag.Class==-6?"active" : "")">
                 <i class="mdi mdi-tooltip-text-outline"></i>
                 اطلاعات حساب
             </a>
         </li>
         <li class="profile-account-nav-item navigation-link-dashboard">
             <a asp-action="ChangePassWord" asp-controller="Account" class="">
-                <i class=""></i>
+                <i class="icon icon-key"></i>
                 تغییر رمز عبور
             </a>
         </li>

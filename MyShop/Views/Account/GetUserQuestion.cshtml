@@ -1,6 +1,7 @@
 ﻿@model ProfileViewModel
 @{
     ViewData["Title"] = "سوالات";
+    int i = 1;
 }
 
 @section Header{
@@ -34,18 +35,40 @@
                                                 <th scope="col"></th>
                                                 <th scope="col">موضوع</th>
                                                 <th scope="col">سوال</th>
+                                                <th scope="col">نام و عکس محصول</th>
+                                                <th scope="col">وضعیت پاسخ</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach (var question in Model.Questions)
                                             {
                                                 <tr>
-                                                    <td></td>
+                                                    <td>@i</td>
                                                     <td>
                                                         @question.Topic
                                                     </td>
                                                     <td>@question.Text</td>
+                                                    <td  scope="row" class="th-img">
+                                                        <div class="thumb-img">
+                                                            <a asp-action="Description" asp-controller="Product" asp-route-productId="@question.ProductId">
+                                                                <img src="/Images/ProductImages/@question.ProductImage" style="max-width: 50px;max-height: 50px;">
+                                                            </a>
+                                                            @question.ProductName
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        @if (question.IsQuestionHaveAwnser == true)
+                                                        {
+                                                            <p style="color:darkseagreen">پاسخ دادند</p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p style="color:orangered">پاسخ ندادند</p>
+                                                        }
+                                                    </td>
                                                 </tr>
+
+                                                i++;
                                             }
                                         </tbody>
                                     </table>

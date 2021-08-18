@@ -2,10 +2,8 @@
 using Application.ViewModels.User;
 using Domain.InterFaces.AdminInterFaces;
 using Domain.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Services.User
@@ -23,20 +21,21 @@ namespace Application.Services.User
         public async Task<IEnumerable<GetCategoriesTreeViewViewModel>> GetCategoriesTreeViewAsync()
         {
             var categories = await _categoryRepository.GetAllCategoriesAsync();
-            var parentCategories = categories.Where(p => p.Parent == null);
-            var categoriesRetuen = parentCategories.Select(p => new GetCategoriesTreeViewViewModel()
+
+            var categoriesReturn = categories.Select(p => new GetCategoriesTreeViewViewModel()
             {
-                Id=p.Id,
-                Name=p.Name,
-                IsCategoryHasChild=p.Children.Count>0?true:false,
-                Children=p.Children==null?null: GetChildrenCategory(categories,p.Id)
+                Id = p.Id,
+                Name = p.Name,
+                Children = p.Children != null ? GetChildrenCategory(p.Children, p.Id) : null,
+                IsCategoryHasChild = p.Children != null ? true : false
             });
 
-            return categoriesRetuen;
+            return categoriesReturn;
         }
 
 
         #region Private Methode
+
         private List<Category> CategoriesList(IEnumerable<Category> categories)
         {
             List<Category> Item = new List<Category>();
@@ -128,65 +127,73 @@ namespace Application.Services.User
 
             return Item;
         }
-       
-        private ICollection<GetCategoriesTreeViewViewModel> GetChildrenCategory(IEnumerable<Category> categories, int categoryId)
+
+        private IEnumerable<GetCategoriesTreeViewViewModel> GetChildrenCategory(IEnumerable<Category> categories, int categoryId)
         {
             var returnChild = categories.Where(p => p.ParentId == categoryId).Select(p => new GetCategoriesTreeViewViewModel()
             {
                 Id = p.Id,
                 Name = p.Name,
                 ParentId = categoryId,
-                IsCategoryHasChild=p.Children.Count>0?true:false,
+                IsCategoryHasChild = p.Children.Count > 0 ? true : false,
                 Children = p.Children.Count != 0 ? GetChildrenCategory(p.Children, p.Id) : null
             }).ToList();
             return returnChild;
         }
 
-        private List<GetCategoriesTreeViewViewModel> GetCategoriesLikeTreeView(IEnumerable<Category> categories)
+        private IEnumerable<GetCategoriesTreeViewViewModel> GetCategoriesTreeView(IEnumerable<Category> categories)
         {
-            var parents = categories.Where(p => p.Parent == null);
+            var parents = categories.Where(p => p.Parent == null).ToList();
+
+
+            var categoriesTreeView = new List<GetCategoriesTreeViewViewModel>();
+
             if (parents != null)
             {
-                var categoriesReturn = new List<GetCategoriesTreeViewViewModel>();
-                categoriesReturn=parents.Select(p=>new GetCategoriesTreeViewViewModel()
+                foreach (var parent in parents)
                 {
-                    Id=p.Id,
-                    Name=p.Name,
-                    Children=p.Children==null?null: GetChildrent(p.Children)
-                }).ToList();
-
-                return categoriesReturn;
-            }
-            else
-            {
-                return null;
-            }
-
-            List<GetCategoriesTreeViewViewModel> GetChildrent(IEnumerable<Category> children)
-            {
-                if (children != null)
-                {
-                    var categoriesChildren = new List<GetCategoriesTreeViewViewModel>();
-                    categoriesChildren = children.Select(p => new GetCategoriesTreeViewViewModel()
+                    var item = new GetCategoriesTreeViewViewModel()
                     {
-                        Id = p.Id,
-                        Name = p.Name,
-                        ParentId = p.ParentId,
-                        Parent = new GetParentCategoryViewModel()
-                        {
-                            Id=p.Parent.Id,
-                            Name=p.Name
-                        },
-                        Children = p.Children == null ? null : GetChildrent(p.Children)
-                    }).ToList();
+                        Id = parent.Id,
+                        Name = parent.Name,
+                        Count = 0
+                    };
 
-                    return categoriesChildren;
+                    categoriesTreeView.Add(item);
+
+                    if (parent.Children != null)
+                        GetCategoriesChild(parent, 1);
+
                 }
-                else
+
+                void GetCategoriesChild(Category category, int counter)
                 {
-                    return null;
+
+                    foreach (var replay in category.Children)
+                    {
+
+                        var item = new GetCategoriesTreeViewViewModel()
+                        {
+                            Id = replay.Id,
+                            Name = replay.Name,
+                            Count = counter
+                        };
+
+                        categoriesTreeView.Add(item);
+
+                        if (replay.Children != null)
+                        {
+                            counter++;
+                            GetCategoriesChild(replay, counter);
+                            counter--;
+                        }
+
+                    }
+
                 }
             }
+
+            return categoriesTreeView;
         }
 
         #endregion

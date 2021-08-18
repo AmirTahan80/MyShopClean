@@ -17,58 +17,6 @@
             <a asp-action="Index" asp-controller="Product" asp-route-categoryId="@category.Id" class="current-link-menu">
                 @category.Name
             </a>
-            <ul class="sub-menu is-mega-menu mega-menu-level-two">
-                @foreach (var categoryChild in category.Children)
-                {
-                    <li class="menu-mega-item menu-item-type-mega-menu">
-                        <a asp-action="Index" asp-controller="Product" asp-route-categoryId="@categoryChild.Id" class="mega-menu-link">
-                            @categoryChild.Name
-                        </a>
-                        @if (categoryChild.IsCategoryHasChild)
-                        {
-                            <ul class="sub-menu mega-menu-level-three">
-                                @foreach (var subChildcategory in categoryChild.Children)
-                                {
-                                    <li class="menu-mega-item-three">
-                                        <a asp-action="Index" asp-controller="Product" asp-route-categoryId="@subChildcategory.Id">
-                                            @subChildcategory.Name
-                                        </a>
-                                        @if (subChildcategory.IsCategoryHasChild)
-                                        {
-                                            <ul class=" m-2">
-                                                @foreach (var subSubChild in subChildcategory.Children)
-                                                {
-                                                    <li class="">
-                                                        <a asp-action="Index" asp-controller="Product" asp-route-categoryId="@subSubChild.Id">
-                                                            @subSubChild.Name
-                                                        </a>
-                                                        @if (subSubChild.IsCategoryHasChild)
-                                                        {
-                                                            <ul class="m-2">
-                                                                @foreach (var sub5 in subSubChild.Children)
-                                                                {
-                                                                    <li class="">
-                                                                        <a asp-action="Index" asp-controller="Product" asp-route-categoryId="@sub5.Id">
-                                                                            @sub5.Name
-                                                                        </a>
-                                                                    </li>
-                                                                }
-                                                            </ul>
-                                                        }
-                                                    </li>
-                                                }
-                                            </ul>
-                                        }
-                                    </li>
-                                }
-                            </ul>
-                        }
-                    </li>
-                }
-                <div class="bg-image">
-                    <img src="assets/images/menu-main/digital.png" alt="">
-                </div>
-            </ul>
         </li>
     }
 }
