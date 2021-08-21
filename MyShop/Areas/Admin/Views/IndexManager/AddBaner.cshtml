@@ -1,0 +1,146 @@
+﻿@model BanerViewModel
+@{
+    ViewData["Title"] = "مدییریت بنرها";
+}
+
+<!-- Inputs Icons start -->
+<section class="inputs-icons">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title-wrap bar-primary">
+                        <h4 class="card-title mb-0">افزودن بنر</h4>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="px-3">
+                        <form method="post" asp-action="AddBaner" asp-controller="IndexManager"
+                              enctype="multipart/form-data">
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <p>عنوان</p>
+                                            <div class="position-relative has-icon-left">
+                                                <input id="productName" asp-for="Text" placeholder="عنوان" class="form-control" autofocus>
+                                                <span asp-validation-for="Text" class="red"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <p>لینک</p>
+                                            <div class="position-relative has-icon-left">
+                                                <input id="productName" asp-for="Link" placeholder="لینک ..." class="form-control" autofocus>
+                                                <span asp-validation-for="Link" class="red"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <p>مکان قرار گیری عکس</p>
+                                            <div class="position-relative has-icon-left">
+                                                <select asp-for="ImageLocation" class="form-control">
+                                                    <option value="Slider">اسلایدر</option>
+                                                    <option value="Right">عکس بالا راست</option>
+                                                    <option value="MiddleLeft">عکس پایین چپ</option>
+                                                    <option value="MiddleRight">عکس پایین راست</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-12">
+                                        <div class="form-group">
+                                            <p>بنر</p>
+                                            <label for="attachment" class="w-100 text-center">
+                                                <a class="upload-btn mb-2" role="button" aria-disabled="false"><i class="bi bi-cloud-arrow-up-fill text-info display-3"></i></a>
+                                            </label>
+                                            <h4 id="upfile1" style="cursor:pointer"><i class="icon-cloud-upload"></i>آپلود عکس</h4>
+                                            <input style="display:none" type="file" asp-for="Image" required accept=".png,.jpg,.jpeg" id="attachment" class="" />
+                                            <span asp-validation-for="Image" class="red"></span>
+                                            <p id="files-area">
+                                                <span id="filesList">
+                                                    <span id="files-names"></span>
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <div class="position-relative has-icon-left">
+                                                <button type="submit" class="btn btn-success">
+                                                    <i class="icon-note"></i> ذخیره
+                                                </button>
+                                            </div>
+                                            @if (ViewData["Error"] != null)
+                                            {
+                                                <div class="alert alert-danger">
+                                                    <strong>خطا! </strong>  @ViewData["Error"]
+                                                </div>}
+                                            @if (ViewData["Success"] != null)
+                                            {
+                                                <div class="alert alert-success">
+                                                    <strong>موفقیت! </strong>  @ViewData["Success"]
+                                                </div>}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Inputs Icons end -->
+
+@section Scripts{
+    <script type='text/javascript'>
+        $(function () {
+            //Maps your button click event to the File Upload click event
+            $("#upfile1").click(function () {
+                $("#attachment").trigger('click');
+            });
+        });
+    </script>
+    <script>
+        const dt = new DataTransfer(); // Permet de manipuler les fichiers de l'input file
+
+        $("#attachment").on('change', function (e) {
+            for (var i = 0; i < this.files.length; i++) {
+                let fileBloc = $('<span/>', { class: 'file-block' }),
+                    fileName = $('<img/>', { class: 'productimages height-100 width-100  ', src: URL.createObjectURL(this.files.item(i)), alt: this.files.item(i).name });
+                fileBloc.append('<span class="file-delete badge badge-danger"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">\r\n  <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>\r\n</svg></span>')
+                    .append(fileName);
+                $("#filesList > #files-names").append(fileBloc);
+                //document.getElementById("lol").src = URL.createObjectURL(this.files.item(i));
+            };
+            // Ajout des fichiers dans l'objet DataTransfer
+            for (let file of this.files) {
+                dt.items.add(file);
+            }
+            // Mise à jour des fichiers de l'input file après ajout
+            this.files = dt.files;
+
+            // EventListener pour le bouton de suppression créé
+            $('span.file-delete').click(function () {
+                let name = $(this).next('img.productimages').attr("alt");
+                // Supprimer l'affichage du nom de fichier
+                $(this).parent().remove();
+                for (let i = 0; i < dt.items.length; i++) {
+                    // Correspondance du fichier et du nom
+                    if (name === dt.items[i].getAsFile().name) {
+                        // Suppression du fichier dans l'objet DataTransfer
+                        dt.items.remove(i);
+                        continue;
+                    }
+                }
+                // Mise à jour des fichiers de l'input file après suppression
+                document.getElementById('attachment').files = dt.files;
+            });
+        });
+
+    </script>
+} 

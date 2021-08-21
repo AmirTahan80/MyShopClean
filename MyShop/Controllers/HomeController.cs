@@ -13,17 +13,17 @@ namespace Controllers
     public class HomeController : Controller
     {
         #region Injections
-        private readonly IProductUserServices _productUserServices;
-        public HomeController(IProductUserServices productUserServices)
+        private readonly IHomePageServices _hoemPageServices;
+        public HomeController(IHomePageServices hoemPageServices)
         {
-            _productUserServices = productUserServices;
+            _hoemPageServices = hoemPageServices;
         }
         #endregion
 
         public async Task<IActionResult> Index()
         {
-            var products = await _productUserServices.GetProdctsListForIndexAsync();
-            return View(products);
+            var getHomePage = await _hoemPageServices.GetBanersAndProductsAsync();
+            return View(getHomePage);
         }
 
         //public IActionResult Privacy()

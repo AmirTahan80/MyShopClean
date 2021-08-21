@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Application.ViewModels;
 
 namespace Application.InterFaces.Admin
 {
@@ -64,5 +65,27 @@ namespace Application.InterFaces.Admin
         /// <param name="addProduct"></param>
         /// <returns>bool : True or False</returns>
         Task<bool> AddProductAsync(AddProductViewModel addProduct);
+        /// <summary>
+        /// ساخت کد تخفیف
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultDto> CreateDiscountAsync(DiscountViewMode discountAdd);
+        /// <summary>
+        /// گرفتن جزئیات کد تخفیف
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>DiscountViewMode</returns>
+        Task<DiscountViewMode> GetDiscountAsync(int id);
+        /// <summary>
+        /// گرفتن تمای کد تخفیف ها و نمایش در لیست
+        /// </summary>
+        /// <returns>DiscountViewMode</returns>
+        Task<IList<DiscountViewMode>> GetDisCountsAsync();
+        /// <summary>
+        /// ویرایش کد تخفیف
+        /// </summary>
+        /// <param name="discountEdit"></param>
+        /// <returns></returns>
+        Task<ResultDto> EditDiscountAsync(DiscountViewMode discountEdit);
     }
 }

@@ -1,0 +1,113 @@
+﻿@model List<BanerViewModel>
+@{
+    ViewData["Title"] = "بنر ها";
+    int i = 1;
+}
+
+<!--Shopping cart starts-->
+<section id="shopping-cart">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title-wrap bar-warning row">
+                        <h4 class="card-title col-md-12">بنرها</h4>
+                        <div class="col-md-12">
+                            <form class="form-group row" enctype="text/plain" method="get" asp-action="Index" asp-controller="ProductManager">
+                                <input type="text" class="form-control m-1 col-md-4" placeholder="نام محصول را وارد کنید ..." value="@ViewBag.SearchProduct" name="searchProduct" />
+                                <select class="form-control col-md-4 m-1" name="filter">
+                                    <option class="bg-blue white" value="@ViewBag.FilterValue">@ViewBag.Filter</option>
+                                    <option value="newest">جدید ترین</option>
+                                    <option value="older">قدیمی ترین</option>
+                                    <option value="lower10">کمتر از 10</option>
+                                    <option value="lower20">کمتر از 20</option>
+                                    <option value="finish">اتمام یافته</option>
+                                    <option value="expensive">گران ترین</option>
+                                    <option value="cheaper">ارزان ترین</option>
+                                </select>
+                                <button type="submit" class="btn btn-outline-info m-1"><i class="icon-magnifier"></i> جست و جو</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="aler alert-danger m-2 p-2">
+                            <p>
+                                <strong>خطا ! </strong>@TempData["Error"]
+                            </p>
+                        </div>}
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="aler alert-success m-2 p-2">
+                            <p>
+                                <strong>موفقیت ! </strong>@TempData["Success"]
+                            </p>
+                        </div>}
+                    <div class="card-block">
+                        <div class="table-responsive">
+                            <form method="post" asp-action="DeleteProduct" asp-controller="ProductManager">
+                                <table id="recent-orders" class="table table-hover table-xl mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">تعداد</th>
+                                            <th class="border-top-0"><button type="submit" class="btn btn-outline-danger"><i class="icon-trash"></i></button></th>
+                                            <th class="border-top-0">عنوان</th>
+                                            <th class="border-top-0">عکس</th>
+                                            <th class="border-top-0">لینک</th>
+                                            <th class="border-top-0">عملیات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int b = 0; b < Model.Count(); b++)
+                                        {
+                                            <tr>
+                                                <td class="text-truncate">
+                                                    @i
+                                                </td>
+                                                <td>
+                                                    @*<input type="checkbox" asp-for="@Model[b].IsSelected" />
+                                                        <input asp-for="@Model[b].Id" type="hidden" />*@
+                                                </td>
+                                                <td class="text-truncate">
+                                                    @if (Model[b].Text.Length > 10)
+                                                    {
+                                                        <p>@Model[b].Text.Remove(10)</p>
+                                                    }
+                                                    else
+                                                    {
+                                                        <p>@Model[b].Text</p>
+                                                    }
+                                                </td>
+                                                <td class="text-truncate p-1">
+
+                                                    <img class="media-object rounded-circle no-border-top-radius no-border-bottom-radius" src="/Images/Baners/@Model[b].ImagePath" alt="@Model[b].Text">
+
+                                                </td>
+                                                <td>
+                                                    <a href="@Model[b].Link"
+                                                       class="btn btn-sm btn-outline-dark">
+                                                        @Model[b].Link
+                                                    </a>
+                                                </td>
+                                                <td class="text-truncate">
+                                                    <a class="btn btn-outline-primary"
+                                                       asp-action="EditBaner"
+                                                       asp-controller="IndexManager"
+                                                       asp-route-banerId="@Model[b].Id">ویرایش</a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <partial name="_PagingParitial"></partial>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Shopping cart ends-->

@@ -6,11 +6,6 @@ namespace Application.InterFaces.User
 {
     public interface IProductUserServices
     {
-        /// <summary>
-        /// گرفتن محصولات برای صفحه اول 
-        /// </summary>
-        /// <returns>IEnumerable<GetListOfProductViewModel></returns>
-        Task<ListOfProductsViewModel> GetProdctsListForIndexAsync();
 
         /// <summary>
         /// گرفتن محصولا برای صفحه محصولات و یا گرفتن محصولات دسته بندی خاص

@@ -465,5 +465,25 @@ namespace MyShop.Controllers
 
             return View(result);
         }
+        
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Discount(CartViewModel model,string returnUrl)
+        {
+            if (string.IsNullOrWhiteSpace(model.CodeName))
+                return NotFound();
+
+            var result = await _accountUserServices.DiscountCartAsync(model);
+
+            if(!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return NotFound();
+            }
+
+        }
     }
 }

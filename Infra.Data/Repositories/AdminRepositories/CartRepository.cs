@@ -19,7 +19,7 @@ namespace Data.Repositories.AdminRepositories
         #endregion
         public async Task<IEnumerable<Cart>> GetCartsAsync()
         {
-            var carts = await _context.Carts.Include(p => p.CartDetails).ToListAsync();
+            var carts = await _context.Carts.Include(p => p.CartDetails).Include(p=>p.Discounts).ToListAsync();
             return carts;
         }
         public async Task<Cart> GetCartAsync(string userId)
@@ -40,6 +40,12 @@ namespace Data.Repositories.AdminRepositories
 
             return cartDetail;
         }
+        public async Task<IEnumerable<Discount>> GetDiscountsAsync()
+        {
+            var discounts = await _context.Discounts.ToListAsync();
+
+            return discounts;
+        }
 
         public async Task AddCart(Cart t)
         {
@@ -48,6 +54,10 @@ namespace Data.Repositories.AdminRepositories
         public async Task AddCartDetail(CartDetail t)
         {
             await _context.CartDetails.AddAsync(t);
+        }
+        public async Task AddDiscountAsync(Discount t)
+        {
+            await _context.Discounts.AddAsync(t);
         }
 
         public void RemoveCartDetail(CartDetail t)

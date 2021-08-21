@@ -46,6 +46,13 @@ namespace Infra.Ioc.Dependencies
             services.AddScoped<IQuestionRepository, QuestionRepository>();
 
 
+            services.AddScoped<IBanerRepository, BanerRepository>();
+            services.AddScoped<IBanerServices, BanerServices>();
+
+
+            services.AddScoped<IHomePageServices, HomePageServices>();
+
+
 
 
             //Authorization

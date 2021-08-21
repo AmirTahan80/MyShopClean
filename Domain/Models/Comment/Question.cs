@@ -23,6 +23,6 @@ namespace Domain.Models
         public Product Product { get; set; }
         public ApplicationUser User { get; set; }
         public Question ReplayOn { get; set; }
-        public IEnumerable<Question> Replais { get; set; }
+        public ICollection<Question> Replais { get; set; }
     }
 }

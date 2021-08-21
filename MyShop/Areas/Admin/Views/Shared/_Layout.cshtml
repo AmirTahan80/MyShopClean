@@ -53,12 +53,6 @@
                                 <li class="">
                                     <a asp-action="AddProduct" asp-controller="ProductManager" class="menu-item">افزودن</a>
                                 </li>
-                                <li class="">
-                                    <a href="/admin/productmanager/productdeleted" class="menu-item">حذف شده</a>
-                                </li>
-                                <li class="">
-                                    <a href="/admin/productmanager/productcount" class="menu-item">تعداد کمتر از 10</a>
-                                </li>
                             </ul>
                         </li>
                         <li class="has-sub sub-menu-category">
@@ -90,10 +84,10 @@
                             <a href="#"><i class="icon-picture"></i><span data-i18n="" class="menu-title">مدیریت بنر ها</span></a>
                             <ul class="menu-content" style="">
                                 <li class="">
-                                    <a href="/admin/IndexManager/index" class="menu-item">لیست</a>
+                                    <a asp-action="Index" asp-controller="IndexManager" class="menu-item">لیست</a>
                                 </li>
                                 <li class="">
-                                    <a href="/admin/IndexManager/AddPhoto" class="menu-item">افزودن</a>
+                                    <a asp-action="AddBaner" asp-controller="IndexManager" class="menu-item">افزودن</a>
                                 </li>
                             </ul>
                         </li>
@@ -101,27 +95,10 @@
                             <a href="#"><i class="icon-direction"></i><span data-i18n="" class="menu-title">مدیریت ارتباطات</span></a>
                             <ul class="menu-content" style="">
                                 <li class="">
-                                    <a href="/admin/IndexManager/FooterManager" class="menu-item">مدیریت فوتر</a>
-                                </li>
-                                <li class="">
-                                    <a href="/admin/IndexManager/ContactManager" class="menu-item">شماره تلفن و ایمیل</a>
-                                </li>
-                                <li class="">
-                                    <a href="/admin/UserManager/GetMessageFromUser" class="menu-item">مشاهده پیام ها</a>
-                                </li>
-                                <li class="">
                                     <a asp-action="GetProductComments" asp-controller="ProductManager" class="menu-item">مشاهده نطرات</a>
                                 </li>
-                            </ul>
-                        </li>
-                        <li class="has-sub sub-menu-category">
-                            <a href="#"><i class="icon-direction"></i><span data-i18n="" class="menu-title">مدیریت قوانین</span></a>
-                            <ul class="menu-content" style="">
                                 <li class="">
-                                    <a asp-action="Privacy" asp-controller="Home" class="menu-item">لیست</a>
-                                </li>
-                                <li class="">
-                                    <a asp-action="PrivacyAdd" asp-controller="Home" class="menu-item">افزودن</a>
+                                    <a asp-action="GetQuestions" asp-controller="AccountManager" class="menu-item">مشاهده سوالات</a>
                                 </li>
                             </ul>
                         </li>

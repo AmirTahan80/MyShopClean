@@ -1,6 +1,5 @@
 ﻿using Application.ViewModels;
 using Application.ViewModels.User;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Application.InterFaces.User
@@ -134,5 +133,11 @@ namespace Application.InterFaces.User
         /// <param name="userId"></param>
         /// <returns></returns>
         Task<ProfileViewModel> GetQuestionsAsync(string userId);
+        /// <summary>
+        /// اعال تخفیف بر روی سبد خرید
+        /// </summary>
+        /// <param name="discount"></param>
+        /// <returns></returns>
+        Task<ResultDto> DiscountCartAsync(CartViewModel discount);
     }
 }

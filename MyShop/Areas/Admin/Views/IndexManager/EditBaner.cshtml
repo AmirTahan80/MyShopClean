@@ -1,0 +1,88 @@
+﻿@model BanerViewModel
+@{
+    ViewData["Title"] = "ویرایش بنر";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title-wrap bar-success">
+                    <h4 class="card-title" id="basic-layout-form">جزئیات بنر</h4>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="px-3">
+                    <form asp-action="EditBaner" asp-controller="IndexManager" method="post" enctype="multipart/form-data">
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput1">عنوان</label>
+                                        <input placeholder="عنوان" class="form-control " asp-for="Text" />
+                                        <span asp-validation-for="Text" required class="red"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput1">لینک</label>
+                                        <input placeholder="لینک ..." class="form-control " asp-for="Link" />
+                                        <span asp-validation-for="Link" required class="red"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2">مکان قرار گیری</label>
+                                        <select asp-for="ImageLocation" class="form-control">
+                                            <option value="Slider">اسلایدر</option>
+                                            <option value="Right">عکس بالا راست</option>
+                                            <option value="MiddleLeft">عکس پایین چپ</option>
+                                            <option value="MiddleRight">عکس پایین راست</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <p>آپلود عکس</p>
+                                        <label for="attachment" class="w-100 text-center">
+                                            <a class="upload-btn mb-2" role="button" aria-disabled="false"><i class="bi bi-cloud-arrow-up-fill text-info display-3"></i></a>
+                                        </label>
+                                        <h4 id="upfile1" style="cursor:pointer"><i class="icon-cloud-upload"></i>آپلود عکس</h4>
+                                        <input style="display:none" type="file" asp-for="Image" accept=".png,.jpg,.jpeg" id="attachment" multiple />
+
+                                        <img style="max-width:60px;max-height:60px" src="~/Images/Baners/@Model.ImagePath" />
+
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-actions">
+                                        <input type="hidden" class="hide" readonly asp-for="Id" />
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="icon-pencil"></i> ویرایش
+                                        </button>
+                                        <a asp-action="Index" asp-controller="IndexManager" class="btn btn-primary">
+                                            برگشت به لیست
+                                        </a>
+                                    </div>
+                                    @if (ViewData["Success"] != null)
+                                    {
+                                        <div class="col-md-12 alert alert-success">
+                                            <p><strong>موفقیت ! </strong>@ViewData["Success"]</p>
+                                        </div>
+                                    }
+                                    @if (ViewData["Error"] != null)
+                                    {
+                                        <div class="col-md-12 alert alert-danger">
+                                            <p><strong>خطا ! </strong>@ViewData["Error"]</p> <br />
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

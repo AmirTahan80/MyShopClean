@@ -65,6 +65,7 @@
 
 	<ItemGroup>
 	  <Folder Include="wwwroot\assets\images\menu-main\card\" />
+	  <Folder Include="wwwroot\Images\Baners\" />
 	</ItemGroup>
 
 

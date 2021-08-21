@@ -1,0 +1,64 @@
+﻿@model DiscountViewMode
+@{
+    ViewData["Title"] = "ویرایش کد تخفیف";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title-wrap bar-success">
+                    <h4 class="card-title" id="basic-layout-form">جزئیات کد تخفیف @Model.CodeName</h4>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="px-3">
+                    <form asp-action="EditDiscount" asp-controller="ProductManager" method="post">
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput1">نام کد تخفیف</label>
+                                        <input class="form-control " asp-for="CodeName" />
+                                        <span asp-validation-for="CodeName" required class="red"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2">قیمت کد تخفیف</label>
+                                        <input class="form-control " asp-for="CodePrice" />
+                                        <span asp-validation-for="CodePrice" required class="red"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-actions">
+                                        <input type="hidden" class="hide" readonly asp-for="Id" />
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="icon-pencil"></i> ویرایش
+                                        </button>
+                                        <a asp-action="GetDiscount" asp-controller="ProductManager" class="btn btn-primary">
+                                            برگشت به لیست
+                                        </a>
+                                    </div>
+                                    @if (ViewData["Success"] != null)
+                                    {
+                                        <div class="col-md-12 alert alert-success">
+                                            <p><strong>موفقیت ! </strong>@ViewData["Success"]</p>
+                                        </div>
+                                    }
+                                    @if (ViewData["Error"] != null)
+                                    {
+                                        <div class="col-md-12 alert alert-danger">
+                                            <p><strong>خطا ! </strong>@ViewData["Error"]</p> <br />
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

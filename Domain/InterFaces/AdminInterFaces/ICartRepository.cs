@@ -14,6 +14,8 @@ namespace Domain.InterFaces.AdminInterFaces
 
         Task<CartDetail> GetCartDetailAsync(int cartDetailId);
 
+        Task<IEnumerable<Discount>> GetDiscountsAsync();
+
         Task AddCart(Cart t);
         Task AddCartDetail(CartDetail t);
 
@@ -22,10 +24,13 @@ namespace Domain.InterFaces.AdminInterFaces
         Task AddFavorite(UserFavorite t);
         Task AddFavoriteDetail(UserFavoritesDetail t);
 
+        Task AddDiscountAsync(Discount t);
+
         Task<UserFavorite> GetFavoriteAsync(string userId);
         Task<UserFavoritesDetail> GetFavoriteDetailAsync(int favoriteDetailId);
 
         void RemoveFavoriteDetail(UserFavoritesDetail t);
+
 
     }
 }

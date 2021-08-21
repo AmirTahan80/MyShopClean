@@ -1,5 +1,6 @@
 ﻿using Application.InterFaces.Admin;
 using Application.Utilities.TagHelper;
+using Application.ViewModels;
 using Application.ViewModels.Admin;
 using Domain.InterFaces.AdminInterFaces;
 using Domain.Models;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,11 +19,14 @@ namespace Application.Services.Admin
         #region Ingection
         private readonly IProductRepository _productRepository;
         private readonly ICategoryServices _categoryServices;
+        private readonly ICartRepository _cartRepository;
         public ProductServices(IProductRepository productRepository,
-            ICategoryServices categoryServices)
+            ICategoryServices categoryServices,
+            ICartRepository cartRepository)
         {
             _productRepository = productRepository;
             _categoryServices = categoryServices;
+            _cartRepository = cartRepository;
         }
 
         #endregion
@@ -132,7 +135,7 @@ namespace Application.Services.Admin
                             {
                                 var intPrice = Convert.ToInt32(addProduct.AttributePrice[i]);
                                 var intCount = Convert.ToInt32(addProduct.AttributeCount[i]);
-                                if(intPrice< LowerPriceOfAttributes)
+                                if (intPrice < LowerPriceOfAttributes)
                                 {
                                     LowerPriceOfAttributes = intPrice;
                                     CountOfLowerPrice = intCount;
@@ -463,6 +466,39 @@ namespace Application.Services.Admin
                 return false;
             }
         }
+        public async Task<ResultDto> EditDiscountAsync(DiscountViewMode discountEdit)
+        {
+            try
+            {
+                var discounts = await _cartRepository.GetDiscountsAsync();
+                var discount = discounts.Where(p => p.Id == discountEdit.Id).SingleOrDefault();
+
+                discount.CodeName = discountEdit.CodeName;
+                discount.DiscountPrice = discount.DiscountPrice;
+
+                await _cartRepository.SaveAsync();
+
+
+                var returnResut = new ResultDto()
+                {
+                    SuccesMessage = "ویرایش کد تخفیف با موفقیت انجام شد ..",
+                    Status = true
+                };
+                return returnResut;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                var returnResut = new ResultDto()
+                {
+                    ErrorMessage = "در ویرایش کد تخفیف مشکلی به وجود امده است لطفا دقایقی دیگر دوباره امتحان کنید !!!",
+                    Status = false
+                };
+                return returnResut;
+            }
+        }
+
 
         public async Task<bool> DeleteListOfProducts(IEnumerable<GetProductsAndImageSrcViewModel> deleteListOfProducts)
         {
@@ -578,13 +614,80 @@ namespace Application.Services.Admin
             }
         }
 
+        public async Task<ResultDto> CreateDiscountAsync(DiscountViewMode discountAdd)
+        {
+            try
+            {
+                var returnResult = new ResultDto();
+
+                var createDiscount = new Discount()
+                {
+                    InsertTime = ConverToShamsi.GetDateYeadAndMonthAndDay(DateTime.Now),
+                    DiscountPrice = discountAdd.CodePrice,
+                    CodeName = discountAdd.CodeName
+                };
+
+                await _cartRepository.AddDiscountAsync(createDiscount);
+
+                await _cartRepository.SaveAsync();
+
+                returnResult.SuccesMessage = "کد تخفیف با موفقیت ثبت شد ...";
+                returnResult.Status = true;
+
+                return returnResult;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                var returnResult = new ResultDto()
+                {
+                    ErrorMessage = "کد تخفیف ساخته نشد ... لطفا دوباره امتحان کنید!!",
+                    Status = false
+                };
+                return returnResult;
+            }
+        }
+        public async Task<DiscountViewMode> GetDiscountAsync(int id)
+        {
+            var discounts = await _cartRepository.GetDiscountsAsync();
+            var discount = discounts.Where(p => p.Id == id).SingleOrDefault();
+
+            var discountreturn = new DiscountViewMode()
+            { 
+                Id=discount.Id,
+                CodeName=discount.CodeName,
+                CodePrice=discount.DiscountPrice
+            };
+
+            return discountreturn;
+        }
+        public async Task<IList<DiscountViewMode>> GetDisCountsAsync()
+        {
+            try
+            {
+                var discounts = await _cartRepository.GetDiscountsAsync();
+
+                var returnDiscount = discounts.Select(p => new DiscountViewMode()
+                {
+                    Id=p.Id,
+                    CodeName=p.CodeName,
+                    CodePrice=p.DiscountPrice
+                }).ToList();
+
+                return returnDiscount;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
+            }
+        }
+
         #region Private Methode Helper
         private (string src, string fileName) uploadImage(IFormFile file, string placeFile)
         {
             if (file == null)
                 return ("", "");
-
-
 
             var todayDate = ConverToShamsi.GetMonthAndYear(DateTime.Now);
             string folder = $@"wwwroot\Images\{placeFile}\{todayDate}\";
@@ -640,6 +743,7 @@ namespace Application.Services.Admin
                 return null;
             }
         }
+
         #endregion
     }
 }

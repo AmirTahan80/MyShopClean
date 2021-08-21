@@ -21,5 +21,7 @@ namespace Domain.Models
         [Required]
         public ApplicationUser User { get; set; }
 
+        public ICollection<Discount> Discounts { get; set; }
+
     }
 }

@@ -1,4 +1,5 @@
 using Domain.Models;
+using Domain.Models.IndexFolder;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,6 +33,9 @@ namespace Infra.Data
 
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Question> Question { get; set; }
+
+        public DbSet<Discount> Discounts { get; set; }
+        public DbSet<Baner> Baners { get; set; }
 
         #endregion
         #region ModelCreating

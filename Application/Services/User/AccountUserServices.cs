@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,11 +30,13 @@ namespace Application.Services.User
         private readonly IProductRepository _productRepository;
         private readonly ICartRepository _cartRepository;
         private readonly IQuestionRepository _questionReposiotry;
+        private readonly RoleManager<RoleModel> _roleManager;
 
         public AccountUserServices(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor,
             IHostingEnvironment env, LinkGenerator linkGenerator, IMessageSenderServices messageSender,
             SignInManager<ApplicationUser> signInManager, IProductRepository productRepository,
-            ICartRepository cartRepository, IQuestionRepository questionReposiotry)
+            ICartRepository cartRepository, IQuestionRepository questionReposiotry,
+            RoleManager<RoleModel> roleManager)
         {
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
@@ -44,6 +47,7 @@ namespace Application.Services.User
             _productRepository = productRepository;
             _cartRepository = cartRepository;
             _questionReposiotry = questionReposiotry;
+            _roleManager = roleManager;
         }
         #endregion
 
@@ -96,7 +100,7 @@ namespace Application.Services.User
                 var result = await _userManager.ConfirmEmailAsync(findUser, token);
                 if (!result.Succeeded) return false;
 
-                await _userManager.AddToRoleAsync(findUser, "CUSTOMER");
+                await _userManager.AddToRoleAsync(findUser, "Customer");
 
                 await _signInManager.SignInAsync(findUser, false);
 
@@ -982,6 +986,54 @@ namespace Application.Services.User
             };
 
             return addToProfile;
+        }
+       
+        public async Task<ResultDto> DiscountCartAsync(CartViewModel discount)
+        {
+            try
+            {
+                var discounts = await _cartRepository.GetDiscountsAsync();
+                var discountFind = discounts.SingleOrDefault(p => p.CodeName == discount.CodeName);
+
+                var returnResult = new ResultDto();
+
+                if (discountFind==null)
+                {
+                    returnResult.ErrorMessage = "کد تخفیف یافت نشد!!!";
+                    returnResult.Status = false;
+                    return returnResult;
+                }
+
+                var carts = await _cartRepository.GetCartsAsync();
+                var cart = carts.SingleOrDefault(p => p.CartId == discount.Id);
+                if(cart==null)
+                {
+                    returnResult.ErrorMessage = "کد تخفیف یافت نشد!!!";
+                    returnResult.Status = false;
+                    return returnResult;
+                }
+
+                cart.TotalPrice -= discountFind.DiscountPrice;
+
+                cart.Discounts.Add(discountFind);
+
+                await _cartRepository.SaveAsync();
+
+
+                returnResult.SuccesMessage = "کد تخفیف اعمال شد ...";
+                returnResult.Status = true;
+                return returnResult;
+                }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                var returnResult = new ResultDto()
+                {
+                    ErrorMessage = "کد تخفیف اعمال نشد ... لطفا دوباره امتحان کنید !!!",
+                    Status = false
+                };
+                return returnResult;
+            }
         }
 
         //Private Mehode

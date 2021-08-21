@@ -2,10 +2,11 @@
 
 namespace Application.ViewModels.User
 {
-    public class ListOfProductsViewModel
+    public class HomePageViewModel
     {
-        public IEnumerable<GetListOfProductViewModel>  NewstProducts { get; set; }
+        public IEnumerable<GetListOfProductViewModel>  NewtProducts { get; set; }
         public IEnumerable<GetListOfProductViewModel>  CheapestProducts { get; set; }
         public IEnumerable<GetListOfProductViewModel>  MostSalerProducts { get; set; }
+        public IEnumerable<BanerViewModel>  Baners { get; set; }
     }
 }

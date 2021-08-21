@@ -1,0 +1,70 @@
+﻿@model DiscountViewMode
+@{
+    ViewData["Tite"] = "ساخت کد تخفیف";
+}
+
+<!-- Inputs Icons start -->
+<section class="inputs-icons">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title-wrap bar-primary">
+                        <h4 class="card-title mb-0">افزودن کد تخفیف</h4>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="px-3">
+                        <form class="form" method="POST" asp-action="CreateDiscount" asp-controller="ProductManager">
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <p>نام کد تخفیف</p>
+                                            <div class="position-relative has-icon-left">
+                                                <input asp-for="CodeName" required class="form-control">
+                                                <span asp-validation-for="CodeName" class="red"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <p>قیمت کد تخفیف</p>
+                                            <div class="position-relative has-icon-left">
+                                                <input asp-for="CodePrice" required class="form-control">
+                                                <span asp-validation-for="CodePrice" class="red"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <div class="position-relative has-icon-left">
+                                                <button type="submit" class="btn btn-success">
+                                                    <i class="icon-note"></i> ذخیره
+                                                </button>
+                                            </div>
+                                            @if (ViewData["Error"] != null)
+                                            {
+                                                <div class="alert alert-danger">
+                                                    <strong>خطا! </strong>  @ViewData["Error"]
+                                                </div>}
+                                            @if (ViewData["Success"] != null)
+                                            {
+                                                <div class="alert alert-success">
+                                                    <strong>موفقیت! </strong>  @ViewData["Success"]
+                                                </div>}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Inputs Icons end -->
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

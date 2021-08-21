@@ -13,6 +13,8 @@ namespace Application.ViewModels.User
         public DateTime CreateTime { get; set; }
         public int CountOfProduct { get; set; }
 
+        public string CodeName { get; set; }
+
         public ICollection<CartDetailViewModel> CartDetails { get; set; }
     }
 }

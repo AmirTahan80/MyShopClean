@@ -167,5 +167,63 @@ namespace Areas.Admin.Controllers
         }
 
 
+        [HttpGet]
+        public async Task<IActionResult> GetDiscount()
+        {
+            var result = await _porudctServices.GetDisCountsAsync();
+
+            return View(result);
+        }
+        [HttpGet]
+        public  IActionResult CreateDiscount()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateDiscount(DiscountViewMode model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var result = await _porudctServices.CreateDiscountAsync(model);
+
+            if(result.Status)
+            {
+                ViewData["Success"] = result.SuccesMessage;
+            }
+            else
+            {
+                ViewData["Error"] = result.ErrorMessage;
+            }
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> EditDiscount(int discountId)
+        {
+            var discount = await _porudctServices.GetDiscountAsync(discountId);
+
+            return View(discount);
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditDiscount(DiscountViewMode model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var result = await _porudctServices.EditDiscountAsync(model);
+
+            if(result.Status==true)
+            {
+                ViewData["Success"] = result.SuccesMessage;
+            }
+            else
+            {
+                ViewData["Error"] = result.ErrorMessage;
+            }
+
+            return View(model);
+        }
+
     }
 }

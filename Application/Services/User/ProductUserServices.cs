@@ -29,39 +29,6 @@ namespace Application.Services.User
         }
 
         //Implements
-        public async Task<ListOfProductsViewModel> GetProdctsListForIndexAsync()
-        {
-            var products = await _productRepository.GetAllProductsAsync();
-            var returnProduct = new ListOfProductsViewModel()
-            {
-                CheapestProducts = products.OrderBy(p => p.Price).Take(10).Select(p => new GetListOfProductViewModel()
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Count = p.Count,
-                    Price = p.Price,
-                    ImageSrc = p.ProductImages.FirstOrDefault().ImgFile + "/" + p.ProductImages.FirstOrDefault().ImgSrc
-                }),
-                MostSalerProducts = products.OrderBy(p => p.Count).Take(10).Select(p => new GetListOfProductViewModel()
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Count = p.Count,
-                    Price = p.Price,
-                    ImageSrc = p.ProductImages.FirstOrDefault().ImgFile + "/" + p.ProductImages.FirstOrDefault().ImgSrc
-                }),
-                NewstProducts = products.OrderByDescending(p => p.Id).Take(10).Select(p => new GetListOfProductViewModel()
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Count = p.Count,
-                    Price = p.Price,
-                    ImageSrc = p.ProductImages.FirstOrDefault().ImgFile + "/" + p.ProductImages.FirstOrDefault().ImgSrc
-                })
-            };
-
-            return returnProduct;
-        }
 
         public async Task<IEnumerable<GetListOfProductViewModel>> GetProductsListAsync(int categoryId)
         {
