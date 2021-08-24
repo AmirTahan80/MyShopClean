@@ -111,13 +111,13 @@
                                                     </td>
                                                     <td class="product-cart-price">
                                                         <span class="amount">
-                                                            @item.ProductPrice
+                                                            @item.ProductPrice.ToString("#,0")
                                                             <span>تومان</span>
                                                         </span>
                                                     </td>
                                                     <td class="product-cart-Total">
                                                         <span class="amount">
-                                                            @item.TotalPrice
+                                                            @item.TotalPrice.ToString("#,0")
                                                             <span>تومان</span>
                                                         </span>
                                                     </td>
@@ -134,7 +134,7 @@
                                         <ul class="checkout-summary-summary">
                                             <li class="cart-subtotal">
                                                 <span class="amount">قیمت کل</span>
-                                                <span> @Model.TotalPrice تومان</span>
+                                                <span> @Model.SumPrice.ToString("#,0") </span>
                                             </li>
                                             <li class="discount-code">
                                                 <div class=" align-items-center">
@@ -149,7 +149,9 @@
                                                     </div>
                                                     <div class="col-md-2 pl mt-5">
                                                         <div class="proceed-to-checkout">
-                                                            <a href="#" class="checkout-button d-block">تسویه حساب</a>
+                                                            <form asp-action="PayCart" asp-controller="Account">
+                                                                <button class="checkout-button d-block">تسویه حساب</button>
+                                                            </form>
                                                         </div>
                                                     </div>
                                                 </div>

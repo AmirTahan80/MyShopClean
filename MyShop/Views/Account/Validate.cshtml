@@ -1,0 +1,240 @@
+﻿@model VerificationPayViewModel
+@{
+    ViewData["Title"] = "پرداخت";
+}
+@section Header{
+
+    <!-- plugin-------------------------------------->
+    <link rel="stylesheet" href="/assets/css/vendor/bootstrap.css">
+    <link rel="stylesheet" href="/assets/css/vendor/owl.carousel.min.css">
+    <link rel="stylesheet" href="/assets/css/vendor/noUISlider.min.css">
+    <link rel="stylesheet" href="/assets/css/vendor/nice-select.css">
+}
+
+@if (ViewData["Success"] != null)
+{
+    <!-- checkout------------------------------>
+    <div class="container-main">
+        <div class="d-block">
+            <section class="blog-checkout d-block order-1">
+                <div class="col-lg">
+                    <div class="checkout woocommerce-checkout">
+                        <div class="content-checkout">
+                            <div class="middle-container">
+                                <form action="#" class="form-checkout">
+                                    <div class="col2-set" id="customer-details">
+                                        <div class="col-12">
+                                            <div class="billing-fields mt-4">
+                                                <h4 class="text-success">سفارش دریافت شد</h4>
+                                                <p class="thankyou-order-received">
+                                                    پرداخت با موفقیت انجام شد. سفارش شما با موفقیت ثبت شد و در زمان تعیین شده برای شما ارسال خواهد شد.
+                                                    از اینکه فروشگاه من را برای خرید انتخاب کردید از شما سپاسگزاریم.
+                                                </p>
+                                                <ul class="order-overview">
+                                                    <li class="order-overview-item">
+                                                        کد سفارش :
+                                                        <span>@Model.RefId</span>
+                                                    </li>
+                                                    <li class="order-overview-item">
+                                                        تاریخ :
+                                                        <span></span>
+                                                    </li>
+                                                    <li class="order-overview-item">
+                                                        روش پرداخت :
+                                                        <span>پرداخت اینترنتی هوشمند</span>
+                                                    </li>
+                                                    <li class="order-overview-item">
+                                                        قیمت نهایی :
+                                                        <span class="amount">
+                                                            @Model.TotalPrice.ToString("#,0")
+                                                            <span>تومان</span>
+                                                        </span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h3 class="order-review-heading">سفارش شما</h3>
+                                    <div class="checkout-review-order">
+                                        <table class="checkout-review-order-table table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="product-name">محصول</th>
+                                                    <th scope="col" class="product-price">قیمت محصول</th>
+                                                    <th scope="col" class="product-price">قیمت پرداحت شده بر اساس تعداد</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in Model.Products)
+                                                {
+                                                    <tr class="checkout-cart-item">
+                                                        <td class="product-name">@item.ProductName</td>
+                                                        <td class="product-price text-info">
+                                                            <span class="amount">
+                                                                @item.ProductPrice.ToString("#,0")
+                                                                <span>تومان</span>
+                                                            </span>
+                                                        </td>
+                                                        <td class="product-price text-info">
+                                                            <span class="amount">
+                                                                @item.TotalPrice.ToString("#,0")
+                                                                <span>تومان</span>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                            <tfoot>
+
+                                                <tr class="cart-subtotal">
+                                                    <th>مجموع</th>
+                                                    <td>
+                                                        <span class="amount">
+                                                            @Model.TotalPrice.ToString("#,0")
+                                                            <span>تومان</span>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+
+                                                <tr class="order-total">
+                                                    <th>حمل ونقل</th>
+                                                    <td>
+                                                        <div class="shipping-totals-item">
+                                                            <span class="shipping-destination">	تومان 20,000 به وسیله حمل و نقل معمولی</span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+
+                                                <tr class="order-total">
+                                                    <th>روش پرداخت</th>
+                                                    <td>
+                                                        <div class="shipping-totals-item">
+                                                            <span class="shipping-destination">	پرداخت اینترنتی هوشمند</span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr class="cart-discount">
+                                                    <th>تخفیف شما از این خرید</th>
+                                                    @if (Model.DisCounts != null)
+                                                    {
+                                                        <td data-title=" تخفیف شما از این خرید ">
+                                                            @foreach (var item in Model.DisCounts)
+                                                            {
+                                                                <div class="price">
+                                                                    <span class="amount">
+                                                                        @item.Price.ToString("#,0")
+                                                                        <span>تومان</span>
+                                                                    </span>
+                                                                </div>
+                                                            }
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>تخفیفی استفاده نکرده اید</td>
+                                                    }
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                        <div class="profile-address pr-3 pl-3 mt-5">
+                                            <div class="box-header">
+                                                <span class="box-title">نشانی شما</span>
+                                            </div>
+                                            <div class="profile-address-item">
+                                                <div class="profile-address-item-top">
+                                                    <div class="profile-address-item-title">@Model.UserAddress</div>
+                                                </div>
+
+                                                <div class="profile-address-content">
+                                                    <ul class="profile-address-info">
+                                                        <li>
+                                                            <div class="profile-address-info-item location">
+                                                                <i class="mdi mdi-map-outline"></i>
+                                                                خراسان شمالی، بجنورد
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="profile-address-info-item location">
+                                                                <i class="mdi mdi-email-outline"></i>
+                                                                @Model.UserPostCode
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="profile-address-info-item location">
+                                                                <i class="mdi mdi-phone"></i>
+                                                                @Model.UserPhoneNumber
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="profile-address-info-item location">
+                                                                <i class="mdi mdi-account"></i>
+                                                                @Model.UserFirstName @Model.UserLastName
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <!-- checkout------------------------------>
+}
+else
+{
+    <!-- checkout------------------------------>
+    <div class="container-main">
+        <div class="d-block">
+            <section class="blog-checkout d-block order-1">
+                <div class="col-lg">
+                    <div class="checkout woocommerce-checkout">
+                        <div class="content-checkout">
+                            <div class="middle-container">
+                                <form action="#" class="form-checkout">
+                                    <div class="col2-set" id="customer-details">
+                                        <div class="col-12">
+                                            <div class="billing-fields mt-4">
+                                                <h4 class="text-danger">سفارش دریافت نشد</h4>
+                                                <p class="thankyou-order-received">
+                                                    پرداخت ناموفقیت انجام شد. برای جلوگیری از لغو سیستمی سفارش،تا 24 ساعت آینده پرداخت را انجام دهید.
+                                                    چنانچه طی این فرایند مبلغی از حساب شما کسر شده است،طی 72 ساعت آینده به حساب شما باز خواهد گشت.
+                                                </p>
+                                                <div>
+                                                    <h5>متن خطا</h5>
+                                                    <div class="alert alert-danger">
+                                                        @ViewData["Error"]
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <!-- checkout------------------------------>
+
+}
+
+
+@section Scripts{
+
+    <!-- plugin----------------------------------------------------->
+    <script src="/assets/js/vendor/owl.carousel.min.js"></script>
+    <script src="/assets/js/vendor/jquery.countdown.js"></script>
+    <script src="/assets/js/vendor/ResizeSensor.min.js"></script>
+    <script src="/assets/js/vendor/theia-sticky-sidebar.min.js"></script>
+    <script src="/assets/js/vendor/wNumb.js"></script>
+    <script src="/assets/js/vendor/nouislider.min.js"></script>
+    <script src="/assets/js/vendor/jquery.nice-select.min.js"></script>
+}

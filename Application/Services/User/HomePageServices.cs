@@ -45,7 +45,7 @@ namespace Application.Services.User
                     Count=p.Count,
                     ImageSrc=p.ProductImages.FirstOrDefault().ImgFile+"/"+p.ProductImages.FirstOrDefault().ImgSrc,
                     Name=p.Name,
-                    Price=p.Price
+                    Price=p.Price.ToString("#,0")
                 }),
                 NewtProducts=newProducts.Select(p=> new GetListOfProductViewModel()
                 {
@@ -53,7 +53,7 @@ namespace Application.Services.User
                     Count = p.Count,
                     ImageSrc = p.ProductImages.FirstOrDefault().ImgFile + "/" + p.ProductImages.FirstOrDefault().ImgSrc,
                     Name = p.Name,
-                    Price = p.Price
+                    Price = p.Price.ToString("#,0")
                 }),
                 MostSalerProducts= mostSalerProduct.Select(p => new GetListOfProductViewModel()
                 {
@@ -61,7 +61,7 @@ namespace Application.Services.User
                     Count = p.Count,
                     ImageSrc = p.ProductImages.FirstOrDefault().ImgFile + "/" + p.ProductImages.FirstOrDefault().ImgSrc,
                     Name = p.Name,
-                    Price = p.Price
+                    Price = p.Price.ToString("#,0")
                 })
             };
 

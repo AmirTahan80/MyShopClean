@@ -14,13 +14,15 @@ namespace MyShop.Controllers
         private readonly IAccountUserServices _accountUserServices;
         private readonly ICommentUserServices _commentUserServices;
         private readonly IProductUserServices _productUserServices;
+        private readonly IPayUserServices _payUserServices;
         public AccountController(IAccountUserServices accountUserServices,
             ICommentUserServices commentUserServices,
-            IProductUserServices productUserServices)
+            IProductUserServices productUserServices, IPayUserServices payUserServices)
         {
             _accountUserServices = accountUserServices;
             _commentUserServices = commentUserServices;
             _productUserServices = productUserServices;
+            _payUserServices = payUserServices;
         }
         #endregion
 
@@ -356,6 +358,9 @@ namespace MyShop.Controllers
 
             var result = await _accountUserServices.GetFavoriteAsync(userId);
 
+            ViewData["Error"] = TempData["Error"];
+            ViewData["Success"] = TempData["Success"];
+
             return View(result);
         }
 
@@ -418,7 +423,7 @@ namespace MyShop.Controllers
 
             var result = await _commentUserServices.GetUserComments(userId);
 
-            var paging = new PagingList<UserCommentsViewModel>(result.Comments,5, pageNumber ?? 1);
+            var paging = new PagingList<UserCommentsViewModel>(result.Comments, 5, pageNumber ?? 1);
             result.Comments = paging.QueryResult;
 
             #region ViewBagForPaging
@@ -431,10 +436,10 @@ namespace MyShop.Controllers
             ViewBag.Action = "GetUserComments";
             ViewBag.Controller = "Account";
             #endregion
-            
+
             ViewBag.Class = 4;
 
-            return View(result);        
+            return View(result);
         }
 
         [Authorize]
@@ -465,17 +470,17 @@ namespace MyShop.Controllers
 
             return View(result);
         }
-        
+
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Discount(CartViewModel model,string returnUrl)
+        public async Task<IActionResult> Discount(CartViewModel model, string returnUrl)
         {
             if (string.IsNullOrWhiteSpace(model.CodeName))
                 return NotFound();
 
             var result = await _accountUserServices.DiscountCartAsync(model);
 
-            if(!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }
@@ -484,6 +489,98 @@ namespace MyShop.Controllers
                 return NotFound();
             }
 
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> PayCart()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _payUserServices.AddRequestPayAsync(userId);
+
+            if (result.Status)
+            {
+                return Redirect(result.ReturnRedirect);
+            }
+            else
+            {
+                if(!string.IsNullOrWhiteSpace(result.ReturnRedirect))
+                {
+                    return Redirect(result.ReturnRedirect);
+                }
+                else if (result.ShowNotFound)
+                    return NotFound();
+                else
+                {
+                    return RedirectToAction("ShowCart");
+                }
+            }
+
+        }
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Validate(string id, string authority, string status)
+        {
+            if (status == "" || authority == "")
+                return NotFound();
+
+            var result = await _payUserServices.Verification(id, authority, status);
+
+            if(result.RetrunResult.ShowNotFound)
+            {
+                return NotFound();
+            }
+            else if(result.RetrunResult.Status)
+            {
+                ViewData["Success"] = result.RetrunResult.SuccesMessage;
+                return View(result);
+            }
+            else
+            {
+                ViewData["Error"] = result.RetrunResult.ErrorMessage;
+                return View();
+            }
+
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetFactors(int? pageNumber)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _accountUserServices.GetFactorsAsync(userId);
+
+            var paging = new PagingList<FactorViewModel>(result.Factors, 5, pageNumber ?? 1);
+            result.Factors = paging.QueryResult;
+
+            #region ViewBagForPaging
+            ViewBag.PageNumber = pageNumber ?? 1;
+            ViewBag.FirstPage = paging.FirstPage;
+            ViewBag.LastPage = paging.LastPage;
+            ViewBag.PrevPage = paging.PreviousPage;
+            ViewBag.NextPage = paging.NextPage;
+            ViewBag.Count = paging.LastPage;
+            ViewBag.Action = "GetFactors";
+            ViewBag.Controller = "Account";
+            #endregion
+
+            ViewBag.Class = 1;
+
+            return View(result);
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> FactorDetail(int factorId=0)
+        {
+            if (factorId == 0)
+                return NotFound();
+
+            var result = await _accountUserServices.GetFactorAsync(factorId);
+
+            return View(result);
         }
     }
 }

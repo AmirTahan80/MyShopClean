@@ -28,6 +28,7 @@ namespace Data.Repositories.AdminRepositories
                 .Include(p => p.CartDetails).ThenInclude(p => p.Product).ThenInclude(p => p.ProductAttributes)
                 .Include(p => p.CartDetails).ThenInclude(p => p.Product).ThenInclude(p => p.Properties)
                 .Include(p => p.CartDetails).ThenInclude(p => p.Templates)
+                .Include(p=>p.Discounts)
                 .SingleOrDefaultAsync(p => p.UserId == userId && !p.IsFinally);
             return cart;
         }

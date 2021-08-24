@@ -1,5 +1,6 @@
 ﻿using Application.InterFaces.Both;
 using Application.InterFaces.User;
+using Application.Utilities.Attributes;
 using Application.ViewModels;
 using Application.ViewModels.User;
 using Domain.InterFaces;
@@ -31,12 +32,13 @@ namespace Application.Services.User
         private readonly ICartRepository _cartRepository;
         private readonly IQuestionRepository _questionReposiotry;
         private readonly RoleManager<RoleModel> _roleManager;
+        private readonly IPayRepository _payRepository;
 
         public AccountUserServices(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor,
             IHostingEnvironment env, LinkGenerator linkGenerator, IMessageSenderServices messageSender,
             SignInManager<ApplicationUser> signInManager, IProductRepository productRepository,
             ICartRepository cartRepository, IQuestionRepository questionReposiotry,
-            RoleManager<RoleModel> roleManager)
+            RoleManager<RoleModel> roleManager, IPayRepository payRepository)
         {
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
@@ -48,6 +50,7 @@ namespace Application.Services.User
             _cartRepository = cartRepository;
             _questionReposiotry = questionReposiotry;
             _roleManager = roleManager;
+            _payRepository = payRepository;
         }
         #endregion
 
@@ -502,8 +505,6 @@ namespace Application.Services.User
                     };
 
                     await _cartRepository.AddCartDetail(cartDetailCreate);
-
-                    cartCreate.TotalPrice += cartDetailCreate.TotalPrice;
                 }
                 else
                 {
@@ -524,8 +525,6 @@ namespace Application.Services.User
                         };
 
                         await _cartRepository.AddCartDetail(cartDetailCreate);
-
-                        cart.TotalPrice += cartDetailCreate.TotalPrice;
                     }
                     else
                     {
@@ -559,8 +558,6 @@ namespace Application.Services.User
                         cartDetail.ProductPrice = productPrice;
                         cartDetail.TotalPrice = productPrice * count;
                         cartDetail.Templates = templateId == 0 ? null : template;
-
-                        cart.TotalPrice += cartDetail.Product.Price;
                     }
                 }
                 await _cartRepository.SaveAsync();
@@ -596,6 +593,15 @@ namespace Application.Services.User
                 if (cart == null || cart.CartDetails.Count == 0)
                     return null;
 
+                int discountsSum = 0;
+                if (cart.Discounts != null)
+                {
+                    foreach (var discount in cart.Discounts)
+                    {
+                        discountsSum += discount.DiscountPrice;
+                    }
+                }
+
                 var cartDetails = cart.CartDetails.Select(p => new CartDetailViewModel()
                 {
                     Id = p.CartDetailId,
@@ -616,13 +622,19 @@ namespace Application.Services.User
                     }) : null,
                 }).ToList();
 
+                int sumPrice = 0;
+                foreach (var cartDetail in cartDetails)
+                {
+                    sumPrice += cartDetail.TotalPrice;
+                }
+
                 var returnCart = new CartViewModel()
                 {
                     Id = cart.CartId,
-                    TotalPrice = cart.TotalPrice,
                     CreateTime = cart.CreateTime,
                     CountOfProduct = cart.CartDetails.Count,
-                    CartDetails = cartDetails
+                    CartDetails = cartDetails,
+                    SumPrice = discountsSum != 0 ? sumPrice - discountsSum : sumPrice
                 };
 
                 return returnCart;
@@ -642,8 +654,6 @@ namespace Application.Services.User
                 var cartDetail = await _cartRepository.GetCartDetailAsync(cartDetailId);
                 if (cartDetail == null)
                     return false;
-
-                cartDetail.Cart.TotalPrice -= cartDetail.TotalPrice;
 
                 _cartRepository.RemoveCartDetail(cartDetail);
 
@@ -666,7 +676,6 @@ namespace Application.Services.User
 
                 if (cartDetail.ProductCount <= 1)
                 {
-                    cartDetail.Cart.TotalPrice -= cartDetail.TotalPrice;
                     _cartRepository.RemoveCartDetail(cartDetail);
                 }
                 else
@@ -683,7 +692,6 @@ namespace Application.Services.User
                         productPrice = cartDetail.Product.Price;
                     }
                     cartDetail.TotalPrice -= productPrice;
-                    cartDetail.Cart.TotalPrice -= productPrice;
                 }
 
                 await _cartRepository.SaveAsync();
@@ -719,7 +727,6 @@ namespace Application.Services.User
                         productPrice = cartDetail.Product.Price;
                     }
                     cartDetail.TotalPrice += productPrice;
-                    cartDetail.Cart.TotalPrice += productPrice;
                 }
 
                 await _cartRepository.SaveAsync();
@@ -932,7 +939,7 @@ namespace Application.Services.User
                 if (parent != null)
                 {
                     var userReplayOn = parent.User;
-                    await Sendemail(userReplayOn,product.Id);
+                    await Sendemail(userReplayOn, product.Id);
                 }
 
                 await _questionReposiotry.SaveAsync();
@@ -987,7 +994,7 @@ namespace Application.Services.User
 
             return addToProfile;
         }
-       
+
         public async Task<ResultDto> DiscountCartAsync(CartViewModel discount)
         {
             try
@@ -997,7 +1004,7 @@ namespace Application.Services.User
 
                 var returnResult = new ResultDto();
 
-                if (discountFind==null)
+                if (discountFind == null)
                 {
                     returnResult.ErrorMessage = "کد تخفیف یافت نشد!!!";
                     returnResult.Status = false;
@@ -1006,14 +1013,13 @@ namespace Application.Services.User
 
                 var carts = await _cartRepository.GetCartsAsync();
                 var cart = carts.SingleOrDefault(p => p.CartId == discount.Id);
-                if(cart==null)
+                if (cart == null)
                 {
                     returnResult.ErrorMessage = "کد تخفیف یافت نشد!!!";
                     returnResult.Status = false;
                     return returnResult;
                 }
 
-                cart.TotalPrice -= discountFind.DiscountPrice;
 
                 cart.Discounts.Add(discountFind);
 
@@ -1023,7 +1029,7 @@ namespace Application.Services.User
                 returnResult.SuccesMessage = "کد تخفیف اعمال شد ...";
                 returnResult.Status = true;
                 return returnResult;
-                }
+            }
             catch (Exception e)
             {
                 Console.WriteLine(e);
@@ -1034,6 +1040,75 @@ namespace Application.Services.User
                 };
                 return returnResult;
             }
+        }
+
+        public async Task<ProfileViewModel> GetFactorsAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            var allFactors = await _payRepository.GetFactors();
+            var userFactors = allFactors.Where(p => p.UserId == userId).OrderByDescending(p=>p.Id).ToList();
+
+            if (userFactors == null)
+                return null;
+
+            var returnFactors = userFactors.Select(p => new FactorViewModel()
+            {
+                Id = p.Id,
+                RefId = p.RefId,
+                TotalPrice = p.TotalPrice,
+                FactorStatus = p.Status,
+                Discounts = p.Discounts != null ? p.Discounts.Select(c => new DisCountViewModel()
+                {
+                    Name = c.CodeName,
+                    Price = c.DiscountPrice
+                }) : null
+            });
+
+            var retrunProfile = new ProfileViewModel()
+            {
+                Name = user.UserName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Factors = returnFactors
+            };
+
+            return retrunProfile;
+        }
+        public async Task<ProfileViewModel> GetFactorAsync(int id)
+        {
+            var factors = await _payRepository.GetFactors();
+            var factor = factors.SingleOrDefault(p => p.Id == id);
+
+            var retrunProfile = new ProfileViewModel()
+            {
+                Id = factor.UserId,
+                Address = factor.UserAddress,
+                Email = factor.UserEmail,
+                Name = factor.UserName,
+                PhoneNumber = factor.UserPhone,
+                Factor = new FactorViewModel()
+                {
+                    Id = factor.Id,
+                    Discounts = factor.Discounts != null ? factor.Discounts.Select(p=> new DisCountViewModel()
+                    {
+                        Name=p.CodeName,
+                        Price=p.DiscountPrice
+                    }).ToList() : null,
+                    FactorStatus = factor.Status,
+                    RefId = factor.RefId,
+                    TotalPrice = factor.TotalPrice,
+                    FactorDetails=factor.FactorDetails.Select(p=> new FactorDetailViewModel()
+                    {
+                        Id=p.Id,
+                        ProductCount=p.ProductCount,
+                        ProductPrice=p.ProductPrice,
+                        ProductName=p.ProductName
+                    })
+                },
+            };
+
+            return retrunProfile;
         }
 
         //Private Mehode
@@ -1157,7 +1232,7 @@ namespace Application.Services.User
 
             var callBackUrl = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext,
         action: "Description", "Product",
-        new {productId = productId }, _httpContextAccessor.HttpContext.Request.Scheme);
+        new { productId = productId }, _httpContextAccessor.HttpContext.Request.Scheme);
 
             string message = "<a href=\"" + callBackUrl + "\" target='_blank' style='font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #FFA73B; display: inline-block;'>مشاهده سوال</a>";
             //Get TemplateFile located at wwwroot/Templates/EmailTemplate/Register_EmailTemplate.html  

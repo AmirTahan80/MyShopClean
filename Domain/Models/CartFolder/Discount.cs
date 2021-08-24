@@ -23,5 +23,6 @@ namespace Domain.Models
         //Navigation
 
         public ICollection<Cart> Carts { get; set; }
+        public ICollection<Factor> Factors { get; set; }
     }
 }

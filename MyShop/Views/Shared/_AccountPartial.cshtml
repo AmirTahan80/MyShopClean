@@ -1,5 +1,6 @@
 ﻿@if (User.Identity.IsAuthenticated)
 {
+    <span class="title-account">@User.Identity.Name</span>
     <div class="dropdown-menu">
         <ul class="account-uls mb-0">
             <li class="account-item">
@@ -16,7 +17,7 @@
             </li>
             <li class="account-item">
                 <form asp-action="SignOutWeb" asp-controller="Account" method="post">
-                    <button class="account-link">خروج</button>
+                    <button class="btn btn-light ">خروج</button>
                 </form>
             </li>
         </ul>
@@ -24,6 +25,7 @@
 }
 else
 {
+    <span class="title-account">حساب کاربری</span>
     <div class="dropdown-menu">
         <ul class="account-uls mb-0">
             <li class="account-item">

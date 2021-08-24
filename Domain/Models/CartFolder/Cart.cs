@@ -12,8 +12,6 @@ namespace Domain.Models
         public string UserId { get; set; }
         [Required]
         public DateTime CreateTime { get; set; }
-        [Required]
-        public int TotalPrice { get; set; }
         public bool IsFinally { get; set; }
 
         //Navigation

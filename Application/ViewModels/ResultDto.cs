@@ -6,5 +6,6 @@
         public bool ShowNotFound { get; set; } = false;
         public string ErrorMessage { get; set; }
         public string SuccesMessage { get; set; }
+        public string ReturnRedirect { get; set; }
     }
 }

@@ -44,7 +44,7 @@ namespace Application.Services.User
                 Name = p.Name,
                 Count = p.Count,
                 ImageSrc = p.ProductImages.FirstOrDefault().ImgFile + "/" + p.ProductImages.FirstOrDefault().ImgSrc,
-                Price = p.Price
+                Price = p.Price.ToString("#,0")
             });
 
             return returnCorrentProduct;
@@ -115,7 +115,7 @@ namespace Application.Services.User
                 Id = product.Id,
                 Name = product.Name,
                 Count = product.Count,
-                Price = product.Price,
+                Price = product.Price.ToString("#,0"),
                 Images = product.ProductImages.Select(p => new ProductImageViewModel()
                 {
                     ImgSrc = p.ImgFile + "/" + p.ImgSrc,

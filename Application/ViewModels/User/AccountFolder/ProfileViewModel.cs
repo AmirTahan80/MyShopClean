@@ -26,5 +26,7 @@ namespace Application.ViewModels.User
 
         public IEnumerable<UserCommentsViewModel> Comments { get; set; }
         public IEnumerable<QuestionViewModel> Questions { get; set; }
+        public IEnumerable<FactorViewModel> Factors { get; set; }
+        public FactorViewModel Factor { get; set; }
     }
 }

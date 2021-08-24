@@ -1,0 +1,90 @@
+﻿@model ProfileViewModel
+@{
+    ViewData["Title"] = "سفارشات";
+}
+
+@section Header{
+    <!-- plugin-------------------------------------->
+    <link rel="stylesheet" href="/assets/css/vendor/bootstrap.css">
+    <link rel="stylesheet" href="/assets/css/vendor/owl.carousel.min.css">
+    <link rel="stylesheet" href="/assets/css/vendor/noUISlider.min.css">
+    <link rel="stylesheet" href="/assets/css/vendor/nice-select.css">
+}
+
+<!-- profile------------------------------->
+<div class="container-main">
+    <div class="d-block">
+        <section class="profile-home">
+            <div class="col-lg">
+                <div class="post-item-profile order-1 d-block">
+                    <div class="col-lg-3 col-md-3 col-xs-12 pr">
+                        <div class="sidebar-profile sidebar-navigation">
+                            <partial name="_SidebarProfilePartial"></partial>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 col-md-9 col-xs-12 pl">
+                        <div class="profile-content">
+                            <div class="profile-stats">
+                                <div class="table-orders">
+                                    <table class="table table-profile-orders">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col">شماره سفارش</th>
+                                                <th scope="col">تاریخ ثبت سفارش</th>
+                                                <th scope="col">وضعیت</th>
+                                                <th scope="col">مجموع</th>
+                                                <th scope="col">جزئیات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.Factors)
+                                            {
+                                                <tr>
+                                                    <td class="order-code">@item.RefId</td>
+                                                    <td>سه شنبه 4 فروردین 99</td>
+                                                    <td class="Waiting text-success">
+                                                        @if (item.FactorStatus.ToString() == "Progssess")
+                                                        {
+                                                            <p class="info">در حال اجرا</p>
+                                                        }
+                                                        else if (item.FactorStatus.ToString() == "Cansel")
+                                                        {
+                                                            <p class="red">لغو شده</p>
+                                                        }
+                                                        else if (item.FactorStatus.ToString() == "Success")
+                                                        {
+                                                            <p class="success">اتمام یافته</p>
+                                                        }
+                                                    </td>
+                                                    <td class="totla">
+                                                        <span class="amount">
+                                                            @item.TotalPrice.ToString("#,0")
+                                                            <span>تومان</span>
+                                                        </span>
+                                                    </td>
+                                                    <td class="detail"><a asp-action="FactorDetail" asp-controller="Account" asp-route-factorId="@item.Id" class="btn btn-secondary d-block">نمایش</a></td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<!-- profile------------------------------->
+
+@section Scripts{
+    <!-- plugin----------------------------------------------------->
+    <script src="/assets/js/vendor/owl.carousel.min.js"></script>
+    <script src="/assets/js/vendor/jquery.countdown.js"></script>
+    <script src="/assets/js/vendor/ResizeSensor.min.js"></script>
+    <script src="/assets/js/vendor/theia-sticky-sidebar.min.js"></script>
+    <script src="/assets/js/vendor/wNumb.js"></script>
+    <script src="/assets/js/vendor/nouislider.min.js"></script>
+    <script src="/assets/js/vendor/jquery.nice-select.min.js"></script>
+} 

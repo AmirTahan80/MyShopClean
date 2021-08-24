@@ -4,14 +4,16 @@ using Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infra.Data.Migrations
 {
     [DbContext(typeof(AppWebContext))]
-    partial class AppWebContextModelSnapshot : ModelSnapshot
+    [Migration("20210822133400_CreateFactorAndFactorDetailAnddeleteTotalPricdFromCart")]
+    partial class CreateFactorAndFactorDetailAnddeleteTotalPricdFromCart
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,21 +34,6 @@ namespace Infra.Data.Migrations
                     b.HasIndex("DiscountsId");
 
                     b.ToTable("CartDiscount");
-                });
-
-            modelBuilder.Entity("DiscountFactor", b =>
-                {
-                    b.Property<int>("DiscountsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FactorsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("DiscountsId", "FactorsId");
-
-                    b.HasIndex("FactorsId");
-
-                    b.ToTable("DiscountFactor");
                 });
 
             modelBuilder.Entity("Domain.Models.AttributeTemplate", b =>
@@ -271,9 +258,6 @@ namespace Infra.Data.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("CartId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RefId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -890,21 +874,6 @@ namespace Infra.Data.Migrations
                     b.HasOne("Domain.Models.Discount", null)
                         .WithMany()
                         .HasForeignKey("DiscountsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("DiscountFactor", b =>
-                {
-                    b.HasOne("Domain.Models.Discount", null)
-                        .WithMany()
-                        .HasForeignKey("DiscountsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Models.Factor", null)
-                        .WithMany()
-                        .HasForeignKey("FactorsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

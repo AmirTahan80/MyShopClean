@@ -9,12 +9,6 @@
                             <li class="top-menu-item menu-item-type">
                                 <a asp-action="Index" asp-controller="Product" class="top-menu-link">محصولات</a>
                             </li>
-                            <li class="top-menu-item menu-item-type">
-                                <a href="#" class="top-menu-link">آرشیو محصولات</a>
-                            </li>
-                            <li class="top-menu-item menu-item-type">
-                                <a href="#" class="top-menu-link">وبلاگ</a>
-                            </li>
                             @if (User.Identity.IsAuthenticated)
                             {
                                 <li class="top-menu-item menu-item-type">
@@ -34,7 +28,7 @@
                     <div class="col-lg-3 pr">
                         <div class="header-logo row text-right">
                             <a href="#">
-                                <img src="/assets/images/logo.png" alt="دیجی اسمارت">
+                                <img src="/assets/images/logo.png" alt="فروشگاه من">
                             </a>
                         </div>
                     </div>
@@ -63,7 +57,6 @@
                                     <span class="icon-account">
                                         <img src="/assets/images/man.png" class="avator">
                                     </span>
-                                    <span class="title-account">حساب کاربری</span>
                                     <partial name="_AccountPartial"></partial>
                                 </div>
                             </div>

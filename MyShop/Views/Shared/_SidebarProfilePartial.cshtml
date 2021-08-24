@@ -11,7 +11,7 @@
         <span class="profile-box-phone">شماره همراه : @Model.PhoneNumber</span>
         <div class="profile-box-tabs">
             <form asp-action="SignOutWeb" asp-controller="Account" method="post">
-                <button class="profile-box-tab-sign-out btn btn-outline-danger"><i class="mdi mdi-logout-variant"></i>خروج از حساب</button>
+                <button class="profile-box-tab-sign-out btn btn-outline-info alert-info m-1"><i class="mdi mdi-logout-variant"></i>خروج از حساب</button>
             </form>
         </div>
     </footer>
@@ -25,7 +25,7 @@
             </a>
         </li>
         <li class="profile-account-nav-item navigation-link-dashboard">
-            <a href="#" class="@(ViewBag.Class==1?"active" : "")">
+            <a asp-action="GetFactors" asp-controller="Account" class="@(ViewBag.Class==1?"active" : "")">
                 <i class="mdi mdi-cart"></i>
                 همه سفارش ها
             </a>
@@ -56,7 +56,7 @@
         </li>
         <li class="profile-account-nav-item navigation-link-dashboard">
             <a asp-action="GetUserQuestion" asp-controller="Account" class="@(ViewBag.Class==5?"active" : "")">
-                <i class="icon icon-question"></i>
+                <i>?</i>
                 سوالات
             </a>
         </li>
@@ -68,7 +68,7 @@
         </li>
         <li class="profile-account-nav-item navigation-link-dashboard">
             <a asp-action="ChangePassWord" asp-controller="Account" class="">
-                <i class="icon icon-key"></i>
+                <i>✎</i>
                 تغییر رمز عبور
             </a>
         </li>

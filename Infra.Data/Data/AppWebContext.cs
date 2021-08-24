@@ -35,7 +35,13 @@ namespace Infra.Data
         public DbSet<Question> Question { get; set; }
 
         public DbSet<Discount> Discounts { get; set; }
+
         public DbSet<Baner> Baners { get; set; }
+
+        public DbSet<RequestPay> RequestPays { get; set; }
+
+        public DbSet<Factor> Factors { get; set; }
+        public DbSet<FactorDetail> FactorDetails { get; set; }
 
         #endregion
         #region ModelCreating

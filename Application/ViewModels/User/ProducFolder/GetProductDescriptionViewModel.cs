@@ -12,7 +12,7 @@ namespace Application.ViewModels.User
         [Required]
         public bool IsProductHaveAttributes { get; set; }
         [Required]
-        public int Price { get; set; }
+        public string Price { get; set; }
         [Required]
         public int Count { get; set; }
         [Required]

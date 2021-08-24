@@ -14,8 +14,7 @@ namespace Domain.Models
         public ICollection<Comment> Comments { get; set; }
         public ICollection<Cart> Carts { get; set; }
         public ICollection<Question> Questions { get; set; }
-
-        //public ICollection<RequestForPay> RequestPaies { get; set; }
-        //public ICollection<Factor> Factors { get; set; }
+        public ICollection<Factor> Factors { get; set; }
+        public ICollection<RequestPay> RequestPays { get; set; }
     }
 }
