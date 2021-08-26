@@ -12,14 +12,13 @@
                     <div class="card-title-wrap bar-warning">
                         <h4 class="card-title">نظرات</h4>
                         <div class="col-md-12">
-                            <form class="row form-group" asp-action="Comments" asp-controller="AccountManager" enctype="text/plain" method="get">
-                                <input type="text" class="form-control col-md-4 m-1" value="@ViewBag.SearchComment" placeholder="نام کاربری و یا ایمیل کاربر نظر دهنده ، محصول و موضوع یا متن نظر را وارد کنید ..." name="searchComment" />
+                            <form class="row form-group" asp-action="GetQuestions" asp-controller="AccountManager" enctype="text/plain" method="get">
+                                <input type="text" class="form-control col-md-4 m-1" value="@ViewBag.SearchQuestion" placeholder="متن سوال ، موضوع ، نام محصول و یا نام کاربری را جست و جو کنید ..." name="searchQuestion" />
                                 <select class="form-control col-md-4 m-1" name="filter">
                                     <option class="bg-blue white">@ViewBag.Filter</option>
-                                    <option value="New">جدید ترین</option>
-                                    <option value="Old">قدیمی ترین</option>
-                                    <option value="Show">تایید شده</option>
-                                    <option value="NotShow">تایید نشده</option>
+                                    <option value="newest">جدید ترین</option>
+                                    <option value="older">قدیمی ترین</option>
+                                    <option value="noAwnser">پاسخ داده نشده</option>
                                 </select>
                                 <button class="btn btn-outline-primary m-1"><i class="icon-magnifier"></i> جست و جو</button>
                             </form>
@@ -43,7 +42,7 @@
                         </div>}
                     <div class="card-block">
                         <div class="table-responsive">
-                            <form method="post" asp-action="DeleteUsers" asp-controller="AccountManager">
+                            <form method="post" asp-action="DeleteQuestion" asp-controller="AccountManager">
                                 <table id="recent-orders" class="table table-hover table-xl mb-0">
                                     <thead>
                                         <tr>
@@ -64,8 +63,8 @@
                                                     @i
                                                 </td>
                                                 <td>
-                                                    @*<input type="checkbox" asp-for="@Model[b].IsSelected" />
-                                                        <input asp-for="@Model[b].UserId" type="hidden" />*@
+                                                    <input type="checkbox" asp-for="@Model[b].IsSelected" />
+                                                    <input asp-for="@Model[b].Id" type="hidden" />
                                                 </td>
                                                 <td class="text-truncate">
                                                     @if (Model[b].Email.Length > 10)
@@ -108,9 +107,9 @@
                                                 </td>
                                                 <td class="text-truncate">
                                                     <a class="btn btn-outline-primary"
-                                                       asp-action="EditComment"
+                                                       asp-action="EditQuestion"
                                                        asp-controller="AccountManager"
-                                                       asp-route-commentId="@Model[b].Id">ویرایش</a>
+                                                       asp-route-questionId="@Model[b].Id">ویرایش</a>
                                                 </td>
                                             </tr>
                                         }

@@ -38,7 +38,7 @@ namespace Application.InterFaces.Admin
         /// </summary>
         /// <param name="id"></param>
         /// <returns>ResultDto</returns>
-        Task<ResultDto> DeleteBanerAsync(int id);
+        Task<ResultDto> DeleteBanersAsync(IList<BanerViewModel> deleteBaners);
 
     }
 }

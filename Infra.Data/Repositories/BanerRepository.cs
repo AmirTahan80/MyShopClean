@@ -33,9 +33,9 @@ namespace Infra.Data.Repositories
             await _context.Baners.AddAsync(t);
         }
 
-        public void DeleteBaner(Baner t)
+        public void DeleteBaners(IList<Baner> t)
         {
-            _context.Remove(t);
+            _context.Baners.RemoveRange(t);
         }
 
         public async Task SaveAsync()

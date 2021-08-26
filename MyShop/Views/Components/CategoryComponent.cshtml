@@ -3,7 +3,7 @@
 
 @foreach (var category in Model)
 {
-    if (category.Children.Count()==0)
+    if (category.Children.Count() == 0)
     {
         <li id="nav-menu-item" class="menu-item">
             <a asp-action="Index" asp-controller="Product" asp-route-categoryId="@category.Id" class="current-link-menu">
@@ -17,6 +17,29 @@
             <a asp-action="Index" asp-controller="Product" asp-route-categoryId="@category.Id" class="current-link-menu">
                 @category.Name
             </a>
+            <ul class="sub-menu is-mega-menu mega-menu-level-two">
+                @foreach (var subCategory in category.Children)
+                {
+                    <li class="menu-mega-item menu-item-type-mega-menu">
+                        <a asp-action="Index" asp-controller="Product" asp-route-categoryId="@subCategory.Id">
+                            @subCategory.Name
+                        </a>
+                        @if (subCategory.Children!=null)
+                        {
+                            <ul class="sub-menu mega-menu-level-three">
+                                @foreach (var subSubCategory in subCategory.Children)
+                                {
+                                    <li class="menu-mega-item-three">
+                                        <a asp-action="Index" asp-controller="Product" asp-route-categoryId="@subSubCategory.Id">
+                                            @subSubCategory.Name
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </li>
+                }
+            </ul>
         </li>
     }
 }

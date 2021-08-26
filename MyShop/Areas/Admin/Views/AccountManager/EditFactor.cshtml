@@ -1,0 +1,143 @@
+﻿@model FactorViewModel
+@{
+    ViewData["Title"] = "جزئیات سفارش";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title-wrap bar-success">
+                    <h4 class="card-title" id="basic-layout-form">جزئیات سفارش @Model.RefId</h4>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="px-3">
+                    <form class="form" asp-action="EditFactor" asp-controller="AccountManager" method="post">
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput1">نام کاربری</label>
+                                        <p class="form-control">@Model.UserName</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2">ایمیل</label>
+                                        <p class="form-control">@Model.UserEmail</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2">آدرس کاربر</label>
+                                        <p class="form-control">@Model.UserAddress</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2">تفلن کاربر</label>
+                                        <p class="form-control">@Model.PhoneNumber</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2">کد رهگیری</label>
+                                        <p class="form-control">@Model.RefId</p>
+                                    </div>
+                                </div>
+                                @if (Model.UseDisCount)
+                                {
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="projectinput2">کد تخفیف</label>
+                                            @for (int i = 0; i < Model.DisCountNames.Count(); i++)
+                                            {
+                                                <span>@Model.DisCountNames[i]</span>
+                                                <span>@Model.DisCountPrices[i].ToString("#,0") <strong>تومان</strong></span>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                <div class="col-md-12">
+                                    <div class="form-group row">
+                                        <table class="table-bordered table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>نام و عکس محصول</th>
+                                                    <th>تعداد سفارش داده شده</th>
+                                                    <th>قیمت محصول</th>
+                                                    <th>مبلغ پرداخت شده</th>
+                                                    <th>نوع محصول</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in Model.FactorDetails)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            <a asp-action="Description" asp-controller="Product" asp-area="" asp-route-productId="@item.Id">
+                                                                <img src="/Images/ProductImages/@item.ProductImage" alt="@item.ProductName" class="thumb-img m-1" style="max-width:50px;max-height:50px" />
+                                                                <span>@item.ProductName</span>
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            <p>@item.Count <strong>تعداد سفارش داده شده.</strong></p>
+                                                        </td>
+                                                        <td>
+                                                            <p>@item.ProducPrice.ToString("#,0") <strong>تومان</strong></p>
+                                                        </td>
+                                                        <td>
+                                                            <p>@item.TotalPrice.ToString("#,0") <strong>تومان</strong></p>
+                                                        </td>
+                                                        @if (!string.IsNullOrWhiteSpace(item.ProductTemplate))
+                                                        {
+                                                            <td>
+                                                                <p>@item.ProductTemplate </p>
+                                                            </td>
+                                                        }
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2">وضعبت سفارش</label>
+                                        <select asp-for="FactorStatus" class="form-control">
+                                            <option value="Progssess">در حال اجرا</option>
+                                            <option value="Cansel">لغو شده</option>
+                                            <option value="Success">اتمام یافته</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <input type="hidden" class="hide" readonly asp-for="Id" />
+                                <button type="submit" class="btn btn-success">
+                                    <i class="icon-pencil"></i> ویرایش
+                                </button>
+                                <a asp-action="GetFactors" asp-controller="AccountManager" class="btn btn-primary">
+                                    برگشت به لیست
+                                </a>
+                            </div>
+                            @if (ViewData["Success"] != null)
+                            {
+                                <div class="alert alert-success round">
+                                    <p><strong>موفقیت ! </strong>@ViewData["Success"]</p>
+                                </div>
+                            }
+                            @if (ViewData["Error"] != null)
+                            {
+                                <div class="alert alert-danger round">
+                                    <p><strong>خطا ! </strong>@ViewData["Error"]</p>
+                                </div>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

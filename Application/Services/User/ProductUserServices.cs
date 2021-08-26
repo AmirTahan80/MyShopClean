@@ -13,26 +13,28 @@ namespace Application.Services.User
 {
     public class ProductUserServices : IProductUserServices
     {
+        #region Injections
         private readonly IProductRepository _productRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ICartRepository _cartRepository;
         private readonly ICommentRepository _commentRepository;
-        public ProductUserServices(IProductRepository productRepository,
-            UserManager<ApplicationUser> userManager,
-            ICartRepository cartRepository,
-            ICommentRepository commentRepository)
+        private readonly ICategoryRepository _categoryRepository;
+        public ProductUserServices(IProductRepository productRepository, UserManager<ApplicationUser> userManager, ICartRepository cartRepository,
+            ICommentRepository commentRepository, ICategoryRepository categoryRepository)
         {
             _productRepository = productRepository;
             _userManager = userManager;
             _cartRepository = cartRepository;
             _commentRepository = commentRepository;
+            _categoryRepository = categoryRepository;
         }
-
+        #endregion
         //Implements
 
-        public async Task<IEnumerable<GetListOfProductViewModel>> GetProductsListAsync(int categoryId)
+        public async Task<ProductIndexViewModel> GetProductsListAsync(int categoryId)
         {
             var products = await _productRepository.GetAllProductsAsync();
+            var categories = await _categoryRepository.GetAllCategoriesAsync();
 
             if (categoryId != 0)
             {
@@ -46,8 +48,15 @@ namespace Application.Services.User
                 ImageSrc = p.ProductImages.FirstOrDefault().ImgFile + "/" + p.ProductImages.FirstOrDefault().ImgSrc,
                 Price = p.Price.ToString("#,0")
             });
+            var retrunCategoriesTreeView = GetCategoriesTreeView(categories);
 
-            return returnCorrentProduct;
+            var retrunProductsAndCategories = new ProductIndexViewModel()
+            {
+                Products = returnCorrentProduct,
+                CategoriesTreeView = retrunCategoriesTreeView
+            };
+
+            return retrunProductsAndCategories;
         }
 
         public async Task<GetProductDescriptionViewModel> GetProductDescriptionAsync(int productId, string userId = "")
@@ -60,7 +69,7 @@ namespace Application.Services.User
 
             if (product.Questions != null)
             {
-                var parentQuestion = product.Questions.Where(p => p.ReplayOn == null).OrderByDescending(p=>p.Id).ToList();
+                var parentQuestion = product.Questions.Where(p => p.ReplayOn == null).OrderByDescending(p => p.Id).ToList();
 
                 foreach (var parent in parentQuestion)
                 {
@@ -70,7 +79,7 @@ namespace Application.Services.User
                         Id = parent.Id,
                         Text = parent.QuestionText,
                         ReplayId = 0,
-                        Counter=0
+                        Counter = 0
                     };
 
                     questionsTreeView.Add(item);
@@ -93,12 +102,12 @@ namespace Application.Services.User
                             ReplayId = replay.ReplayOn.Id,
                             Text = replay.QuestionText,
                             ProductId = replay.Product.Id,
-                            Counter=counter*2
+                            Counter = counter * 2
                         };
 
                         questionsTreeView.Add(item);
 
-                        if(replay.Replais!=null)
+                        if (replay.Replais != null)
                         {
                             counter++;
                             GetQuesTionsReplay(replay, counter);
@@ -180,5 +189,63 @@ namespace Application.Services.User
             return productReturn;
         }
 
+
+        #region PrivateMethodes
+        private IEnumerable<GetCategoriesTreeViewViewModel> GetCategoriesTreeView(IEnumerable<Category> categories)
+        {
+            var parents = categories.Where(p => p.Parent == null).ToList();
+
+
+            var categoriesTreeView = new List<GetCategoriesTreeViewViewModel>();
+
+            if (parents != null)
+            {
+                foreach (var parent in parents)
+                {
+                    var item = new GetCategoriesTreeViewViewModel()
+                    {
+                        Id = parent.Id,
+                        Name = parent.Name,
+                        Count = 0
+                    };
+
+                    categoriesTreeView.Add(item);
+
+                    if (parent.Children != null)
+                        GetCategoriesChild(parent, 2);
+
+                }
+
+                void GetCategoriesChild(Category category, int counter)
+                {
+
+                    foreach (var replay in category.Children)
+                    {
+
+                        var item = new GetCategoriesTreeViewViewModel()
+                        {
+                            Id = replay.Id,
+                            Name = replay.Name,
+                            Count = counter
+                        };
+
+                        categoriesTreeView.Add(item);
+
+                        if (replay.Children != null)
+                        {
+                            counter++;
+                            GetCategoriesChild(replay, counter);
+                            counter--;
+                        }
+
+                    }
+
+                }
+            }
+
+            return categoriesTreeView;
+        }
+
+        #endregion
     }
 }

@@ -10,7 +10,9 @@ namespace Domain.InterFaces
     public interface IBanerRepository:ISaveInterFaces
     {
         Task<IEnumerable<Baner>> GetBanersAsync();
+
         Task AddBanerAsync(Baner t);
-        void DeleteBaner(Baner t);
+
+        void DeleteBaners(IList<Baner> t);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Application.InterFaces.Admin;
+using Application.Utilities;
 using Application.ViewModels.Admin;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -21,9 +22,55 @@ namespace MyShop.Areas.Admin.Controllers
         #endregion
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchBaner, int? pageNumber, string filter)
         {
             var baners = await _banerServices.GetBanersAsync();
+
+            if (!string.IsNullOrWhiteSpace(searchBaner))
+            {
+                baners = baners.Where(p => p.Link.Contains(searchBaner) || p.Text.Contains(searchBaner)).ToList();
+
+                ViewBag.SearcgBaner = searchBaner;
+            }
+
+            ViewBag.Filter = "جدید ترین";
+
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                switch (filter)
+                {
+                    case "slider":
+                        baners = baners.Where(p=>p.ImageLocation=="Slider").ToList();
+                        ViewBag.Filter = "اسلایدر";
+                        break;
+                    case "newest":
+                        baners = baners.OrderByDescending(p=>p.Id).ToList();
+                        ViewBag.Filter = "جدید ترین";
+                        break;
+                    case "older":
+                        baners = baners.OrderBy(p => p.Id).ToList();
+                        ViewBag.Filter = "قدیمی ترین";
+                        break;
+                }
+            }
+
+
+            var paging = new PagingList<BanerViewModel>(baners , 10, pageNumber ?? 1);
+            var banersPaging = paging.QueryResult;
+
+            #region ViewBagForPaging
+            ViewBag.PageNumber = pageNumber ?? 1;
+            ViewBag.FirstPage = paging.FirstPage;
+            ViewBag.LastPage = paging.LastPage;
+            ViewBag.PrevPage = paging.PreviousPage;
+            ViewBag.NextPage = paging.NextPage;
+            ViewBag.Count = paging.LastPage;
+            ViewBag.Action = "Index";
+            ViewBag.Controller = "IndexManager";
+            #endregion
+
+            ViewData["Error"] = TempData["Error"];
+            ViewData["Success"] = TempData["Success"];
 
             return View(baners);
         }
@@ -41,7 +88,7 @@ namespace MyShop.Areas.Admin.Controllers
 
             var result = await _banerServices.AddBanerAsync(model);
 
-            if(result.Status)
+            if (result.Status)
             {
                 ViewData["Success"] = result.SuccesMessage;
             }
@@ -68,7 +115,7 @@ namespace MyShop.Areas.Admin.Controllers
 
             var result = await _banerServices.EditBanerAsync(model);
 
-            if(result.Status==true)
+            if (result.Status == true)
             {
                 ViewData["Success"] = result.SuccesMessage;
             }
@@ -78,6 +125,23 @@ namespace MyShop.Areas.Admin.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteBaner(IList<BanerViewModel> models)
+        {
+            var result = await _banerServices.DeleteBanersAsync(models);
+
+            if (result.Status)
+            {
+                TempData["Success"] = result.SuccesMessage;
+            }
+            else
+            {
+                TempData["Error"] = result.ErrorMessage;
+            }
+
+            return RedirectToAction("Index");
         }
     }
 }

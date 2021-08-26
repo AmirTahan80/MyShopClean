@@ -1,0 +1,82 @@
+﻿@model QuestionViewModel
+@{
+    ViewData["Title"] = "ویرایش سوال";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title-wrap bar-success">
+                    <h4 class="card-title" id="basic-layout-form">جزئیات سوال @Model.Text</h4>
+                </div>
+                <p class="mb-0">سوال را مشاهده کنید و پاسخ دهید .</p>
+            </div>
+            <div class="card-body">
+                <div class="px-3">
+                    @if (ViewData["Success"] != null)
+                    {
+                        <div class="alert alert-success round">
+                            <p><strong>موفقیت ! </strong>@ViewData["Success"]</p>
+                        </div>
+                    }
+                    @if (ViewData["Error"] != null)
+                    {
+                        <div class="alert alert-danger round">
+                            <p><strong>خطا ! </strong>@ViewData["Error"]</p>
+                        </div>
+                    }
+                    <form class="form" asp-action="EditQuestion" asp-controller="AccountManager" method="post">
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2">ایمیل</label>
+                                        <a class="form-control" asp-action="EditUser" asp-controller="AccountManager" asp-route-userId="@Model.UserId">
+                                            @Model.Email
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2">موضوع</label>
+                                        <input asp-for="Topic" readonly class="form-control" />
+                                        <span class="red" asp-validation-for="Topic"> </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="projectinput2">سوال</label>
+                                        <textarea asp-for="Text" rows="10" readonly class="form-control"></textarea>
+                                        <span class="red" asp-validation-for="Text"> </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="projectinput2">ثبت پاسخ</label>
+                                        <textarea asp-for="Awnser" rows="10" required class="form-control"></textarea>
+                                        <span class="red" asp-validation-for="Awnser"> </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <input type="hidden" class="hide" readonly asp-for="Id" />
+                                <button type="submit" class="btn btn-success">
+                                    <i class="icon-pencil"></i> ثبت تغییرات
+                                </button>
+                                <a asp-action="GetQuestions" asp-controller="AccountManager" class="btn btn-primary">
+                                    برگشت به لیست
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

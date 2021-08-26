@@ -80,5 +80,39 @@ namespace Application.InterFaces.Admin
         /// </summary>
         /// <returns></returns>
         Task<IList<QuestionViewModel>> GetQuestionsAsync();
+        /// <summary>
+        /// گرفتن سوال
+        /// </summary>
+        /// <returns></returns>
+        Task<QuestionViewModel> GetQuestionAsync(int questionId);
+        /// <summary>
+        /// ثبت پاسخ و ویرایش سوال
+        /// </summary>
+        /// <param name="editQuestion"></param>
+        /// <returns>ResultDto</returns>
+        Task<ResultDto> EditQuestionAsync(QuestionViewModel editQuestion,string userId);
+        /// <summary>
+        /// حذف سوال یا سوالات
+        /// </summary>
+        /// <param name="deleteQuestions"></param>
+        /// <returns>ResultDto</returns>
+        Task<ResultDto> DeleteQuestionAsync(IList<QuestionViewModel> deleteQuestions);
+        /// <summary>
+        /// گرفتن تمامی فاکتور ها
+        /// </summary>
+        /// <returns>FactorViewModel</returns>
+        Task<IEnumerable<FactorViewModel>> GetFactorsAsync();
+        /// <summary>
+        /// گرفتن جزئیات فاکتور
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>FactorViewModel</returns>
+        Task<FactorViewModel> GetFactorAsync(int id);
+        /// <summary>
+        /// ویرایش سفارش
+        /// </summary>
+        /// <param name="editFactor"></param>
+        /// <returns>ResultDto</returns>
+        Task<ResultDto> EditFactorAsync(FactorViewModel editFactor);
     }
 }

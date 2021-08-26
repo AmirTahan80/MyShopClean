@@ -2,7 +2,6 @@
 using Application.Utilities.TagHelper;
 using Application.ViewModels;
 using Application.ViewModels.Admin;
-using Application.ViewModels.EnumFolder;
 using Domain.InterFaces;
 using Domain.Models.IndexFolder;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Services.Admin
@@ -27,13 +25,15 @@ namespace Application.Services.Admin
         public async Task<IList<BanerViewModel>> GetBanersAsync()
         {
             var baners = await _banerRepository.GetBanersAsync();
+            var banersOrder = baners.OrderByDescending(p => p.Id);
 
-            var returnBaners = baners.Select(p => new BanerViewModel()
+            var returnBaners = banersOrder.Select(p => new BanerViewModel()
             {
                 Id = p.Id,
                 Text = p.Text,
                 ImagePath = p.Image,
                 Link = p.Link,
+                ImageLocation = p.BanerPlace
             }).ToList();
 
             return returnBaners;
@@ -146,31 +146,40 @@ namespace Application.Services.Admin
             }
         }
 
-        public async Task<ResultDto> DeleteBanerAsync(int id)
+        public async Task<ResultDto> DeleteBanersAsync(IList<BanerViewModel> deleteBaners)
         {
             try
             {
 
                 var returnResult = new ResultDto();
 
-                var baners = await _banerRepository.GetBanersAsync();
-                var findBanerById = baners.SingleOrDefault(p => p.Id == id);
+                var banersIdForDelete = deleteBaners.Where(p => p.IsSelected).Select(p => p.Id);
+                var allBaners = await _banerRepository.GetBanersAsync();
+                var baners = new List<Baner>();
 
-                var result = DeletePhoto(findBanerById.Image);
-
-                if (!result)
+                foreach (var banerId in banersIdForDelete)
                 {
-                    returnResult.ErrorMessage = "در حذف بنر از فایل مشکلی به وجود آمد لطفا دوباره امتحان کنید !!!";
-                    returnResult.Status = false;
-
-                    return returnResult;
+                    baners.Add(allBaners.Where(p => p.Id == banerId).SingleOrDefault());
                 }
 
-                _banerRepository.DeleteBaner(findBanerById);
+                foreach (var baner in baners)
+                {
+                    var result = DeletePhoto(baner.Image);
+                    if (!result)
+                    {
+                        returnResult.ErrorMessage = "در حذف بنر از فایل مشکلی به وجود آمد لطفا دوباره امتحان کنید !!!";
+                        returnResult.Status = false;
+
+                        return returnResult;
+                    }
+
+                }   
+
+                _banerRepository.DeleteBaners(baners);
 
                 await _banerRepository.SaveAsync();
 
-                returnResult.SuccesMessage = "بنر با موفقیت حذف شد ...";
+                returnResult.SuccesMessage = "بنر ها با موفقیت حذف شد ...";
                 returnResult.Status = true;
 
                 return returnResult;
@@ -211,7 +220,7 @@ namespace Application.Services.Admin
                 {
                     file.CopyTo(FileStream);
                 }
-                return (todayDate+"/"+ fileName);
+                return (todayDate + "/" + fileName);
             }
             else
                 return ("");
@@ -222,7 +231,7 @@ namespace Application.Services.Admin
             if (imagePath == "")
                 return false;
 
-            string folder = $@"wwwroot\Images\ProductImages\imagePath";
+            string folder = $@"wwwroot\Images\Baners\{imagePath}";
             var uploadsRootFolder = Path.Combine(Directory.GetCurrentDirectory(), folder);
             if (File.Exists(uploadsRootFolder))
             {

@@ -9,5 +9,6 @@ namespace Domain.InterFaces
         Task<Question> GetQuestionAsync(int id);
         Task<IEnumerable<Question>> GetQuestionsAsync();
         Task AddQuestionAsync(Question t);
+        void DeleteQuestionsAsync(IEnumerable<Question> t);
     }
 }

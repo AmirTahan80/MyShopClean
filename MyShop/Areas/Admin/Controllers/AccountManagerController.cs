@@ -263,11 +263,136 @@ namespace MyShop.Areas.Admin.Controllers
         }
     
         [HttpGet]
-        public async Task<IActionResult> GetQuestions()
+        public async Task<IActionResult> GetQuestions(string searchQuestion, int? pageNumber,string filter)
         {
             var questions = await _accountServices.GetQuestionsAsync();
 
+
+            if (!string.IsNullOrWhiteSpace(searchQuestion))
+            {
+                searchQuestion = searchQuestion.Trim();
+                questions = questions.Where(p => p.Text.Contains(searchQuestion)
+                || p.Email.Contains(searchQuestion) || p.ProductName.Contains(searchQuestion)).ToList();
+
+                ViewBag.SearchQuestion = searchQuestion;
+            }
+
+            ViewBag.Filter = "جدید ترین";
+
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                switch (filter)
+                {
+                    case "newest":
+                        questions = questions.OrderByDescending(p => p.Id).ToList();
+                        ViewBag.Filter = "جدید ترین";
+                        break;
+                    case "older":
+                        questions = questions.OrderBy(p => p.Id).ToList();
+                        ViewBag.Filter = "قدیمی ترین";
+                        break;
+                    case "noAwnser":
+                        questions = questions.Where(p => p.Replaise==null).ToList();
+                        ViewBag.Filter = "پاسخ داده نشده";
+                        break;
+                }
+            }
+
+
+            var paging = new PagingList<QuestionViewModel>(questions, 10, pageNumber ?? 1);
+            var userPaging = paging.QueryResult;
+
+            #region ViewBagForPaging
+            ViewBag.PageNumber = pageNumber ?? 1;
+            ViewBag.FirstPage = paging.FirstPage;
+            ViewBag.LastPage = paging.LastPage;
+            ViewBag.PrevPage = paging.PreviousPage;
+            ViewBag.NextPage = paging.NextPage;
+            ViewBag.Count = paging.LastPage;
+            ViewBag.Action = "GetQuestions";
+            ViewBag.Controller = "AccountManager";
+            #endregion
+
+
             return View(questions);
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> EditQuestion(int questionId)
+        {
+
+            var result = await _accountServices.GetQuestionAsync(questionId);
+
+            return View(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditQuestion(QuestionViewModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.Text))
+                return View(model);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _accountServices.EditQuestionAsync(model, userId);
+
+            if(result.Status)
+            {
+                ViewData["Success"] = result.SuccesMessage;
+            }
+            else
+            {
+                ViewData["Error"] = result.ErrorMessage;
+            }
+
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteQuestion(IList<QuestionViewModel> models)
+        {
+            var resulr = await _accountServices.DeleteQuestionAsync(models);
+
+            if(resulr.Status)
+            {
+                TempData["Success"] = resulr.SuccesMessage;
+            }
+            else
+            {
+                TempData["Error"] = resulr.ErrorMessage;
+            }
+
+            return RedirectToAction("GetQuestions");
+        }
+    
+        [HttpGet]
+        public async Task<IActionResult> GetFactors()
+        {
+            var result = await _accountServices.GetFactorsAsync();
+
+            return View(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditFactor(int factorId)
+        {
+            var result = await _accountServices.GetFactorAsync(factorId);
+
+            return View(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditFactor(FactorViewModel model)
+        {
+            var result = await _accountServices.EditFactorAsync(model);
+
+            if(result.Status)
+            {
+                ViewData["Success"] = result.SuccesMessage;
+            }
+            else
+            {
+                ViewData["Error"] = result.ErrorMessage;
+            }
+
+            return View(model);
         }
     }
 }

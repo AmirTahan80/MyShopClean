@@ -1,10 +1,8 @@
 ﻿using Application.InterFaces.Admin;
 using Application.InterFaces.Both;
-using Application.Utilities.TagHelper;
 using Application.ViewModels;
 using Application.ViewModels.Admin;
 using Domain.InterFaces;
-using Domain.InterFaces.AdminInterFaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -32,6 +30,7 @@ namespace Application.Services.Admin
         private readonly RoleManager<RoleModel> _roleManager;
         private readonly ICommentRepository _commentRepository;
         private readonly IQuestionRepository _questionRepository;
+        private readonly IPayRepository _payRepository;
 
         public AccountServices(SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
@@ -39,7 +38,7 @@ namespace Application.Services.Admin
             IHttpContextAccessor httpContextAccessor,
             LinkGenerator linkGenerator, RoleManager<RoleModel> roleManager,
             ICommentRepository commentRepository,
-            IQuestionRepository questionRepository)
+            IQuestionRepository questionRepository, IPayRepository payRepository)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -50,6 +49,7 @@ namespace Application.Services.Admin
             _roleManager = roleManager;
             _commentRepository = commentRepository;
             _questionRepository = questionRepository;
+            _payRepository = payRepository;
         }
         #endregion
 
@@ -350,24 +350,220 @@ namespace Application.Services.Admin
                 return returnResultDto;
             }
         }
-        
+
         public async Task<IList<QuestionViewModel>> GetQuestionsAsync()
         {
             var questions = await _questionRepository.GetQuestionsAsync();
 
             var retunrQuestions = questions.Select(p => new QuestionViewModel()
             {
-                Id=p.Id,
-                Email=p.User.Email,
-                UserId=p.User.Id,
-                ProductName=p.Product.Name,
-                ProductImage=p.Product.ProductImages.FirstOrDefault().ImgFile+"/"+p.Product.ProductImages.FirstOrDefault().ImgSrc,
-                ProductId=p.Product.Id,
-                Text=p.QuestionText,
-                Topic=p.Topic
+                Id = p.Id,
+                Email = p.User.Email,
+                UserId = p.User.Id,
+                ProductName = p.Product.Name,
+                ProductImage = p.Product.ProductImages.FirstOrDefault().ImgFile + "/" + p.Product.ProductImages.FirstOrDefault().ImgSrc,
+                ProductId = p.Product.Id,
+                Text = p.QuestionText,
+                Topic = p.Topic,
+                Replaise = p.Replais.Count() > 0 ? p.Replais.Select(c => new QuestionViewModel()
+                {
+                    Id = c.Id,
+                    Email = c.User.Email,
+                    UserId = c.User.Id,
+                    ProductName = c.Product.Name,
+                    ProductImage = c.Product.ProductImages.FirstOrDefault().ImgFile + "/" + p.Product.ProductImages.FirstOrDefault().ImgSrc,
+                    ProductId = c.Product.Id,
+                    Text = c.QuestionText,
+                    Topic = c.Topic
+                }).ToList() : null
             }).ToList();
 
             return retunrQuestions;
+        }
+        public async Task<QuestionViewModel> GetQuestionAsync(int questionId)
+        {
+            var question = await _questionRepository.GetQuestionAsync(questionId);
+
+            var retrunQuestion = new QuestionViewModel()
+            {
+                Id = question.Id,
+                UserId = question.User.Id,
+                Email = question.User.Email,
+                Text = question.QuestionText,
+                Topic = question.Topic
+            };
+
+            return retrunQuestion;
+        }
+        public async Task<ResultDto> EditQuestionAsync(QuestionViewModel editQuestion, string userId)
+        {
+            try
+            {
+                var question = await _questionRepository.GetQuestionAsync(editQuestion.Id);
+                var user = await _userManager.FindByIdAsync(userId);
+
+                var createQuestion = new Question()
+                {
+                    Product = question.Product,
+                    QuestionText = editQuestion.Awnser,
+                    User = user,
+                    ReplayOn = question,
+                    Topic = ""
+                };
+
+                await _questionRepository.AddQuestionAsync(createQuestion);
+
+                question.Replais.Add(createQuestion);
+
+                await _questionRepository.SaveAsync();
+
+                var retrunResult = new ResultDto()
+                {
+                    SuccesMessage = "ثبت تغییرا با موفقیت انجام شد .",
+                    Status = true
+                };
+                return retrunResult;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                var retrunResult = new ResultDto()
+                {
+                    ErrorMessage = "مشکلی در ثبت پاسخ به وجود آمده است !!!",
+                    Status = false
+                };
+                return retrunResult;
+            }
+        }
+        public async Task<ResultDto> DeleteQuestionAsync(IList<QuestionViewModel> deleteQuestions)
+        {
+            try
+            {
+                var questionSelect = deleteQuestions.Where(p => p.IsSelected).Select(p => p.Id).ToList();
+
+                var questions = new List<Question>();
+                foreach (var questionId in questionSelect)
+                {
+                    var questionFind = await _questionRepository.GetQuestionAsync(questionId);
+                    questions.Add(questionFind);
+                    if (questionFind.Replais.Count() > 0)
+                    {
+                        foreach (var questionReplay in questionFind.Replais)
+                        {
+                            questions.Add(questionReplay);
+                        }
+                    }
+                }
+
+                questions = questions.OrderByDescending(p => p.Id).ToList();
+
+                _questionRepository.DeleteQuestionsAsync(questions);
+
+                await _questionRepository.SaveAsync();
+
+                var returnResultDto = new ResultDto()
+                {
+                    SuccesMessage = "حذف سوالات با موفقیت انحام شد ...",
+                    Status = true
+                };
+                return returnResultDto;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                var returnResultDto = new ResultDto()
+                {
+                    ErrorMessage = "مشکلی در حذف سوالات به وجود آمده است لطفا دوباره تلاش کنید !!!",
+                    Status = false
+                };
+                return returnResultDto;
+            }
+        }
+
+        public async Task<IEnumerable<FactorViewModel>> GetFactorsAsync()
+        {
+            var factors = await _payRepository.GetFactors();
+
+            var returnFactors = factors.Select(p => new FactorViewModel()
+            {
+                Id = p.Id,
+                UserName = p.UserName,
+                UserEmail = p.UserEmail,
+                FactorStatus = p.Status.ToString() == "Progssess" ? "در حال انجام" : p.Status.ToString() == "Cansel" ? "لغو شده" : p.Status.ToString() == "Success" ? "اتمام یافته" : "",
+                UserId = p.UserId,
+                UserAddress = p.UserAddress,
+                PhoneNumber = p.UserPhone,
+                DisCountNames = p.Discounts != null ? p.Discounts.Select(p => p.CodeName).ToList() : null,
+                UseDisCount = p.Discounts != null ? true:false,
+                RefId = p.RefId,
+                TotalPrice = p.TotalPrice
+            });
+
+            return returnFactors;
+        }
+        public async Task<FactorViewModel> GetFactorAsync(int id)
+        {
+            var factors = await _payRepository.GetFactors();
+            var factor = factors.SingleOrDefault(p => p.Id == id);
+
+            var returnFactor = new FactorViewModel()
+            {
+                Id = factor.Id,
+                UserName = factor.UserName,
+                UserEmail = factor.UserEmail,
+                FactorStatus = factor.Status.ToString(),
+                UserId = factor.UserId,
+                UserAddress = factor.UserAddress,
+                PhoneNumber = factor.UserPhone,
+                DisCountNames = factor.Discounts != null ? factor.Discounts.Select(p => p.CodeName).ToList() : null,
+                DisCountPrices = factor.Discounts != null ? factor.Discounts.Select(p => p.DiscountPrice).ToList() : null,
+                FactorDetails = factor.FactorDetails.Select(c => new FactorDetailViewModel()
+                {
+                    Id = c.Id,
+                    Count = c.ProductCount,
+                    ProducPrice = c.ProductPrice,
+                    ProductName = c.ProductName,
+                    ProductTemplate = c.AttributesValue,
+                    TotalPrice = c.TotalPrice,
+                    ProductImage = c.ImageSrc
+                }).ToList(),
+                RefId = factor.RefId,
+                TotalPrice = factor.TotalPrice,
+                UseDisCount= factor.Discounts != null ?true:false
+            };
+
+            return returnFactor;
+        }
+        public async Task<ResultDto> EditFactorAsync(FactorViewModel editFactor)
+        {
+            try
+            {
+                var factors = await _payRepository.GetFactors();
+                var factor = factors.SingleOrDefault(p => p.Id == editFactor.Id);
+
+                factor.Status = editFactor.FactorStatus == "Progssess" ? FactorStatus.Progssess : editFactor.FactorStatus == "Cansel" ? FactorStatus.Cansel : editFactor.FactorStatus == "Success" ? FactorStatus.Success : FactorStatus.Progssess;
+
+                await _payRepository.SaveAsync();
+
+                var returnResult = new ResultDto()
+                {
+                    SuccesMessage = "تغییرا با موفقیت اعمال شد ...",
+                    Status = true
+                };
+                return returnResult;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                var returnResult = new ResultDto()
+                {
+                    ErrorMessage = "در ویرایش سفارش مشکلی پیش آمده است لطفا دوباره تلاش کنید !!!",
+                    Status = false
+                };
+                return returnResult;
+            }
         }
 
         //Tag Helpers

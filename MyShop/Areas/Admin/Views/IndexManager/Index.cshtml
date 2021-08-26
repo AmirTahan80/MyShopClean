@@ -13,17 +13,13 @@
                     <div class="card-title-wrap bar-warning row">
                         <h4 class="card-title col-md-12">بنرها</h4>
                         <div class="col-md-12">
-                            <form class="form-group row" enctype="text/plain" method="get" asp-action="Index" asp-controller="ProductManager">
-                                <input type="text" class="form-control m-1 col-md-4" placeholder="نام محصول را وارد کنید ..." value="@ViewBag.SearchProduct" name="searchProduct" />
+                            <form class="form-group row" enctype="text/plain" method="get" asp-action="Index" asp-controller="IndexManager">
+                                <input type="text" class="form-control m-1 col-md-4" placeholder="عنوان و یا لینک را وارد کنید ..." value="@ViewBag.SearchBaner" name="searchBaner" />
                                 <select class="form-control col-md-4 m-1" name="filter">
                                     <option class="bg-blue white" value="@ViewBag.FilterValue">@ViewBag.Filter</option>
+                                    <option value="slider">اسلایدر</option>
                                     <option value="newest">جدید ترین</option>
                                     <option value="older">قدیمی ترین</option>
-                                    <option value="lower10">کمتر از 10</option>
-                                    <option value="lower20">کمتر از 20</option>
-                                    <option value="finish">اتمام یافته</option>
-                                    <option value="expensive">گران ترین</option>
-                                    <option value="cheaper">ارزان ترین</option>
                                 </select>
                                 <button type="submit" class="btn btn-outline-info m-1"><i class="icon-magnifier"></i> جست و جو</button>
                             </form>
@@ -47,7 +43,7 @@
                         </div>}
                     <div class="card-block">
                         <div class="table-responsive">
-                            <form method="post" asp-action="DeleteProduct" asp-controller="ProductManager">
+                            <form method="post" asp-action="DeleteBaner" asp-controller="IndexManager">
                                 <table id="recent-orders" class="table table-hover table-xl mb-0">
                                     <thead>
                                         <tr>
@@ -56,19 +52,20 @@
                                             <th class="border-top-0">عنوان</th>
                                             <th class="border-top-0">عکس</th>
                                             <th class="border-top-0">لینک</th>
+                                            <th class="border-top-0">مکان قرار گیری</th>
                                             <th class="border-top-0">عملیات</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @for (int b = 0; b < Model.Count(); b++)
+                                        @for (int b = 0; b < Model.Count(); b++,i++)
                                         {
                                             <tr>
                                                 <td class="text-truncate">
                                                     @i
                                                 </td>
                                                 <td>
-                                                    @*<input type="checkbox" asp-for="@Model[b].IsSelected" />
-                                                        <input asp-for="@Model[b].Id" type="hidden" />*@
+                                                    <input type="checkbox" asp-for="@Model[b].IsSelected" />
+                                                    <input asp-for="@Model[b].Id" type="hidden" />
                                                 </td>
                                                 <td class="text-truncate">
                                                     @if (Model[b].Text.Length > 10)
@@ -82,7 +79,10 @@
                                                 </td>
                                                 <td class="text-truncate p-1">
 
-                                                    <img class="media-object rounded-circle no-border-top-radius no-border-bottom-radius" src="/Images/Baners/@Model[b].ImagePath" alt="@Model[b].Text">
+                                                    <img class="media-object rounded-circle no-border-top-radius no-border-bottom-radius"
+                                                         src="/Images/Baners/@Model[b].ImagePath"
+                                                         alt="@Model[b].Text"
+                                                         style="width:50px;height:50px">
 
                                                 </td>
                                                 <td>
@@ -90,6 +90,24 @@
                                                        class="btn btn-sm btn-outline-dark">
                                                         @Model[b].Link
                                                     </a>
+                                                </td>
+                                                <td class="text-truncate">
+                                                    @if (Model[b].ImageLocation == "Slider")
+                                                    {
+                                                        <p>اسلایدر</p>
+                                                    }
+                                                    else if (Model[b].ImageLocation == "Right")
+                                                    {
+                                                        <p>کنار اسلایدر</p>
+                                                    }
+                                                    else if (Model[b].ImageLocation == "MiddleLeft")
+                                                    {
+                                                        <p>پایین چپ</p>
+                                                    }
+                                                    else if (Model[b].ImageLocation == "MiddleRight")
+                                                    {
+                                                        <p>پایین راست</p>
+                                                    }
                                                 </td>
                                                 <td class="text-truncate">
                                                     <a class="btn btn-outline-primary"

@@ -19,5 +19,7 @@ namespace Application.ViewModels.Admin
         public IFormFile Image { get; set; }
         public string ImagePath { get; set; }
         public string ImageLocation { get; set; }
+
+        public bool IsSelected { get; set; }
     }
 }

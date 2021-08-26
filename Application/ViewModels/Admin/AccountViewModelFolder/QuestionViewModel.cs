@@ -16,5 +16,9 @@ namespace Application.ViewModels.Admin
         public string ProductImage { get; set; }
         public string Topic { get; set; }
         public string Text { get; set; }
+        public bool IsSelected { get; set; }
+        public string Awnser { get; set; }
+
+        public ICollection<QuestionViewModel> Replaise { get; set; }
     }
 }

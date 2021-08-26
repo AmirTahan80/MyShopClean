@@ -1,4 +1,4 @@
-﻿@model IEnumerable<GetListOfProductViewModel>
+﻿@model ProductIndexViewModel
 @{
     ViewData["Title"] = "لیست محصولات";
 }
@@ -20,7 +20,7 @@
                     <i class="mdi mdi-home"></i>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="#">خانه</a></li>
+                            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">خانه</a></li>
                             <li class="breadcrumb-item active" aria-current="page">آرشیو محصولات</li>
                         </ol>
                     </nav>
@@ -41,38 +41,37 @@
                                 </header>
                                 <div class="product-filter">
                                     <div class="card">
-                                        <div class="collapse show" id="headingOne">
-                                            <div class="card-main mb-0">
-                                                <div class="form-auth-row">
-                                                    <label for="#" class="ui-checkbox">
-                                                        <input type="checkbox" value="1" name="login" id="remember">
-                                                        <span class="ui-checkbox-check"></span>
-                                                    </label>
-                                                    <label for="remember" class="remember-me">همه</label>
+                                        @foreach (var item in Model.CategoriesTreeView)
+                                        {
+                                            if (item.Count == 0)
+                                            {
+                                                <div class="collapse show" id="headingOne">
+                                                    <div class="card-main mb-0">
+                                                        <div class="form-auth-row">
+                                                            <label for="#" class="ui-checkbox">
+                                                                <input type="checkbox" value="" name="login" id="remember">
+                                                                <span class="ui-checkbox-check"></span>
+                                                            </label>
+                                                            <label for="remember" class="remember-me">@item.Name</label>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="form-auth-row">
-                                                    <label for="#" class="ui-checkbox">
-                                                        <input type="checkbox" value="1" name="login" id="remember">
-                                                        <span class="ui-checkbox-check"></span>
-                                                    </label>
-                                                    <label for="remember" class="remember-me">کالای دیجیتال</label>
+                                            }
+                                            else
+                                            {
+                                                <div class="collapse show" id="headingOne" style="margin-right:@(item.Count*2)px">
+                                                    <div class="card-main mb-0">
+                                                        <div class="form-auth-row">
+                                                            <label for="#" class="ui-checkbox">
+                                                                <input type="checkbox" value="" name="login" id="remember">
+                                                                <span class="ui-checkbox-check"></span>
+                                                            </label>
+                                                            <label for="remember" class="remember-me">@item.Name</label>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="form-auth-row">
-                                                    <label for="#" class="ui-checkbox">
-                                                        <input type="checkbox" value="1" name="login" id="remember">
-                                                        <span class="ui-checkbox-check"></span>
-                                                    </label>
-                                                    <label for="remember" class="remember-me">آرایشی، بهداشتی و سلامت</label>
-                                                </div>
-                                                <div class="form-auth-row">
-                                                    <label for="#" class="ui-checkbox">
-                                                        <input type="checkbox" value="1" name="login" id="remember">
-                                                        <span class="ui-checkbox-check"></span>
-                                                    </label>
-                                                    <label for="remember" class="remember-me">مد و پوشاک</label>
-                                                </div>
-                                            </div>
-                                        </div>
+                                            }
+                                        }
                                     </div>
                                 </div>
                             </section>
@@ -138,7 +137,7 @@
                             <div class="tab-content" id="myTabContent">
                                 <div class="tab-pane fade show active" id="Most-visited" role="tabpanel" aria-labelledby="Most-visited-tab">
                                     <div class="row">
-                                        @foreach (var product in Model)
+                                        @foreach (var product in Model.Products)
                                         {
                                             <div class="col-lg-3 col-md-3 col-xs-12 order-1 d-block mb-3">
                                                 <section class="product-box product product-type-simple">

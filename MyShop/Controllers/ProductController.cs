@@ -23,12 +23,12 @@ namespace MyShop.Controllers
 
         public async Task<IActionResult> Index(int categoryId = 0, int? pageNumber = 1, string searchProduct = "", string filter = "")
         {
-            var products = await _productUserServices.GetProductsListAsync(categoryId);
-            products = products.OrderByDescending(p => p.Id);
+            var retrunModel = await _productUserServices.GetProductsListAsync(categoryId);
+            retrunModel.Products = retrunModel.Products.OrderByDescending(p => p.Id);
 
             if (!string.IsNullOrWhiteSpace(searchProduct))
             {
-                products = products.Where(p => p.Name.Contains(searchProduct));
+                retrunModel.Products = retrunModel.Products.Where(p => p.Name.Contains(searchProduct));
                 ViewBag.SearchProduct = searchProduct;
             }
 
@@ -38,22 +38,22 @@ namespace MyShop.Controllers
                 switch (filter)
                 {
                     case "New":
-                        products = products.OrderByDescending(p => p.Id);
+                        retrunModel.Products = retrunModel.Products.OrderByDescending(p => p.Id);
                         ViewData["Filter"] = "1";
                         break;
                     case "Expensive":
-                        products = products.OrderByDescending(p => p.Price);
+                        retrunModel.Products = retrunModel.Products.OrderByDescending(p => p.Price);
                         ViewData["Filter"] = "2";
                         break;
                     case "Cheaper":
-                        products = products.OrderBy(p => p.Price);
+                        retrunModel.Products = retrunModel.Products.OrderBy(p => p.Price);
                         ViewData["Filter"] = "3";
                         break;
                 }
             }
 
-            var paging = new Paging<GetListOfProductViewModel>(products, 6, pageNumber ?? 1);
-            var productsPaging = paging.QueryResult;
+            var paging = new Paging<GetListOfProductViewModel>(retrunModel.Products, 6, pageNumber ?? 1);
+            retrunModel.Products = paging.QueryResult;
 
 
             #region ViewBagForPaging
@@ -71,7 +71,7 @@ namespace MyShop.Controllers
 
 
 
-            return View(productsPaging);
+            return View(retrunModel);
         }
 
         [HttpGet]
