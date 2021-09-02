@@ -1,5 +1,6 @@
 ﻿using Application.InterFaces.Admin;
 using Application.InterFaces.Both;
+using Application.Utilities.TagHelper;
 using Application.ViewModels;
 using Application.ViewModels.Admin;
 using Domain.InterFaces;
@@ -31,6 +32,7 @@ namespace Application.Services.Admin
         private readonly ICommentRepository _commentRepository;
         private readonly IQuestionRepository _questionRepository;
         private readonly IPayRepository _payRepository;
+        private readonly IContactUsRepository _contactUsrepository;
 
         public AccountServices(SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
@@ -38,7 +40,7 @@ namespace Application.Services.Admin
             IHttpContextAccessor httpContextAccessor,
             LinkGenerator linkGenerator, RoleManager<RoleModel> roleManager,
             ICommentRepository commentRepository,
-            IQuestionRepository questionRepository, IPayRepository payRepository)
+            IQuestionRepository questionRepository, IPayRepository payRepository, IContactUsRepository contactUsrepository)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -50,6 +52,7 @@ namespace Application.Services.Admin
             _commentRepository = commentRepository;
             _questionRepository = questionRepository;
             _payRepository = payRepository;
+            _contactUsrepository = contactUsrepository;
         }
         #endregion
 
@@ -135,40 +138,8 @@ namespace Application.Services.Admin
         public async Task<UserDetailViewModel> FinUserById(string userId, string userLoginId)
         {
             var user = await _userManager.FindByIdAsync(userId);
-            var roles = await _roleManager.Roles.ToListAsync();
 
-            var findUserLogIn = await _userManager.FindByIdAsync(userLoginId);
-            var userLogInRoles = await _userManager.GetRolesAsync(findUserLogIn);
-            var userLogInRole = userLogInRoles.FirstOrDefault();
-
-            var correctRolesGet = new List<RoleModel>();
-
-            if (userLogInRole == "Manager")
-            {
-                correctRolesGet = roles.Where(p => p.Name != "Founder" && p.Name != "Manager").ToList();
-            }
-            else if (userLogInRole == "Writer")
-            {
-                correctRolesGet = roles.Where(p => p.Name != "Founder" && p.Name != "Manager" && p.Name != "Writer").ToList();
-            }
-            else if (userLogInRole == "Customer")
-            {
-                correctRolesGet = roles.Where(p => p.Name != "Founder" && p.Name != "Manager" && p.Name != "Writer" && p.Name != "Customer").ToList();
-            }
-            else if (userLogInRole == "Founder")
-            {
-                correctRolesGet = roles.ToList();
-            }
-
-            var rolesItem = new List<SelectListItem>();
-            foreach (var role in correctRolesGet)
-            {
-                rolesItem.Add(new SelectListItem()
-                {
-                    Value = role.Id,
-                    Text = role.Name == "Manager" ? "ادمین | مدیریت کننده" : role.Name == "Writer" ? "نویسنده" : role.Name == "Customer" ? "مشتری" : role.Name == "Founder" ? "سازنده سایت" : ""
-                });
-            }
+            var correctRolesGet = await GetRoles(userLoginId);
 
             var userReturn = new UserDetailViewModel()
             {
@@ -176,7 +147,7 @@ namespace Application.Services.Admin
                 UserName = user.UserName,
                 UserEmail = user.Email,
                 RoleName = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().FirstOrDefault(),
-                RolesName = rolesItem
+                RolesName = correctRolesGet
             };
             return userReturn;
         }
@@ -566,24 +537,84 @@ namespace Application.Services.Admin
             }
         }
 
-        //Tag Helpers
-        async Task SendEmailAsync(ApplicationUser user, string passForReturn = "ConfirmEmail")
+        public async Task<IEnumerable<ContactViewModel>> GetContactsAsync()
         {
+            var contactsUs = await _contactUsrepository.GetContactsUsAsync();
 
-            var emailConfiguration = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callBackUrl = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext,
-    action: passForReturn, "AccountManager",
-     new { userEmail = user.Email, token = emailConfiguration }, _httpContextAccessor.HttpContext.Request.Scheme);
+            var returnContactUs = contactsUs.Select(p => new ContactViewModel()
+            {
+                UserEmail=p.User.Email,
+                Text=p.Text,
+                Topic=p.Topic,
+                Id=p.Id,
+                Awnser=p.Awnser
+            });
 
-            string message = "<a href=\"" + callBackUrl + "\" target='_blank' style='font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #FFA73B; display: inline-block;'>تایید اکانت</a>";
-            //Get TemplateFile located at wwwroot/Templates/EmailTemplate/Register_EmailTemplate.html  
+            return returnContactUs;
+        }
+        public async Task<ContactViewModel> GetContactDetailAsync(int id)
+        {
+            var contactsUs = await _contactUsrepository.GetContactsUsAsync();
+            var contact = contactsUs.SingleOrDefault(p => p.Id == id);
+
+            var returnContact = new ContactViewModel()
+            {
+                UserEmail = contact.User.Email,
+                Text = contact.Text,
+                Topic = contact.Topic,
+                UserId=contact.User.Id,
+                Id=contact.Id,
+                Awnser=contact.Awnser
+            };
+
+            return returnContact;
+        }
+        public async Task<ResultDto> AwnserAsync(ContactViewModel awnserContact)
+        {
+            try
+            {
+                var contacts = await _contactUsrepository.GetContactsUsAsync();
+                var contact = contacts.SingleOrDefault(p => p.Id == awnserContact.Id);
+
+                contact.IsHaveAwnser = true;
+                contact.Awnser = awnserContact.Awnser;
+                contact.AwnserTime = ConverToShamsi.GetDateYeadAndMonthAndDay(DateTime.Now);
+
+                await SendEmailAsync(awnserContact);
+
+                await _contactUsrepository.SaveAsync();
+
+                var returnResult = new ResultDto()
+                {
+                    SuccesMessage = "پاسخ به درستی برای ایمیل کاربر ارسال شد ...",
+                    Status = true
+                };
+                return returnResult;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                var returnResult = new ResultDto()
+                {
+                    ErrorMessage = "ثبت درخواست با مشکل مواجه شد ... دوباره امتحان کنید و اگر به مشکل خوردید به پشتیبان سایت تماس بگیرید !!!",
+                    Status = false
+                };
+                return returnResult;
+            }
+        }
+
+        //Tag Helpers
+        async Task SendEmailAsync(ContactViewModel contact)
+        {
+            string message = contact.Awnser;
+
             var pathToFile = _env.WebRootPath
                     + Path.DirectorySeparatorChar.ToString()
                     + "Templates"
                     + Path.DirectorySeparatorChar.ToString()
                     + "EmailTemplate"
                     + Path.DirectorySeparatorChar.ToString()
-                    + "EmailConfirmTemplate.html";
+                    + "SendAwnserEmailTemplate.html";
             string builder;
             using (StreamReader SourceReader = System.IO.File.OpenText(pathToFile))
             {
@@ -608,11 +639,8 @@ namespace Application.Services.Admin
             //builder = builder.Replace("{dateTime}", ConverToShamsi.GetDate(DateTime.Now).ToString());
             //builder = builder.Replace("{userName}", user.UserName);
             //builder = builder.Replace("{userEmail}", user.Email);
-            builder = builder.Replace("{linkForConfirm}", message);
-            builder = builder.Replace("{link}", callBackUrl);
-            builder = builder.Replace("{userName}", user.UserName);
-            builder = builder.Replace("{userEmail}", user.Email);
-            await _messageSender.SendEmailAsync(user.Email, passForReturn, builder, true);
+            builder = builder.Replace("{Awnser}", message);
+            await _messageSender.SendEmailAsync(contact.UserEmail,"", builder, true);
         }
         private async Task<List<SelectListItem>> GetRoles(string userLoginId)
         {
@@ -654,6 +682,5 @@ namespace Application.Services.Admin
 
             return listOfRoleItem;
         }
-
     }
 }

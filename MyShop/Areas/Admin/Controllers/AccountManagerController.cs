@@ -178,7 +178,7 @@ namespace MyShop.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Comments(int? pageNumber,string searchComment,string filter)
+        public async Task<IActionResult> Comments(int? pageNumber, string searchComment, string filter)
         {
             var comments = await _accountServices.GetCommentsAsync();
             comments = comments.OrderByDescending(p => p.CommentId);
@@ -235,7 +235,7 @@ namespace MyShop.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditComment(int commentId=0)
+        public async Task<IActionResult> EditComment(int commentId = 0)
         {
             if (commentId == 0) return NotFound();
 
@@ -250,7 +250,7 @@ namespace MyShop.Areas.Admin.Controllers
 
             var result = await _accountServices.EditCommentAsync(model);
 
-            if(result.Status)
+            if (result.Status)
             {
                 ViewData["Success"] = result.SuccesMessage;
             }
@@ -261,9 +261,9 @@ namespace MyShop.Areas.Admin.Controllers
 
             return View(model);
         }
-    
+
         [HttpGet]
-        public async Task<IActionResult> GetQuestions(string searchQuestion, int? pageNumber,string filter)
+        public async Task<IActionResult> GetQuestions(string searchQuestion, int? pageNumber, string filter)
         {
             var questions = await _accountServices.GetQuestionsAsync();
 
@@ -292,7 +292,7 @@ namespace MyShop.Areas.Admin.Controllers
                         ViewBag.Filter = "قدیمی ترین";
                         break;
                     case "noAwnser":
-                        questions = questions.Where(p => p.Replaise==null).ToList();
+                        questions = questions.Where(p => p.Replaise == null).ToList();
                         ViewBag.Filter = "پاسخ داده نشده";
                         break;
                 }
@@ -316,7 +316,7 @@ namespace MyShop.Areas.Admin.Controllers
 
             return View(questions);
         }
-        
+
         [HttpGet]
         public async Task<IActionResult> EditQuestion(int questionId)
         {
@@ -335,7 +335,7 @@ namespace MyShop.Areas.Admin.Controllers
 
             var result = await _accountServices.EditQuestionAsync(model, userId);
 
-            if(result.Status)
+            if (result.Status)
             {
                 ViewData["Success"] = result.SuccesMessage;
             }
@@ -351,7 +351,7 @@ namespace MyShop.Areas.Admin.Controllers
         {
             var resulr = await _accountServices.DeleteQuestionAsync(models);
 
-            if(resulr.Status)
+            if (resulr.Status)
             {
                 TempData["Success"] = resulr.SuccesMessage;
             }
@@ -362,7 +362,7 @@ namespace MyShop.Areas.Admin.Controllers
 
             return RedirectToAction("GetQuestions");
         }
-    
+
         [HttpGet]
         public async Task<IActionResult> GetFactors()
         {
@@ -383,7 +383,7 @@ namespace MyShop.Areas.Admin.Controllers
         {
             var result = await _accountServices.EditFactorAsync(model);
 
-            if(result.Status)
+            if (result.Status)
             {
                 ViewData["Success"] = result.SuccesMessage;
             }
@@ -393,6 +393,92 @@ namespace MyShop.Areas.Admin.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserContacts(int? pageNumber,string searchContact,string filter)
+        {
+            var result = await _accountServices.GetContactsAsync();
+
+            if (!string.IsNullOrWhiteSpace(searchContact))
+            {
+                searchContact = searchContact.Trim();
+                result = result.Where(p => p.Text.Contains(searchContact)
+                || p.UserEmail.Contains(searchContact) || p.Topic.Contains(searchContact)).ToList();
+
+                ViewBag.SearchContact = searchContact;
+            }
+
+            ViewBag.Filter = "جدید ترین";
+
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                switch (filter)
+                {
+                    case "newest":
+                        result = result.OrderByDescending(p => p.Id).ToList();
+                        ViewBag.Filter = "جدید ترین";
+                        break;
+                    case "older":
+                        result = result.OrderBy(p => p.Id).ToList();
+                        ViewBag.Filter = "قدیمی ترین";
+                        break;
+                    case "noAwnser":
+                        result = result.Where(p => p.Awnser == null || p.Awnser=="").ToList();
+                        ViewBag.Filter = "پاسخ داده نشده";
+                        break;
+                }
+            }
+
+
+            var paging = new Paging<ContactViewModel>(result, 10, pageNumber ?? 1);
+            result = paging.QueryResult;
+
+            #region ViewBagForPaging
+            ViewBag.PageNumber = pageNumber ?? 1;
+            ViewBag.FirstPage = paging.FirstPage;
+            ViewBag.LastPage = paging.LastPage;
+            ViewBag.PrevPage = paging.PreviousPage;
+            ViewBag.NextPage = paging.NextPage;
+            ViewBag.Count = paging.LastPage;
+            ViewBag.Action = "GetUserContacts";
+            ViewBag.Controller = "AccountManager";
+            #endregion
+
+
+            return View(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> ContactDetail(int contactId)
+        {
+            var result = await _accountServices.GetContactDetailAsync(contactId);
+
+            ViewData["Success"] = TempData["Success"];
+            ViewData["Error"] = TempData["Error"];
+
+            return View(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AwnserContact(ContactViewModel model, string returnUrl)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var result = await _accountServices.AwnserAsync(model);
+
+            if (result.Status)
+            {
+                TempData["Success"] = result.SuccesMessage;
+            }
+            else
+            {
+                TempData["Error"] = result.ErrorMessage;
+            }
+
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
+            else
+                return RedirectToAction("GetUserContacts");
         }
     }
 }

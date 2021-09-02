@@ -21,21 +21,21 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="projectinput1">نام کاربری</label>
-                                        <input class="form-control round" asp-for="UserName" required autofocus />
+                                        <input class="form-control" asp-for="UserName" required autofocus />
                                         <span asp-validation-for="UserName" class="red"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="projectinput2">ایمیل</label>
-                                        <input asp-for="UserEmail" class="round form-control" required />
+                                        <input asp-for="UserEmail" class="form-control" required />
                                         <span class="red" asp-validation-for="UserEmail"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="projectinput2">مقام کاربر</label>
-                                        <input asp-for="RoleName" class="round form-control" required />
+                                        <select asp-for="RoleName" class="form-control" required ></select>
                                         <span class="red" asp-validation-for="RoleName"></span>
                                     </div>
                                 </div>

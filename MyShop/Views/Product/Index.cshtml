@@ -41,41 +41,43 @@
                                 </header>
                                 <div class="product-filter">
                                     <div class="card">
-                                        @foreach (var item in Model.CategoriesTreeView)
-                                        {
-                                            if (item.Count == 0)
+                                        <form class="form-group" method="get" asp-action="Index" asp-controller="Product" id="categoryForm">
+                                            @foreach (var item in Model.CategoriesTreeView)
                                             {
-                                                <div class="collapse show" id="headingOne">
-                                                    <div class="card-main mb-0">
-                                                        <div class="form-auth-row">
-                                                            <label for="#" class="ui-checkbox">
-                                                                <input type="checkbox" value="" name="login" id="remember">
-                                                                <span class="ui-checkbox-check"></span>
-                                                            </label>
-                                                            <label for="remember" class="remember-me">@item.Name</label>
+                                                if (item.Count == 0)
+                                                {
+                                                    <div class="collapse show" id="headingOne">
+                                                        <div class="card-main mb-0">
+                                                            <div class="form-auth-row">
+                                                                <label for="#" class="ui-checkbox">
+                                                                    <input type="checkbox" value="@item.Id" @(Model.CategoriesId.Any(p=>item.Id==p) ? "checked":"") name="categoriesId" class="categorySelect">
+                                                                    <span class="ui-checkbox-check"></span>
+                                                                </label>
+                                                                <label for="remember" class="remember-me">@item.Name</label>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <div class="collapse show" id="headingOne" style="margin-right:@(item.Count*2)px">
-                                                    <div class="card-main mb-0">
-                                                        <div class="form-auth-row">
-                                                            <label for="#" class="ui-checkbox">
-                                                                <input type="checkbox" value="" name="login" id="remember">
-                                                                <span class="ui-checkbox-check"></span>
-                                                            </label>
-                                                            <label for="remember" class="remember-me">@item.Name</label>
+                                                }
+                                                else
+                                                {
+                                                    <div class="collapse show" id="headingOne" style="margin-right:@(item.Count*2)px">
+                                                        <div class="card-main mb-0">
+                                                            <div class="form-auth-row">
+                                                                <label for="#" class="ui-checkbox">
+                                                                    <input type="checkbox" value="@item.Id" @(Model.CategoriesId.Any(p=>item.Id==p) ? "checked":"") name="categoriesId" class="categorySelect">
+                                                                    <span class="ui-checkbox-check"></span>
+                                                                </label>
+                                                                <label for="remember" class="remember-me">@item.Name</label>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                }
                                             }
-                                        }
+                                        </form>
                                     </div>
                                 </div>
                             </section>
-                            <section class="widget-product-categories">
+                            <section class="widget-product-categories" style="display:none">
                                 <header class="cat-header">
                                     <h2 class="mb-0">
                                         <button class="btn btn-block text-right collapsed" data-toggle="collapse" href="#headingThree" role="button" aria-expanded="false" aria-controls="headingThree">
@@ -89,12 +91,14 @@
                                         <div class="collapse show" id="headingThree">
                                             <div class="card-main mb-0">
                                                 <div class="box-data">
-                                                    <form action="">
+                                                    <form asp-action="index" asp-controller="product">
                                                         <div class="mt-5 mb-4">
-                                                            <div id="slider-non-linear-step"></div>
+                                                            <div id="slider-non-linear-step" ></div>
                                                         </div>
                                                         <div class="filter-range mt-2 mb-2 pr">
                                                             <span>قیمت: </span>
+                                                            <input type="hidden" value="@ViewData["Filter"]" name="filter" />
+                                                            <input type="hidden" value="@ViewBag.SearchProduct" name="searchProduct" />
                                                             <span class="example-val" id="slider-non-linear-step-value"></span> تومان
                                                         </div>
                                                         <div class="mt-2 pl">
@@ -122,7 +126,7 @@
                             <div class="nav-sort-tabs-res">
                                 <ul class="nav sort-tabs-options" id="myTab" role="tablist">
                                     <li class="nav-item">
-                                        <a asp-action="Index" asp-controller="Product" asp-route-filter="New" class="nav-link @(ViewData["Filter"].ToString()=="1"?"active":"")" >جدیدترین</a>
+                                        <a asp-action="Index" asp-controller="Product" asp-route-filter="New" class="nav-link @(ViewData["Filter"].ToString()=="1"?"active":"")">جدیدترین</a>
                                     </li>
                                     <li class="nav-item">
                                         <a asp-action="Index" asp-controller="Product" asp-route-filter="Cheaper" class="nav-link @(ViewData["Filter"].ToString()=="3"?"active":"")">ارزان‌ترین</a>
@@ -196,6 +200,15 @@
     <script src="/assets/js/vendor/wNumb.js"></script>
     <script src="/assets/js/vendor/nouislider.min.js"></script>
     <script src="/assets/js/vendor/jquery.nice-select.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".categorySelect").change(function () {
+                $("#categoryForm").submit();
+            });
+
+        });
+    </script>
 
 }
 

@@ -238,6 +238,42 @@ namespace Infra.Data.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("Domain.Models.ContactUs", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Awnser")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("AwnserTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsHaveAwnser")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Topic")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ContactUs");
+                });
+
             modelBuilder.Entity("Domain.Models.Discount", b =>
                 {
                     b.Property<int>("Id")
@@ -999,6 +1035,15 @@ namespace Infra.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Models.ContactUs", b =>
+                {
+                    b.HasOne("Domain.Models.ApplicationUser", "User")
+                        .WithMany("ContactUs")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Models.Factor", b =>
                 {
                     b.HasOne("Domain.Models.ApplicationUser", "User")
@@ -1248,6 +1293,8 @@ namespace Infra.Data.Migrations
                     b.Navigation("Carts");
 
                     b.Navigation("Comments");
+
+                    b.Navigation("ContactUs");
 
                     b.Navigation("Factors");
 

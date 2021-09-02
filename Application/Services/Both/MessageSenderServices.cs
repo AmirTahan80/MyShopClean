@@ -18,7 +18,7 @@ namespace Application.Services.Both
 
                 var credentials = new NetworkCredential()
                 {
-                    UserName = "amirhosin6405",
+                    UserName = "amirhosin6402",
                     Password = "33682964"
                 };
 
@@ -31,7 +31,7 @@ namespace Application.Services.Both
                 using var emailMessage = new MailMessage()
                 {
                     To = { new MailAddress(toEmail) },
-                    From = new MailAddress("amirhosin6405@gmail.com"),
+                    From = new MailAddress("amirhosin6402@gmail.com"),
                     Subject = subject,
                     Body = message,
                     IsBodyHtml = isMessageHtml

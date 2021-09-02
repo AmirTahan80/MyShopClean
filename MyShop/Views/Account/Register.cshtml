@@ -1,4 +1,5 @@
 ﻿@model RegisetUserForLoginViewModel
+@inject IConfiguration configuration
 @{
     ViewData["Title"] = "ثبت نام در سایت";
 }
@@ -53,6 +54,10 @@
                                             <input type="password" class="password-input" required asp-for="RePassWord">
                                             <span asp-validation-for="RePassWord" class="red"></span>
                                         </div>
+                                        <div class="form-account-title">
+                                            <label for="password">ربات نیستم</label>
+                                            <div class="g-recaptcha" data-sitekey="@configuration["reCAPTCHA:SiteKey"]"></div>
+                                        </div>
                                         <div class="form-auth-row">
                                             <label for="#" class="ui-checkbox mt-1">
                                                 <input type="checkbox" value="1" name="login" id="remember">
@@ -98,5 +103,7 @@
     <script src="/assets/js/vendor/theia-sticky-sidebar.min.js"></script>
     <script src="/assets/js/vendor/wNumb.js"></script>
     <script src="/assets/js/vendor/nouislider.min.js"></script>
+
+    <script src="https://www.google.com/recaptcha/api.js?hl=fa" async defer></script>
 
 }

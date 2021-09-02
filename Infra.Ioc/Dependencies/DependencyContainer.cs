@@ -55,6 +55,8 @@ namespace Infra.Ioc.Dependencies
             services.AddScoped<IPayRepository, PayRepository>();
             services.AddScoped<IPayUserServices, PayUserServices>();
 
+            services.AddScoped<IContactUsRepository,ContactUsRepository>();
+
 
 
 

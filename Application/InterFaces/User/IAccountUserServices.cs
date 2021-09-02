@@ -1,6 +1,7 @@
 ﻿using Application.ViewModels;
 using Application.ViewModels.User;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace Application.InterFaces.User
@@ -152,5 +153,17 @@ namespace Application.InterFaces.User
         /// <param name="id"></param>
         /// <returns>ProfileViewModel</returns>
         Task<ProfileViewModel> GetFactorAsync(int id);
+        /// <summary>
+        /// ساخت ارتباط با ما
+        /// </summary>
+        /// <param name="addContactUs"></param>
+        /// <returns>ResultDto</returns>
+        Task<ResultDto> AddContactUsAsync(ContactUsViewModel addContactUs, string userId);
+        /// <summary>
+        /// اپلود عکس داخل ادیتور
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns>JsonResult</returns>
+        JsonResult UploadFileEditor(IFormFile file);
     }
 }

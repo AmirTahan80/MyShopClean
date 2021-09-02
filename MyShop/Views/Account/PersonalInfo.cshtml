@@ -1,4 +1,5 @@
 ﻿@model ProfileViewModel
+@inject IConfiguration configuration
 @{
     ViewData["Title"] = "اطلاعات حساب";
 }
@@ -50,6 +51,13 @@
                                                 <label for="email">آدرس</label>
                                                 <input asp-for="Address" type="text" id="address" class="input-email-checkout form-control">
 
+                                                <label for="password">ربات نیستم</label>
+                                                <div class="g-recaptcha" data-sitekey="@configuration["reCAPTCHA:SiteKey"]"></div>
+
+                                                <br />
+                                                <br />
+                                                <br />
+
                                                 <div class="AR-CR">
                                                     <button class="btn-registrar"> ثبت تغییرات </button>
                                                     <a asp-action="Profile" asp-controller="Account" class="cancel-edit-address" data-dismiss="modal" aria-label="Close">بازگشت</a>
@@ -91,4 +99,6 @@
     <script src="/assets/js/vendor/wNumb.js"></script>
     <script src="/assets/js/vendor/nouislider.min.js"></script>
     <script src="/assets/js/vendor/jquery.nice-select.min.js"></script>
+
+    <script src="https://www.google.com/recaptcha/api.js?hl=fa" async defer></script>
 }

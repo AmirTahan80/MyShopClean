@@ -6,5 +6,6 @@ namespace Application.ViewModels.User
     {
         public IEnumerable<GetListOfProductViewModel> Products { get; set; }
         public IEnumerable<GetCategoriesTreeViewViewModel> CategoriesTreeView { get; set; }
+        public IEnumerable<int> CategoriesId { get; set; }
     }
 }

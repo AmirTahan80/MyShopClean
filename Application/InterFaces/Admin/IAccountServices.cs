@@ -114,5 +114,22 @@ namespace Application.InterFaces.Admin
         /// <param name="editFactor"></param>
         /// <returns>ResultDto</returns>
         Task<ResultDto> EditFactorAsync(FactorViewModel editFactor);
+        /// <summary>
+        /// گرفتن تمامی نظرات
+        /// </summary>
+        /// <returns>ContactViewModel</returns>
+        Task<IEnumerable<ContactViewModel>> GetContactsAsync();
+        /// <summary>
+        /// گرفتن جزئیات
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>ContactViewModel</returns>
+        Task<ContactViewModel> GetContactDetailAsync(int id);
+        /// <summary>
+        /// ثبت پاسخ
+        /// </summary>
+        /// <param name="awnserContact"></param>
+        /// <returns>ResultDto</returns>
+        Task<ResultDto> AwnserAsync(ContactViewModel awnserContact);
     }
 }

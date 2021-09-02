@@ -6,6 +6,7 @@ using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -31,14 +32,15 @@ namespace Application.Services.User
         #endregion
         //Implements
 
-        public async Task<ProductIndexViewModel> GetProductsListAsync(int categoryId)
+        public async Task<ProductIndexViewModel> GetProductsListAsync(IEnumerable<int> categoriesId)
         {
             var products = await _productRepository.GetAllProductsAsync();
             var categories = await _categoryRepository.GetAllCategoriesAsync();
 
-            if (categoryId != 0)
+            if (categoriesId.Count() > 0)
             {
-                products = products.Where(p => p.CategoryId == categoryId).ToList();
+                products = products.Where(p => categoriesId.Any(t => p.CategoryId == t)).ToList();
+
             }
             var returnCorrentProduct = products.Select(p => new GetListOfProductViewModel()
             {
@@ -53,7 +55,8 @@ namespace Application.Services.User
             var retrunProductsAndCategories = new ProductIndexViewModel()
             {
                 Products = returnCorrentProduct,
-                CategoriesTreeView = retrunCategoriesTreeView
+                CategoriesTreeView = retrunCategoriesTreeView,
+                CategoriesId=categoriesId
             };
 
             return retrunProductsAndCategories;

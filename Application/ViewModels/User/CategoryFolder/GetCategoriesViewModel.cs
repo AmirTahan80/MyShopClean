@@ -24,6 +24,7 @@ namespace Application.ViewModels.User
 
         public bool IsCategoryHasChild { get; set; } = false;
 
+
         //Navigation
         public IEnumerable<GetCategoriesTreeViewViewModel> Children { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿@model GetProductDescriptionViewModel
+@inject IConfiguration configuration
 @{
     ViewData["Title"] = "ثبت نظر";
 }
@@ -156,6 +157,12 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            <div class="col-12 mt-5">
+                                                                <div class="form-account-title">
+                                                                    <label for="password">ربات نیستم</label>
+                                                                    <div class="g-recaptcha" data-sitekey="@configuration["reCAPTCHA:SiteKey"]"></div>
+                                                                </div>
+                                                            </div>
                                                             <br>
                                                             <br>
                                                             <br>
@@ -223,6 +230,9 @@
     <script src="/assets/js/vendor/nouislider.min.js"></script>
     <script src="/assets/js/vendor/bootstrap-slider.min.js"></script>
     <script src="/assets/js/vendor/jquery.nice-select.min.js"></script>
+
+
+    <script src="https://www.google.com/recaptcha/api.js?hl=fa" async defer></script>
 
     <script>
 

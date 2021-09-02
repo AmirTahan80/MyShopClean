@@ -2,7 +2,11 @@
 using Application.Utilities;
 using Application.ViewModels.User;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -13,17 +17,20 @@ namespace MyShop.Controllers
         #region Injections
         private readonly IProductUserServices _productUserServices;
         private readonly IAccountUserServices _accountServices;
+        private readonly IConfiguration _configuration;
         public ProductController(IProductUserServices productUserServices,
-            IAccountUserServices accountServices)
+            IAccountUserServices accountServices, IConfiguration configuration)
         {
             _productUserServices = productUserServices;
             _accountServices = accountServices;
+            _configuration = configuration;
         }
         #endregion
 
-        public async Task<IActionResult> Index(int categoryId = 0, int? pageNumber = 1, string searchProduct = "", string filter = "")
+        [HttpGet]
+        public async Task<IActionResult> Index(IEnumerable<int> categoriesId, int? pageNumber = 1, string searchProduct = "", string filter = "")
         {
-            var retrunModel = await _productUserServices.GetProductsListAsync(categoryId);
+            var retrunModel = await _productUserServices.GetProductsListAsync(categoriesId);
             retrunModel.Products = retrunModel.Products.OrderByDescending(p => p.Id);
 
             if (!string.IsNullOrWhiteSpace(searchProduct))
@@ -67,7 +74,7 @@ namespace MyShop.Controllers
             ViewBag.Controller = "Product";
             #endregion
 
-            ViewData["CategoryId"]= categoryId;
+            ViewData["CategoryId"]= categoriesId;
 
 
 
@@ -93,10 +100,32 @@ namespace MyShop.Controllers
         [HttpPost]
         public async Task<IActionResult> AskQuestion(GetProductDescriptionViewModel model, string returnUrl = "")
         {
-            if (string.IsNullOrEmpty(model.Question.Email) || string.IsNullOrEmpty(model.Question.Text))
+            string recaptchaResponse = this.Request.Form["g-recaptcha-response"];
+            var client = HttpClientFactory.Create();
+            var parameters = new Dictionary<string, string>
+            {
+                {"secret", _configuration["reCAPTCHA:SecretKey"]},
+                {"response", recaptchaResponse},
+                {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
+            };
+
+            HttpResponseMessage response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", new FormUrlEncodedContent(parameters));
+            response.EnsureSuccessStatusCode();
+
+            string apiResponse = await response.Content.ReadAsStringAsync();
+            dynamic apiJson = JObject.Parse(apiResponse);
+
+
+            if (string.IsNullOrEmpty(model.Question.Email) || string.IsNullOrEmpty(model.Question.Text) || apiJson.success != true)
             {
                 if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    if (apiJson.success != true)
+                    {
+                        ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
+                    }
                     return Redirect(returnUrl);
+                }
                 else
                     return NotFound();
             }

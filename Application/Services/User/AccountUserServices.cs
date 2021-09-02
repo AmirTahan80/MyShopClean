@@ -1,6 +1,6 @@
 ﻿using Application.InterFaces.Both;
 using Application.InterFaces.User;
-using Application.Utilities.Attributes;
+using Application.Security.Recaptcha;
 using Application.ViewModels;
 using Application.ViewModels.User;
 using Domain.InterFaces;
@@ -9,12 +9,14 @@ using Domain.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Application.Services.User
@@ -33,12 +35,13 @@ namespace Application.Services.User
         private readonly IQuestionRepository _questionReposiotry;
         private readonly RoleManager<RoleModel> _roleManager;
         private readonly IPayRepository _payRepository;
+        private readonly IContactUsRepository _contactUsRepository;
 
         public AccountUserServices(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor,
             IHostingEnvironment env, LinkGenerator linkGenerator, IMessageSenderServices messageSender,
             SignInManager<ApplicationUser> signInManager, IProductRepository productRepository,
             ICartRepository cartRepository, IQuestionRepository questionReposiotry,
-            RoleManager<RoleModel> roleManager, IPayRepository payRepository)
+            RoleManager<RoleModel> roleManager, IPayRepository payRepository, IContactUsRepository contactUsRepository)
         {
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
@@ -51,6 +54,7 @@ namespace Application.Services.User
             _questionReposiotry = questionReposiotry;
             _roleManager = roleManager;
             _payRepository = payRepository;
+            _contactUsRepository = contactUsRepository;
         }
         #endregion
 
@@ -75,9 +79,9 @@ namespace Application.Services.User
                     UserDetail = userDetail
                 };
 
-                var result = await _userManager.CreateAsync(userCreate, register.PassWord);
+                var resultCreate = await _userManager.CreateAsync(userCreate, register.PassWord);
 
-                if (result.Succeeded)
+                if (resultCreate.Succeeded)
                 {
                     var resultSendEmail = await SendConfirmEmailAsync(userCreate);
                     if (!resultSendEmail)
@@ -1047,7 +1051,7 @@ namespace Application.Services.User
             var user = await _userManager.FindByIdAsync(userId);
 
             var allFactors = await _payRepository.GetFactors();
-            var userFactors = allFactors.Where(p => p.UserId == userId).OrderByDescending(p=>p.Id).ToList();
+            var userFactors = allFactors.Where(p => p.UserId == userId).OrderByDescending(p => p.Id).ToList();
 
             if (userFactors == null)
                 return null;
@@ -1090,20 +1094,20 @@ namespace Application.Services.User
                 Factor = new FactorViewModel()
                 {
                     Id = factor.Id,
-                    Discounts = factor.Discounts != null ? factor.Discounts.Select(p=> new DisCountViewModel()
+                    Discounts = factor.Discounts != null ? factor.Discounts.Select(p => new DisCountViewModel()
                     {
-                        Name=p.CodeName,
-                        Price=p.DiscountPrice
+                        Name = p.CodeName,
+                        Price = p.DiscountPrice
                     }).ToList() : null,
                     FactorStatus = factor.Status,
                     RefId = factor.RefId,
                     TotalPrice = factor.TotalPrice,
-                    FactorDetails=factor.FactorDetails.Select(p=> new FactorDetailViewModel()
+                    FactorDetails = factor.FactorDetails.Select(p => new FactorDetailViewModel()
                     {
-                        Id=p.Id,
-                        ProductCount=p.ProductCount,
-                        ProductPrice=p.ProductPrice,
-                        ProductName=p.ProductName
+                        Id = p.Id,
+                        ProductCount = p.ProductCount,
+                        ProductPrice = p.ProductPrice,
+                        ProductName = p.ProductName
                     })
                 },
             };
@@ -1111,7 +1115,81 @@ namespace Application.Services.User
             return retrunProfile;
         }
 
-        //Private Mehode
+        public async Task<ResultDto> AddContactUsAsync(ContactUsViewModel addContactUs, string userId)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId);
+
+                var createContact = new ContactUs()
+                {
+                    IsHaveAwnser = false,
+                    Text = addContactUs.Text,
+                    Topic = addContactUs.Topic,
+                    User = user
+                };
+
+                await _contactUsRepository.AddContactUsAsync(createContact);
+
+                await _contactUsRepository.SaveAsync();
+
+                var returnResult = new ResultDto()
+                {
+                    SuccesMessage = "درخواست شما با موفقیت ثبت شد ... در طول 24 یا 48 ساعت آینده منتظره پاسخ بمانید ... با تشکر از ثبت درخواست .",
+                    Status = true
+                };
+
+                return returnResult;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                var returnResult = new ResultDto()
+                {
+                    ErrorMessage = "مشکلی در ثبت درخواست شما به وجود آمده لطفا با پشتیبانی تماس بگیرید !!!",
+                    Status = false
+                };
+                return returnResult;
+            }
+        }
+
+        public JsonResult UploadFileEditor(IFormFile file)
+        {
+            try
+            {
+                if (file.Length <= 0) return null;
+
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "Editor");
+
+                if (!Directory.Exists(filePath))
+                {
+                    Directory.CreateDirectory(filePath);
+                }
+                var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName).ToLower();
+                using (var stream = new FileStream(filePath + "/" + fileName, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+                var url = $"/Images/Editor/{fileName}";
+                var result = new UploadFileForCkEditorResultViewModel()
+                {
+                    FileName = fileName,
+                    Uploaded = 1,
+                    Url = url
+                };
+                var successResultJson = new JsonResult(result);
+                return successResultJson;
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine(error);
+                return null;
+            }
+        }
+
+
+
+        #region Private Mehode
         private async Task<bool> IsUserEmailExist(string userEmail)
         {
             var user = await _userManager.FindByEmailAsync(userEmail);
@@ -1226,7 +1304,6 @@ namespace Application.Services.User
 
             return true;
         }
-
         private async Task<bool> Sendemail(ApplicationUser user, int productId)
         {
 
@@ -1275,6 +1352,8 @@ namespace Application.Services.User
 
             return true;
         }
+
+        #endregion
 
     }
 }

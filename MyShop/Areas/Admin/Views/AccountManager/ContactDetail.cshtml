@@ -1,0 +1,155 @@
+﻿@model ContactViewModel
+@{
+    ViewData["Title"] = "جزئیات تماس";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title-wrap bar-success">
+                    <h4 class="card-title" id="basic-layout-form">جزئیات تماس</h4>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="px-3">
+                    @if (ViewData["Success"] != null)
+                    {
+                        <div class="alert alert-success">
+                            <p><strong>موفقیت ! </strong>@ViewData["Success"]</p>
+                        </div>
+                    }
+                    @if (ViewData["Error"] != null)
+                    {
+                        <div class="alert alert-danger">
+                            <p><strong>خطا ! </strong>@ViewData["Error"]</p>
+                        </div>
+                    }
+                    <form class="form" asp-action="AwnserContact" asp-controller="AccountManager" asp-route-returnUrl="@this.Url.Action("ContactDetail","AccountManager",new { contactId = Model.Id })" method="post">
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2">ایمیل</label>
+                                        <a class="form-control" asp-action="EditUser" asp-controller="AccountManager" asp-route-userId="@Model.UserId">
+                                            @Model.UserEmail
+                                            <input type="hidden" asp-for="UserEmail" />
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2">موضوع</label>
+                                        <input asp-for="Topic" readonly class="form-control" />
+                                        <span class="red" asp-validation-for="Topic"> </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="projectinput2">متن</label>
+                                        <div class="col-md-12 thumb thumb-img border" style="overflow:auto" >
+                                            @Html.Raw(Model.Text)
+                                            <span class="red" asp-validation-for="Text"> </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="projectinput2">ثبت پاسخ</label>
+                                        <textarea rows="10" id="editor" asp-for="Awnser"></textarea>
+                                        <span class="red" asp-validation-for="Awnser"> </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <input type="hidden" class="hide" readonly asp-for="Id" />
+                                <button type="submit" class="btn btn-success">
+                                    <i class="icon-pencil"></i> ثبت تغییرات
+                                </button>
+                                <a asp-action="GetQuestions" asp-controller="AccountManager" class="btn btn-primary">
+                                    برگشت به لیست
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+
+    <script src="~/Vendors/ckeditor5/build/ckeditor.js"></script>
+
+    <script>
+
+        ClassicEditor.create(document.querySelector('#editor'),
+            {
+                language: 'fa',
+                ckfinder: { uploadUrl: "/Admin/ProductManager/UploadEditorFile" },
+                heading: {
+                    options: [
+                        { model: 'paragraph', title: 'پاراگراف', class: 'ck-heading_paragraph' },
+                        { model: 'heading1', view: 'h1', title: 'هدر 1', class: 'ck-heading_heading1' },
+                        { model: 'heading2', view: 'h2', title: 'هدر 2', class: 'ck-heading_heading2' },
+                        { model: 'heading3', view: 'h3', title: 'هدر 3', class: 'ck-heading_heading3' }
+                    ]
+                },
+                toolbar: {
+                    items: [
+                        'heading', '|',
+                        'bold', 'italic', 'link', 'horizontalLine', 'underline', 'fontSize', 'fontColor', 'fontBackgroundColor', 'highlight', 'bulletedList', 'numberedList', 'blockQuote', '|',
+                        'alignment', 'indent', 'outdent', '|',
+                        'insertTable', 'htmlEmbed', 'codeBlock', '|',
+                        'imageInsert', 'mediaEmbed', '|',
+                        'removeFormat', 'redo', 'undo'
+                    ],
+                    shouldNotGroupWhenFull: true
+                },
+                image: {
+                    // Configure the available styles.
+                    styles: [
+                        'alignLeft', 'alignCenter', 'alignRight'
+                    ],
+
+                    // Configure the available image resize options.
+                    resizeOptions: [
+                        {
+                            name: 'resizeImage:original',
+                            label: 'Original',
+                            value: null
+                        },
+                        {
+                            name: 'resizeImage:50',
+                            label: '50%',
+                            value: '50'
+                        },
+                        {
+                            name: 'resizeImage:75',
+                            label: '75%',
+                            value: '75'
+                        }
+                    ],
+
+                    // You need to configure the image toolbar, too, so it shows the new style
+                    // buttons as well as the resize buttons.
+                    toolbar: [
+                        'imageStyle:alignLeft', 'imageStyle:alignCenter', 'imageStyle:alignRight',
+                        '|',
+                        'resizeImage',
+                        '|',
+                        'imageTextAlternative'
+                    ]
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+    </script>
+
+}

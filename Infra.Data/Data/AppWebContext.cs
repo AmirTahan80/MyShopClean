@@ -43,6 +43,8 @@ namespace Infra.Data
         public DbSet<Factor> Factors { get; set; }
         public DbSet<FactorDetail> FactorDetails { get; set; }
 
+        public DbSet<ContactUs> ContactUs { get; set; }
+
         #endregion
         #region ModelCreating
         protected override void OnModelCreating(ModelBuilder builder)

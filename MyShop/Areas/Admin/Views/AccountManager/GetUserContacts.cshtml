@@ -1,0 +1,114 @@
+﻿@model IEnumerable<ContactViewModel>
+@{
+    ViewData["Title"] = "ارتباط با شما";
+    int i = 1;
+}
+
+
+<!--Shopping cart starts-->
+<section id="shopping-cart">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title-wrap bar-warning">
+                        <h4 class="card-title">ارتباطات</h4>
+                        <div class="col-md-12">
+                            <form class="row form-group" asp-action="GetUserContacts" asp-controller="AccountManager" enctype="text/plain" method="get">
+                                <input type="text" class="form-control col-md-4 m-1" value="@ViewBag.SearchContact" placeholder="ایمیل کاربر ، عنوان و یا متن را وارد کنید ..." name="searchContact" />
+                                <select class="form-control col-md-4 m-1" name="filter">
+                                    <option class="bg-blue white">@ViewBag.Filter</option>
+                                    <option value="newest">جدید ترین</option>
+                                    <option value="older">قدیمی ترین</option>
+                                    <option value="noAwnser">پاسخ داده نشده</option>
+                                </select>
+                                <button class="btn btn-outline-primary m-1"><i class="icon-magnifier"></i> جست و جو</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="aler alert-danger m-2 p-2">
+                            <p>
+                                <strong>خطا ! </strong>@TempData["Error"]
+                            </p>
+                        </div>}
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="aler alert-success m-2 p-2">
+                            <p>
+                                <strong>موفقیت ! </strong>@TempData["Success"]
+                            </p>
+                        </div>}
+                    <div class="card-block">
+                        <div class="table-responsive">
+                            <table id="recent-orders" class="table table-hover table-xl mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="border-top-0">#</th>
+                                        <th class="border-top-0">ایمیل کاربر</th>
+                                        <th class="border-top-0">موضوع</th>
+                                        <th class="border-top-0">وضعیت پاسخ</th>
+                                        <th class="border-top-0">عملیات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td class="text-truncate">
+                                                @i
+                                            </td>
+                                            <td class="text-truncate">
+                                                @if (item.UserEmail.Length > 10)
+                                                {
+                                                    <text> @item.UserEmail.Remove(10) </text> }
+                                                else
+                                                {
+                                                    @item.UserEmail}
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrWhiteSpace(item.Topic))
+                                                {
+                                                    if (item.Topic.Length > 20)
+                                                    {
+                                                        <text> @item.Topic.Remove(20) </text>
+                                                    }
+                                                    else
+                                                    {
+                                                        @item.Topic
+                                                    }
+                                                }
+                                            </td>
+                                            <td class="text-truncate">
+                                                @if (item.Awnser != null)
+                                                {
+                                                    <p class="success">پاسخ داده شده است .</p>
+                                                }
+                                                else
+                                                {
+                                                    <p class="red">پاسخی ندارد !</p>
+                                                }
+                                            </td>
+                                            <td class="text-truncate">
+                                                <a class="btn btn-outline-primary"
+                                                   asp-action="ContactDetail"
+                                                   asp-controller="AccountManager"
+                                                   asp-route-contactId="@item.Id">جزئیات</a>
+                                            </td>
+                                        </tr>
+                                        i++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <partial name="_PagingParitial"></partial>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Shopping cart ends-->
