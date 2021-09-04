@@ -1,16 +1,12 @@
 ﻿using Application.InterFaces.User;
-using Application.Security.Recaptcha;
 using Application.Utilities;
 using Application.ViewModels.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -73,7 +69,7 @@ namespace MyShop.Controllers
 
             if (!ModelState.IsValid || apiJson.success != true)
             {
-                if(apiJson.success != true)
+                if (apiJson.success != true)
                 {
                     ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
                 }
@@ -400,23 +396,23 @@ namespace MyShop.Controllers
 
             if (result.Status)
             {
-                ViewData["Success"] = result.SuccesMessage;
-                //if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-                //{
-                //    return Redirect(returnUrl+"?productId="+productId);
-                //}
-                //else
-                return RedirectToAction("ShowCart");
+                TempData["Success"] = result.SuccesMessage;
+                if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+                else
+                    return RedirectToAction("ShowCart");
             }
             else
             {
-                ViewData["Error"] = result.ErrorMessage;
-                //if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-                //{
-                //    return Redirect(returnUrl + "/" + productId);
-                //}
-                //else
-                return RedirectToAction("ShowCart");
+                TempData["Error"] = result.ErrorMessage;
+                if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+                else
+                    return RedirectToAction("ShowCart");
             }
         }
         [HttpGet]
@@ -582,7 +578,7 @@ namespace MyShop.Controllers
                 }
                 return NotFound();
             }
-           
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var result = await _commentUserServices.AddUserCommentAsync(model.Comment, userId);

@@ -319,9 +319,10 @@ namespace Application.Services.User
 
                 if (result.Succeeded)
                 {
+                    await _userManager.UpdateSecurityStampAsync(findUser);
                     var returnResult = new ResultDto()
                     {
-                        SuccesMessage = "تغییر رمز عبور با موفقیت انجام شد ...",
+                        SuccesMessage = "تغییر رمز عبور با موفقیت انجام شد ... لطفا دوباره وارد شوید .",
                         Status = true
                     };
                     return returnResult;
@@ -428,15 +429,14 @@ namespace Application.Services.User
             try
             {
                 var productPrice = 0;
+                var returnResult = new ResultDto();
 
                 var product = await _productRepository.GetProductAsync(productId);
                 if (product == null)
                 {
-                    var returnResult = new ResultDto()
-                    {
-                        ErrorMessage = "محصولی با این مشخصات یافت نشد !!!!!",
-                        Status = false
-                    };
+                    returnResult.ErrorMessage = "محصولی با این مشخصات یافت نشد !!!!!";
+                    returnResult.Status = false;
+
                     return returnResult;
                 }
 
@@ -444,13 +444,18 @@ namespace Application.Services.User
 
                 if (templateId == 0)
                 {
+                    if (product.AttributeTemplates.Count() > 0)
+                    {
+                        returnResult.ErrorMessage = "لطفا نوع مورد نظر را انتخاب کنید !!!";
+                        returnResult.Status = false;
+
+                        return returnResult;
+                    }
                     if (product.Count < count)
                     {
-                        var returnResult = new ResultDto()
-                        {
-                            ErrorMessage = "تعداد خواسته شده از تعداده موجو در انبار بیشتر است !!!",
-                            Status = false
-                        };
+                        returnResult.ErrorMessage = "تعداد خواسته شده از تعداده موجو در انبار بیشتر است !!!";
+                        returnResult.Status = false;
+
                         return returnResult;
                     }
                     template = null;
@@ -459,13 +464,18 @@ namespace Application.Services.User
                 else
                 {
                     var findTemplate = product.AttributeTemplates.SingleOrDefault(p => p.AttributeTemplateId == templateId);
+                    if(findTemplate==null)
+                    {
+                        returnResult.ErrorMessage = "این نوع محصول موجود نمیباشد لطفا نوع دیگری را انتخاب کنید !!!";
+                        returnResult.Status = false;
+
+                        return returnResult;
+                    }
                     if (findTemplate.AttrinbuteTemplateCount < count)
                     {
-                        var returnResult = new ResultDto()
-                        {
-                            ErrorMessage = "تعداد خواسته شده از تعداده موجو در انبار بیشتر است !!!",
-                            Status = false
-                        };
+                        returnResult.ErrorMessage = "تعداد خواسته شده از تعداده موجو در انبار بیشتر است !!!";
+                        returnResult.Status = false;
+
                         return returnResult;
                     }
                     template = findTemplate;
@@ -475,11 +485,8 @@ namespace Application.Services.User
                 var user = await _userManager.FindByIdAsync(userId);
                 if (user == null)
                 {
-                    var returnResult = new ResultDto()
-                    {
-                        ErrorMessage = "لطفا ابتدا وارد سایت شوید !",
-                        Status = false
-                    };
+                    returnResult.ErrorMessage = "لطفا ابتدا وارد سایت شوید !";
+                    returnResult.Status = false;
                     return returnResult;
                 }
 
@@ -537,11 +544,9 @@ namespace Application.Services.User
                         {
                             if (product.Count < count)
                             {
-                                var returnResult = new ResultDto()
-                                {
-                                    ErrorMessage = "تعداد خواسته شده از تعداده موجو در انبار بیشتر است !!!",
-                                    Status = false
-                                };
+                                returnResult.ErrorMessage = "تعداد خواسته شده از تعداده موجو در انبار بیشتر است !!!";
+                                returnResult.Status = false;
+
                                 return returnResult;
                             }
                         }
@@ -549,11 +554,9 @@ namespace Application.Services.User
                         {
                             if (template.AttrinbuteTemplateCount < count)
                             {
-                                var returnResult = new ResultDto()
-                                {
-                                    ErrorMessage = "تعداد خواسته شده از تعداده موجو در انبار بیشتر است !!!",
-                                    Status = false
-                                };
+                                returnResult.ErrorMessage = "تعداد خواسته شده از تعداده موجو در انبار بیشتر است !!!";
+                                returnResult.Status = false;
+
                                 return returnResult;
                             }
                         }
@@ -562,16 +565,17 @@ namespace Application.Services.User
                         cartDetail.ProductPrice = productPrice;
                         cartDetail.TotalPrice = productPrice * count;
                         cartDetail.Templates = templateId == 0 ? null : template;
+
+                        _cartRepository.UpdateCartDetail(cartDetail);
                     }
                 }
                 await _cartRepository.SaveAsync();
 
-                var returnResult1 = new ResultDto()
-                {
-                    SuccesMessage = "محصول به درستی به سبد خرید شما افزوده شد.",
-                    Status = true
-                };
-                return returnResult1;
+
+                returnResult.SuccesMessage = "محصول به درستی به سبد خرید شما افزوده شد.";
+                returnResult.Status = true;
+
+                return returnResult;
             }
             catch (Exception e)
             {
@@ -717,20 +721,41 @@ namespace Application.Services.User
                 var cartDetail = await _cartRepository.GetCartDetailAsync(cartDetailId);
                 if (cartDetail == null) return false;
 
-                if (cartDetail.ProductCount < cartDetail.Product.Count)
+                if (cartDetail.Product.AttributeTemplates.Count() == 0)
                 {
-                    cartDetail.ProductCount += 1;
-                    var productPrice = 0;
-                    if (cartDetail.Product.AttributeTemplates.Count > 0)
+                    if (cartDetail.ProductCount < cartDetail.Product.Count)
                     {
-                        var template = cartDetail.Product.AttributeTemplates.Where(p => p.AttributeTemplateId == cartDetail.Templates.AttributeTemplateId).SingleOrDefault();
-                        productPrice = template.AttrinbuteTemplatePrice;
+                        cartDetail.ProductCount += 1;
+                        var productPrice = 0;
+                        if (cartDetail.Product.AttributeTemplates.Count > 0)
+                        {
+                            var template = cartDetail.Product.AttributeTemplates.Where(p => p.AttributeTemplateId == cartDetail.Templates.AttributeTemplateId).SingleOrDefault();
+                            productPrice = template.AttrinbuteTemplatePrice;
+                        }
+                        else
+                        {
+                            productPrice = cartDetail.Product.Price;
+                        }
+                        cartDetail.TotalPrice += productPrice;
                     }
-                    else
+                }
+                else
+                {
+                    if (cartDetail.ProductCount < cartDetail.Templates.AttrinbuteTemplateCount)
                     {
-                        productPrice = cartDetail.Product.Price;
+                        cartDetail.ProductCount += 1;
+                        var productPrice = 0;
+                        if (cartDetail.Product.AttributeTemplates.Count > 0)
+                        {
+                            var template = cartDetail.Product.AttributeTemplates.Where(p => p.AttributeTemplateId == cartDetail.Templates.AttributeTemplateId).SingleOrDefault();
+                            productPrice = template.AttrinbuteTemplatePrice;
+                        }
+                        else
+                        {
+                            productPrice = cartDetail.Product.Price;
+                        }
+                        cartDetail.TotalPrice += productPrice;
                     }
-                    cartDetail.TotalPrice += productPrice;
                 }
 
                 await _cartRepository.SaveAsync();

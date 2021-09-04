@@ -32,16 +32,29 @@ namespace Application.Services.User
         #endregion
         //Implements
 
-        public async Task<ProductIndexViewModel> GetProductsListAsync(IEnumerable<int> categoriesId)
+        public async Task<ProductIndexViewModel> GetProductsListAsync(ICollection<int> categoriesId)
         {
             var products = await _productRepository.GetAllProductsAsync();
             var categories = await _categoryRepository.GetAllCategoriesAsync();
 
             if (categoriesId.Count() > 0)
             {
-                products = products.Where(p => categoriesId.Any(t => p.CategoryId == t)).ToList();
-
+                if (!categoriesId.Any(p => p == 0))
+                {
+                    products = products.Where(p => categoriesId.Any(t => p.CategoryId == t)).ToList();
+                }
+                else
+                {
+                    categoriesId.Clear();
+                    categoriesId.Add(0);
+                }
             }
+            else
+            {
+                categoriesId.Clear();
+                categoriesId.Add(0);
+            }
+
             var returnCorrentProduct = products.Select(p => new GetListOfProductViewModel()
             {
                 Id = p.Id,
@@ -56,7 +69,7 @@ namespace Application.Services.User
             {
                 Products = returnCorrentProduct,
                 CategoriesTreeView = retrunCategoriesTreeView,
-                CategoriesId=categoriesId
+                CategoriesId = categoriesId
             };
 
             return retrunProductsAndCategories;

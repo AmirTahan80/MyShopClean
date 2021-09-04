@@ -196,7 +196,10 @@ namespace Application.Services.Admin
                 }
                 var result = await _userManager.UpdateAsync(updateUser);
                 if (result.Succeeded)
+                {
+                    await _userManager.UpdateSecurityStampAsync(user);
                     return true;
+                }
                 else
                     return false;
             }
@@ -277,9 +280,9 @@ namespace Application.Services.Admin
                 UserEmail = comment.User.Email,
                 UserId = comment.UserId,
                 UserName = comment.User.UserName,
-                ProductId = comment.ProductId,
                 Goodness = comment.ProductGoodNess != null ? comment.ProductGoodNess.Split(",") : null,
-                Bads = comment.ProductBads != null ? comment.ProductBads.Split(",") : null
+                Bads = comment.ProductGoodNess != null ? comment.ProductGoodNess.Split(",") : null,
+                ProductId = comment.ProductId
             };
 
             return commentReturn;
@@ -388,6 +391,7 @@ namespace Application.Services.Admin
 
                 await _questionRepository.SaveAsync();
 
+
                 var retrunResult = new ResultDto()
                 {
                     SuccesMessage = "ثبت تغییرا با موفقیت انجام شد .",
@@ -466,7 +470,7 @@ namespace Application.Services.Admin
                 UserAddress = p.UserAddress,
                 PhoneNumber = p.UserPhone,
                 DisCountNames = p.Discounts != null ? p.Discounts.Select(p => p.CodeName).ToList() : null,
-                UseDisCount = p.Discounts != null ? true:false,
+                UseDisCount = p.Discounts != null ? true : false,
                 RefId = p.RefId,
                 TotalPrice = p.TotalPrice
             });
@@ -501,7 +505,7 @@ namespace Application.Services.Admin
                 }).ToList(),
                 RefId = factor.RefId,
                 TotalPrice = factor.TotalPrice,
-                UseDisCount= factor.Discounts != null ?true:false
+                UseDisCount = factor.Discounts != null ? true : false
             };
 
             return returnFactor;
@@ -543,11 +547,11 @@ namespace Application.Services.Admin
 
             var returnContactUs = contactsUs.Select(p => new ContactViewModel()
             {
-                UserEmail=p.User.Email,
-                Text=p.Text,
-                Topic=p.Topic,
-                Id=p.Id,
-                Awnser=p.Awnser
+                UserEmail = p.User.Email,
+                Text = p.Text,
+                Topic = p.Topic,
+                Id = p.Id,
+                Awnser = p.Awnser
             });
 
             return returnContactUs;
@@ -562,9 +566,9 @@ namespace Application.Services.Admin
                 UserEmail = contact.User.Email,
                 Text = contact.Text,
                 Topic = contact.Topic,
-                UserId=contact.User.Id,
-                Id=contact.Id,
-                Awnser=contact.Awnser
+                UserId = contact.User.Id,
+                Id = contact.Id,
+                Awnser = contact.Awnser
             };
 
             return returnContact;
@@ -603,7 +607,7 @@ namespace Application.Services.Admin
             }
         }
 
-        //Tag Helpers
+        #region PrivateMethodes
         async Task SendEmailAsync(ContactViewModel contact)
         {
             string message = contact.Awnser;
@@ -640,7 +644,7 @@ namespace Application.Services.Admin
             //builder = builder.Replace("{userName}", user.UserName);
             //builder = builder.Replace("{userEmail}", user.Email);
             builder = builder.Replace("{Awnser}", message);
-            await _messageSender.SendEmailAsync(contact.UserEmail,"", builder, true);
+            await _messageSender.SendEmailAsync(contact.UserEmail, "", builder, true);
         }
         private async Task<List<SelectListItem>> GetRoles(string userLoginId)
         {
@@ -682,5 +686,7 @@ namespace Application.Services.Admin
 
             return listOfRoleItem;
         }
+        #endregion
+
     }
 }

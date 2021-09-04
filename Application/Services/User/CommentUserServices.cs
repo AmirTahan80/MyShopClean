@@ -59,13 +59,13 @@ namespace Application.Services.User
                 else
                     parent = null;
 
-                var goodNes = "";
+                string goodNes = "";
 
-                if(addComment.Goodness!=null)
+                if (addComment.Goodness != null)
                 {
                     for (int i = 0; i < addComment.Goodness.Count(); i++)
                     {
-                        if(i==0)
+                        if (i == 0)
                         {
                             goodNes = addComment.Goodness[i];
                         }
@@ -75,9 +75,13 @@ namespace Application.Services.User
                         }
                     }
                 }
+                else
+                {
+                    goodNes = null;
+                }
 
 
-                var bads = "";
+                string bads = "";
 
                 if (addComment.Bads != null)
                 {
@@ -93,23 +97,27 @@ namespace Application.Services.User
                         }
                     }
                 }
+                else
+                {
+                    bads = null;
+                }
 
 
                 var commentcreate = new Comment()
                 {
-                    CommentTopic=addComment.Topic,
+                    CommentTopic = addComment.Topic,
                     CommentText = addComment.Text,
                     IsShow = false,
                     User = user,
                     CommentInsertTime = ConverToShamsi.GetDate(DateTime.Now),
-                    ReplayId = addComment.ReplayId!=0?addComment.ReplayId : null,
+                    ReplayId = addComment.ReplayId != 0 ? addComment.ReplayId : null,
                     Product = product,
                     Parent = parent != null ? parent : null,
-                    ProductId=product.Id,
-                    UserId=user.Id,
-                    Suggest=addComment.CustomerSuggestToBuyThisProduct,
-                    ProductBads=bads,
-                    ProductGoodNess=goodNes
+                    ProductId = product.Id,
+                    UserId = user.Id,
+                    Suggest = addComment.CustomerSuggestToBuyThisProduct,
+                    ProductBads = bads,
+                    ProductGoodNess = goodNes
                 };
 
                 await _commentRepository.AddCommentAsync(commentcreate);
@@ -160,12 +168,12 @@ namespace Application.Services.User
 
             var userCommentsResturn = comments.Select(p => new UserCommentsViewModel()
             {
-                CommentId=p.CommentId,
-                CommentText=p.CommentText,
-                ProductId=p.ProductId,
-                ProductImage=p.Product.ProductImages.FirstOrDefault().ImgFile+"/"+p.Product.ProductImages.FirstOrDefault().ImgSrc,
-                ProductName=p.Product.Name,
-                IsShow=p.IsShow
+                CommentId = p.CommentId,
+                CommentText = p.CommentText,
+                ProductId = p.ProductId,
+                ProductImage = p.Product.ProductImages.FirstOrDefault().ImgFile + "/" + p.Product.ProductImages.FirstOrDefault().ImgSrc,
+                ProductName = p.Product.Name,
+                IsShow = p.IsShow
             });
 
             var returnProfile = new ProfileViewModel()

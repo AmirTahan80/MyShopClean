@@ -12,7 +12,7 @@ namespace Application.InterFaces.User
         /// </summary>
         /// <param name="categoryId"></param>
         /// <returns>GetListOfProductViewModel</returns>
-        Task<ProductIndexViewModel> GetProductsListAsync(IEnumerable<int> categoriesId);
+        Task<ProductIndexViewModel> GetProductsListAsync(ICollection<int> categoriesId);
 
         /// <summary>
         /// گرفتن جزئیات محصول با آیدی

@@ -26,6 +26,9 @@ namespace Domain.InterFaces.AdminInterFaces
 
         Task AddDiscountAsync(Discount t);
 
+        void UpdateCart(Cart t);
+        void UpdateCartDetail(CartDetail t);
+
         Task<UserFavorite> GetFavoriteAsync(string userId);
         Task<UserFavoritesDetail> GetFavoriteDetailAsync(int favoriteDetailId);
 

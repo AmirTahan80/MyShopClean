@@ -14,5 +14,6 @@ namespace Application.InterFaces.User
         /// </summary>
         /// <returns>GetCategoriesTreeViewViewModel</returns>
         Task<IEnumerable<GetCategoriesTreeViewViewModel>> GetCategoriesTreeViewAsync();
+        Task<IEnumerable<GetCategoriesTreeViewViewModel>> GetResponsiveCategoriesAsync();
     }
 }

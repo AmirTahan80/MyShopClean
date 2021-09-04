@@ -16,7 +16,7 @@
                             <form class="row form-group" asp-action="Index" asp-controller="AccountManager" enctype="text/plain" method="get">
                                 <input type="text" class="form-control col-md-4 m-1" value="@ViewBag.SearchUser" placeholder="نام کاربری و یا ایمیل را وارد کنید ..." name="searchUser" />
                                 <select class="form-control col-md-4 m-1" name="filter">
-                                    <option class="bg-blue white">@ViewBag.Filter</option>
+                                    <option class="bg-blue white" value="@ViewBag.Filter">@ViewBag.FilterName</option>
                                     <option value="all">همه</option>
                                     <option value="admin">مدیریت کنندگان</option>
                                     <option value="admin2">نویسندگان</option>

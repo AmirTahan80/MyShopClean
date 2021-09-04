@@ -19,7 +19,7 @@ namespace Data.Repositories.AdminRepositories
         #endregion
         public async Task<IEnumerable<Cart>> GetCartsAsync()
         {
-            var carts = await _context.Carts.Include(p => p.CartDetails).Include(p=>p.Discounts).ToListAsync();
+            var carts = await _context.Carts.Include(p => p.CartDetails).Include(p => p.Discounts).ToListAsync();
             return carts;
         }
         public async Task<Cart> GetCartAsync(string userId)
@@ -28,7 +28,7 @@ namespace Data.Repositories.AdminRepositories
                 .Include(p => p.CartDetails).ThenInclude(p => p.Product).ThenInclude(p => p.ProductAttributes)
                 .Include(p => p.CartDetails).ThenInclude(p => p.Product).ThenInclude(p => p.Properties)
                 .Include(p => p.CartDetails).ThenInclude(p => p.Templates)
-                .Include(p=>p.Discounts)
+                .Include(p => p.Discounts)
                 .SingleOrDefaultAsync(p => p.UserId == userId && !p.IsFinally);
             return cart;
         }
@@ -83,14 +83,14 @@ namespace Data.Repositories.AdminRepositories
 
         public async Task<UserFavorite> GetFavoriteAsync(string userId)
         {
-            var favorite = await _context.UserFavorites.Include(p => p.UserFavoritesDetails).ThenInclude(p=>p.Product).ThenInclude(p=>p.ProductImages)
+            var favorite = await _context.UserFavorites.Include(p => p.UserFavoritesDetails).ThenInclude(p => p.Product).ThenInclude(p => p.ProductImages)
                 .SingleOrDefaultAsync(p => p.UserId == userId);
 
             return favorite;
         }
         public async Task<UserFavoritesDetail> GetFavoriteDetailAsync(int favoriteDetailId)
         {
-            var favoriteDetail = await _context.UserFavoritesDetails.SingleOrDefaultAsync(p=>p.UserFavoritesDetailId== favoriteDetailId);
+            var favoriteDetail = await _context.UserFavoritesDetails.SingleOrDefaultAsync(p => p.UserFavoritesDetailId == favoriteDetailId);
 
             return favoriteDetail;
         }
@@ -100,5 +100,14 @@ namespace Data.Repositories.AdminRepositories
             _context.UserFavoritesDetails.Remove(t);
         }
 
+        public void UpdateCart(Cart t)
+        {
+            _context.Carts.Update(t);
+        }
+
+        public void UpdateCartDetail(CartDetail t)
+        {
+            _context.CartDetails.Update(t);
+        }
     }
 }

@@ -21,20 +21,21 @@ namespace Areas.Admin.Controllers
         #endregion
 
         [HttpGet]
-        public async Task<IActionResult> Index(int? pageNumber,string searchCategory="",string filter="")
+        public async Task<IActionResult> Index(int? pageNumber,string search="",string filter="")
         {
             var categories = await _categoryServices.GetAllCategoriesAsync();
 
             var categoriesSearch=new List<GetCategoryViewModel>();
 
-            if(!string.IsNullOrWhiteSpace(searchCategory))
+            if(!string.IsNullOrWhiteSpace(search))
             {
-                categories = categories.Where(p => p.Name.Contains(searchCategory) || (p.Parent!=null?p.Parent.Name.Contains(searchCategory):p.Name.Contains(searchCategory))).ToList();
+                categories = categories.Where(p => p.Name.Contains(search) || (p.Parent!=null?p.Parent.Name.Contains(search) :p.Name.Contains(search))).ToList();
                 
-                ViewBag.SearchCategory = searchCategory;
+                ViewBag.Search = search;
             }
 
-            ViewBag.Filter = "جدید ترین";
+            ViewBag.Filter = "newest";
+            ViewBag.FilterName = "جدید ترین";
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
@@ -42,19 +43,23 @@ namespace Areas.Admin.Controllers
                 {
                     case "newest":
                         categories = categories.OrderByDescending(p => p.Id).ToList();
-                        ViewBag.Filter = "جدید ترین";
+                        ViewBag.Filter = "newest";
+                        ViewBag.FilterName = "جدید ترین";
                         break;
                     case "older":
                         categories = categories.OrderBy(p => p.Id).ToList();
-                        ViewBag.Filter = "قدیمی ترین";
+                        ViewBag.Filter = "older";
+                        ViewBag.FilterName = "قدیمی ترین";
                         break;                    
                     case "parent":
                         categories = categories.Where(p => p.Parent!=null).ToList();
-                        ViewBag.Filter = "دسته های پدر";
+                        ViewBag.Filter = "parent";
+                        ViewBag.FilterName = "دسته های پدر";
                         break;
                     case "sub":
                         categories = categories.Where(p => p.Parent==null).ToList();
-                        ViewBag.Filter = "دسته های فرزند";
+                        ViewBag.Filter = "sub";
+                        ViewBag.FilterName = "دسته های فرزند";
                         break;
                 }
             }

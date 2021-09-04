@@ -33,12 +33,24 @@
                             <section class="product-gallery">
                                 <div class="gallery">
                                     <div class="gallery-item">
+                                        @if (ViewData["Error"] != null)
+                                        {
+                                            <div class="alert alert-danger">
+                                                خطا ! @ViewData["Error"]
+                                            </div>
+                                        }
+                                        @if (ViewData["Success"] != null)
+                                        {
+                                            <div class="alert alert-success">
+                                                موفقیت ! @ViewData["Success"]
+                                            </div>
+                                        }
                                         <div>
                                             <ul class="gallery-actions">
                                                 <li>
                                                     <a asp-action="AddToFavorite" asp-controller="Account"
                                                        asp-route-productId="@Model.Id"
-                                                       asp-route-returnUrl="@this.Url.Action("Description", "Account", new {productId=Model.Id})"
+                                                       asp-route-returnUrl="@this.Url.Action("Description", "Product", new {productId=Model.Id})"
                                                        class="btn-option add-product-wishes" style="@(Model.IsInUserFavorite==true?"background: antiquewhite;":"")">
                                                         <i class="mdi mdi-heart-outline"></i>
                                                         <span>محبوب</span>
@@ -101,22 +113,6 @@
                                 <h1 class="product-title">
                                     @Model.Name
                                 </h1>
-                                <div class="product-guaranteed text-success">
-                                    12
-                                    <span>فروش موفق</span>
-                                </div>
-                            </div>
-                            <div class="product-attributes">
-                                <div class="product-config">
-                                    <span class="product-title-en">@Model.Name</span>
-                                    <div class="product-rate">
-                                        <i class="fa fa-star active"></i>
-                                        <i class="fa fa-star active"></i>
-                                        <i class="fa fa-star active"></i>
-                                        <i class="fa fa-star active"></i>
-                                        <i class="fa fa-star active"></i>
-                                    </div>
-                                </div>
                             </div>
                             <div class="product-config-wrapper">
                                 <div class="product-directory">
@@ -126,18 +122,6 @@
                                                 <i class="fa fa-archive"></i> دسته:
                                             </span>
                                             <a href="#" class="product-link product-cat-title">@Model.CategoryName</a>
-                                        </li>
-                                        <li>
-                                            <span>
-                                                <i class="fa fa-tags"></i> برچسب:
-                                            </span>
-                                            <a href="#" class="product-link product-tag-title">سامسونگ</a>
-                                        </li>
-                                        <li>
-                                            <span>
-                                                برند:
-                                            </span>
-                                            <a href="#" class="product-link product-tag-title">سامسونگ</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -184,13 +168,6 @@
                                             </ul>
                                         </div>
                                     }
-                                    <div class="product-price-survey-question">
-                                        آیا قیمت مناسب‌تری سراغ دارید؟
-                                        <div class="answers">
-                                            <a href="#" class="product-price-survery-answer price-yes btn btn-secondary">بلی</a>
-                                            <a href="#" class="product-price-survery-answer price-no btn btn-secondary">خیر</a>
-                                        </div>
-                                    </div>
                                 </div>
                                 <div class="col=lg-6 col-md-6 col-xs-12 pr">
                                     <div class="product-seller-info">
@@ -198,10 +175,6 @@
                                             <div class="product-seller-row vendor">
                                                 <span class="title"> فروشنده:</span>
                                                 <a href="#" class="product-name">فروشگاه من</a>
-                                            </div>
-                                            <div class="product-seller-row guarantee">
-                                                <span class="title"> گارانتی:</span>
-                                                <a href="#" class="product-name">۱۸ ماهه دیجی اسمارت</a>
                                             </div>
                                             <div class="product-seller-row price">
                                                 <span class="title"> قیمت:</span>
@@ -220,7 +193,7 @@
                                                 </a>
                                             </div>
                                             <form asp-action="AddToCart" asp-controller="Account" method="get" enctype="text/plain">
-                                                <input type="hidden" name="returnUrl" value="@this.Url.Action("Description", "Account", new {productId=Model.Id})" />
+                                                <input type="hidden" name="returnUrl" value="@this.Url.Action("Description", "Product", new {productId=Model.Id})" />
                                                 <input type="hidden" asp-for="Id" name="productId" />
                                                 <div class="product-seller-row guarantee">
                                                     <span class="title mt-3"> تعداد:</span>
@@ -241,18 +214,6 @@
                                                             id="btnAddTocart">
                                                         <span class="btn-add-to-cart-txt">افزودن به سبد خرید</span>
                                                     </button>
-                                                    @if (ViewData["Error"] != null)
-                                                    {
-                                                        <div class="alert alert-danger">
-                                                            خطا ! @ViewData["Error"]
-                                                        </div>
-                                                    }
-                                                    @if (ViewData["Success"] != null)
-                                                    {
-                                                        <div class="alert alert-success">
-                                                            موفقیت ! @ViewData["Success"]
-                                                        </div>
-                                                    }
                                                 </div>
                                             </form>
                                         </div>
@@ -261,387 +222,333 @@
                             </div>
                         </section>
                     </div>
-                    <div class="product-usp">
-                        <div class="product-feature">
-                            <div class="product-feature-col">
-                                <a href="#" class="product-feature-item">
-                                    <img src="/assets/images/page-single-product/delivery.svg">
-                                    امکان تحویل
-                                    <br>
-                                    اکسپرس
-                                </a>
-                            </div>
-                            <div class="product-feature-col">
-                                <a href="#" class="product-feature-item">
-                                    <img src="/assets/images/page-single-product/contact-us.svg">
-                                    ۷ روز هفته
-                                    <br>
-                                    ۲۴ ساعته
-                                </a>
-                            </div>
-                            <div class="product-feature-col">
-                                <a href="#" class="product-feature-item">
-                                    <img src="/assets/images/page-single-product/payment-terms.svg">
-                                    امکان
-                                    <br>
-                                    پرداخت در محل
-                                </a>
-                            </div>
-                            <div class="product-feature-col">
-                                <a href="#" class="product-feature-item">
-                                    <img src="/assets/images/page-single-product/return-policy.svg">
-                                    هفت روز ضمانت بازگشت کالا
-                                </a>
-                            </div>
-                            <div class="product-feature-col">
-                                <a href="#" class="product-feature-item">
-                                    <img src="/assets/images/page-single-product/origin-guarantee.svg">
-                                    ضمانت
-                                    <br>
-                                    اصل بودن کالا
-                                </a>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
-        </div>
-        <div class="tabs">
-            <div class="tab-box">
-                <ul class="tab nav nav-tabs" id="myTab" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="Review-tab" data-toggle="tab" href="#Review" role="tab" aria-controls="Review" aria-selected="true">
-                            <i class="mdi mdi-glasses"></i>
-                            نقد و بررسی
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="Specifications-tab" data-toggle="tab" href="#Specifications" role="tab" aria-controls="Specifications" aria-selected="false">
-                            <i class="mdi mdi-format-list-checks"></i>
-                            مشخصات
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="User-comments-tab" data-toggle="tab" href="#User-comments" role="tab" aria-controls="User-comments" aria-selected="false">
-                            <i class="mdi mdi-comment-text-multiple-outline"></i>
-                            نظرات کاربران
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="question-and-answer-tab" data-toggle="tab" href="#question-and-answer" role="tab" aria-controls="question-and-answer" aria-selected="false">
-                            <i class="mdi mdi-comment-question-outline"></i>
-                            پرسش و پاسخ
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <div class="col-lg">
-                <div class="tabs-content">
-                    <div class="tab-content" id="myTabContent">
-                        <div class="tab-pane fade show active" id="Review" role="tabpanel" aria-labelledby="Review-tab">
-                            <h2 class="params-headline">نقد و بررسی اجمالی</h2>
-                            <section class="content-expert-summary">
-                                <div class="mask pm-3">
-                                    <div class="mask-text">
-                                        <p>@Html.Raw(Model.Description)</p>
+            <div class="tabs">
+                <div class="tab-box">
+                    <ul class="tab nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="Review-tab" data-toggle="tab" href="#Review" role="tab" aria-controls="Review" aria-selected="true">
+                                <i class="mdi mdi-glasses"></i>
+                                نقد و بررسی
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="Specifications-tab" data-toggle="tab" href="#Specifications" role="tab" aria-controls="Specifications" aria-selected="false">
+                                <i class="mdi mdi-format-list-checks"></i>
+                                مشخصات
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="User-comments-tab" data-toggle="tab" href="#User-comments" role="tab" aria-controls="User-comments" aria-selected="false">
+                                <i class="mdi mdi-comment-text-multiple-outline"></i>
+                                نظرات کاربران
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="question-and-answer-tab" data-toggle="tab" href="#question-and-answer" role="tab" aria-controls="question-and-answer" aria-selected="false">
+                                <i class="mdi mdi-comment-question-outline"></i>
+                                پرسش و پاسخ
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg">
+                    <div class="tabs-content">
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="Review" role="tabpanel" aria-labelledby="Review-tab">
+                                <h2 class="params-headline">نقد و بررسی اجمالی</h2>
+                                <section class="">
+                                    <div class="mask pm-3">
+                                        <div class="mask-text" style="overflow:hidden">
+                                            <p>@Html.Raw(Model.Description)</p>
+                                        </div>
                                     </div>
-                                </div>
-                            </section>
-                        </div>
-                        <div class="tab-pane fade" id="Specifications" role="tabpanel" aria-labelledby="Specifications-tab">
-                            <article>
-                                <h2 class="params-headline">
-                                    مشخصات
-                                    <span>@Model.Name</span>
-                                </h2>
-                                <section>
-                                    <ul class="params-list">
-                                        @for (int i = 0; i < Model.PropertyName.Count; i++)
-                                        {
-                                            <li class="params-list-item">
-                                                <div class="params-list-key">
-                                                    <span class="block">@Model.PropertyValue[i]</span>
-                                                </div>
-                                                <div class="params-list-value">
-                                                    <span class="block">
-                                                        @Model.PropertyName[i]
-                                                    </span>
-                                                </div>
-                                            </li>
-                                        }
-                                    </ul>
                                 </section>
-                            </article>
-                        </div>
-                        <div class="tab-pane fade" id="User-comments" role="tabpanel" aria-labelledby="User-comments-tab">
-                            <div class="comments">
-                                <h2 class="params-headline">
-                                    نظرات برای محصول
-                                    <span>@Model.Name</span>
-                                </h2>
-                                <div class="comments-summary">
-                                    <div class="col-lg-6 col-md-6 col-xs-12 pr">
-                                        <div class="comments-summary-box">
-                                            <p>
-                                                برای ثبت نظر ابتدا باید وارد سایت شوید و بعد میتوانید نظر را ثبت کنید ... <br />
-                                                نظر شما بعد از 24 ساعت توسط ادمین اگر تایید شود نشان داده می شود و در صورت تایید نکردن نشان داده نمی شود !!
-                                            </p>
-                                            @*<ul class="comments-item-rating">
-                                                    <li>
-                                                        <span class="cell-title">کیفیت ساخت:</span>
-                                                        <span class="cell-value">خوب</span>
-                                                        <div class="rating-general">
-                                                            <div class="rating-value"></div>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <span class="cell-title">ارزش خرید به نسبت قیمت:</span>
-                                                        <span class="cell-value">خوب</span>
-                                                        <div class="rating-general">
-                                                            <div class="rating-value"></div>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <span class="cell-title">نوآوری:</span>
-                                                        <span class="cell-value">خوب</span>
-                                                        <div class="rating-general">
-                                                            <div class="rating-value" style="width: 70%;"></div>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <span class="cell-title">امکانات و قابلیت ها:</span>
-                                                        <span class="cell-value">متوسط</span>
-                                                        <div class="rating-general">
-                                                            <div class="rating-value" style="width: 65%;"></div>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <span class="cell-title">سهولت استفاده:</span>
-                                                        <span class="cell-value">خوب</span>
-                                                        <div class="rating-general">
-                                                            <div class="rating-value" style="width: 75%;"></div>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <span class="cell-title">طراحی و ظاهر:</span>
-                                                        <span class="cell-value">خوب</span>
-                                                        <div class="rating-general">
-                                                            <div class="rating-value"></div>
-                                                        </div>
-                                                    </li>
-                                                </ul>*@
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 col-xs-12 pr">
-                                        <div class="comments-summary-note">
-                                            <h6>شما هم می‌توانید در مورد این کالا نظر بدهید.</h6>
-                                            @if (!User.Identity.IsAuthenticated)
+                            </div>
+                            <div class="tab-pane fade" id="Specifications" role="tabpanel" aria-labelledby="Specifications-tab">
+                                <article>
+                                    <h2 class="params-headline">
+                                        مشخصات
+                                        <span>@Model.Name</span>
+                                    </h2>
+                                    <section>
+                                        <ul class="params-list">
+                                            @for (int i = 0; i < Model.PropertyName.Count; i++)
                                             {
-                                                <p>
-                                                    برای ثبت نظر، لازم است ابتدا وارد حساب کاربری خود شوید. اگر این محصول را قبلا از فروشگاه من خریده باشید،
-                                                    نظر
-                                                    شما به عنوان مالک محصول ثبت خواهد شد.
-                                                </p>
-                                            }
-                                            else
-                                            {
-                                                <a asp-action="ProductComment" asp-controller="Account" asp-route-Id="@Model.Id" class="btn-add-comment btn btn-secondary">افزودن نظر جدید</a>
-                                            }
-                                        </div>
-                                    </div>
-                                    <div class="product-comment-list">
-                                        <ul class="comment-list">
-                                            @foreach (var comment in Model.Comments)
-                                            {
-
-                                                <li>
-                                                    <div class="col-lg-3 pr">
-                                                        <section>
-                                                            <div class="comments-user-shopping">
-                                                                @comment.UserName
-                                                                <div class="cell-date">
-                                                                    نظر ثبت شده در تاریخ
-                                                                    <time dir="ltr">@comment.InsertTime</time>
-                                                                </div>
-                                                                @if (comment.CustomerSuggestToBuy)
-                                                                {
-                                                                    <div class="message-light"><i class="fa fa-thumbs-o-up"></i>خرید این محصول را پیشنهاد میکنم</div>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <div class="message-light"><i class="fa fa-thumbs-o-down"></i>خرید این محصول را پیشنهاد نمیکنم</div>
-                                                                }
-                                                            </div>
-                                                        </section>
+                                                <li class="params-list-item">
+                                                    <div class="params-list-key">
+                                                        <span class="block">@Model.PropertyValue[i]</span>
                                                     </div>
-                                                    <div class="col-lg-9 pl">
-                                                        <div class="article">
-                                                            <ul class="comment-text">
-                                                                <div class="header">
-                                                                    <div>@comment.Topic</div>
-                                                                    @*<div class="product-rate pl">
-                                                                            <i class="fa fa-star active"></i>
-                                                                            <i class="fa fa-star active"></i>
-                                                                            <i class="fa fa-star active"></i>
-                                                                            <i class="fa fa-star active"></i>
-                                                                            <i class="fa fa-star active"></i>
-                                                                        </div>*@
-                                                                    <p>@comment.Text</p>
-                                                                </div>
-                                                                <div class="comments-evaluation">
-                                                                    @if (comment.GoodNess != null)
-                                                                    {
-                                                                        <div class="comments-evaluation-positive">
-                                                                            <span>نقاط قوت</span>
-                                                                            <ul>
-                                                                                @foreach (var good in comment.GoodNess)
-                                                                                {
-                                                                                    <li>@good</li>
-                                                                                }
-                                                                            </ul>
-                                                                        </div>
-                                                                    }
-                                                                    @if (comment.Bads != null)
-                                                                    {
-                                                                        <div class="comments-evaluation-negative">
-                                                                            <span>نقاط ضعف</span>
-                                                                            <ul>
-                                                                                @foreach (var bad in comment.Bads)
-                                                                                {
-                                                                                    <li>@bad</li>
-                                                                                }
-                                                                            </ul>
-                                                                        </div>
-                                                                    }
-                                                                    @*<div class="footer">
-                                                                            <div class="comments-likes">
-                                                                                آیا این نظر برایتان مفید بود؟
-                                                                                <button class="btn-like js-comment-like" type="submit">
-                                                                                    بله
-                                                                                    <span class="count">8</span>
-                                                                                </button>
-                                                                                <button class="btn-like js-comment-dislike" type="submit">
-                                                                                    خیر
-                                                                                    <span class="count">4</span>
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>*@
-                                                                </div>
-                                                            </ul>
-                                                        </div>
+                                                    <div class="params-list-value">
+                                                        <span class="block">
+                                                            @Model.PropertyName[i]
+                                                        </span>
                                                     </div>
                                                 </li>
                                             }
                                         </ul>
+                                    </section>
+                                </article>
+                            </div>
+                            <div class="tab-pane fade" id="User-comments" role="tabpanel" aria-labelledby="User-comments-tab">
+                                <div class="comments">
+                                    <h2 class="params-headline">
+                                        نظرات برای محصول
+                                        <span>@Model.Name</span>
+                                    </h2>
+                                    <div class="comments-summary">
+                                        <div class="col-lg-6 col-md-6 col-xs-12 pr">
+                                            <div class="comments-summary-box">
+                                                <p>
+                                                    برای ثبت نظر ابتدا باید وارد سایت شوید و بعد میتوانید نظر را ثبت کنید ... <br />
+                                                    نظر شما بعد از 24 ساعت توسط ادمین اگر تایید شود نشان داده می شود و در صورت تایید نکردن نشان داده نمی شود !!
+                                                </p>
+                                                @*<ul class="comments-item-rating">
+                                                        <li>
+                                                            <span class="cell-title">کیفیت ساخت:</span>
+                                                            <span class="cell-value">خوب</span>
+                                                            <div class="rating-general">
+                                                                <div class="rating-value"></div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <span class="cell-title">ارزش خرید به نسبت قیمت:</span>
+                                                            <span class="cell-value">خوب</span>
+                                                            <div class="rating-general">
+                                                                <div class="rating-value"></div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <span class="cell-title">نوآوری:</span>
+                                                            <span class="cell-value">خوب</span>
+                                                            <div class="rating-general">
+                                                                <div class="rating-value" style="width: 70%;"></div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <span class="cell-title">امکانات و قابلیت ها:</span>
+                                                            <span class="cell-value">متوسط</span>
+                                                            <div class="rating-general">
+                                                                <div class="rating-value" style="width: 65%;"></div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <span class="cell-title">سهولت استفاده:</span>
+                                                            <span class="cell-value">خوب</span>
+                                                            <div class="rating-general">
+                                                                <div class="rating-value" style="width: 75%;"></div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <span class="cell-title">طراحی و ظاهر:</span>
+                                                            <span class="cell-value">خوب</span>
+                                                            <div class="rating-general">
+                                                                <div class="rating-value"></div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>*@
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-xs-12 pr">
+                                            <div class="comments-summary-note">
+                                                <h6>شما هم می‌توانید در مورد این کالا نظر بدهید.</h6>
+                                                @if (!User.Identity.IsAuthenticated)
+                                                {
+                                                    <p>
+                                                        برای ثبت نظر، لازم است ابتدا وارد حساب کاربری خود شوید. اگر این محصول را قبلا از فروشگاه من خریده باشید،
+                                                        نظر
+                                                        شما به عنوان مالک محصول ثبت خواهد شد.
+                                                    </p>
+                                                }
+                                                else
+                                                {
+                                                    <a asp-action="ProductComment" asp-controller="Account" asp-route-Id="@Model.Id" class="btn-add-comment btn btn-secondary">افزودن نظر جدید</a>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="product-comment-list">
+                                            <ul class="comment-list">
+                                                @foreach (var comment in Model.Comments)
+                                                {
+
+                                                    <li>
+                                                        <div class="col-lg-3 pr">
+                                                            <section>
+                                                                <div class="comments-user-shopping">
+                                                                    @comment.UserName
+                                                                    <div class="cell-date">
+                                                                        نظر ثبت شده در تاریخ
+                                                                        <time dir="ltr">@comment.InsertTime</time>
+                                                                    </div>
+                                                                    @if (comment.CustomerSuggestToBuy)
+                                                                    {
+                                                                        <div class="message-light"><i class="fa fa-thumbs-o-up"></i>خرید این محصول را پیشنهاد میکنم</div>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <div class="message-light"><i class="fa fa-thumbs-o-down"></i>خرید این محصول را پیشنهاد نمیکنم</div>
+                                                                    }
+                                                                </div>
+                                                            </section>
+                                                        </div>
+                                                        <div class="col-lg-9 pl">
+                                                            <div class="article">
+                                                                <ul class="comment-text">
+                                                                    <div class="header">
+                                                                        <div>@comment.Topic</div>
+                                                                        @*<div class="product-rate pl">
+                                                                                <i class="fa fa-star active"></i>
+                                                                                <i class="fa fa-star active"></i>
+                                                                                <i class="fa fa-star active"></i>
+                                                                                <i class="fa fa-star active"></i>
+                                                                                <i class="fa fa-star active"></i>
+                                                                            </div>*@
+                                                                        <p>@comment.Text</p>
+                                                                    </div>
+                                                                    <div class="comments-evaluation">
+                                                                        @if (comment.GoodNess != null)
+                                                                        {
+                                                                            <div class="comments-evaluation-positive">
+                                                                                <span>نقاط قوت</span>
+                                                                                <ul>
+                                                                                    @foreach (var good in comment.GoodNess)
+                                                                                    {
+                                                                                        <li>@good</li>
+                                                                                    }
+                                                                                </ul>
+                                                                            </div>
+                                                                        }
+                                                                        @if (comment.Bads != null)
+                                                                        {
+                                                                            <div class="comments-evaluation-negative">
+                                                                                <span>نقاط ضعف</span>
+                                                                                <ul>
+                                                                                    @foreach (var bad in comment.Bads)
+                                                                                    {
+                                                                                        <li>@bad</li>
+                                                                                    }
+                                                                                </ul>
+                                                                            </div>
+                                                                        }
+                                                                        @*<div class="footer">
+                                                                                <div class="comments-likes">
+                                                                                    آیا این نظر برایتان مفید بود؟
+                                                                                    <button class="btn-like js-comment-like" type="submit">
+                                                                                        بله
+                                                                                        <span class="count">8</span>
+                                                                                    </button>
+                                                                                    <button class="btn-like js-comment-dislike" type="submit">
+                                                                                        خیر
+                                                                                        <span class="count">4</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>*@
+                                                                    </div>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="tab-pane fade" id="question-and-answer" role="tabpanel" aria-labelledby="question-and-answer-tab">
-                            <div class="faq">
-                                <h2 class="params-headline">
-                                    پرسش و پاسخ
-                                    <span>پرسش خود را در مورد محصول مطرح نمایید</span>
-                                </h2>
-                                <form asp-action="AskQuestion" asp-controller="Product"
-                                      method="post"
-                                      asp-route-returnUrl="@this.Url.Action("Description", "Product", new {productId=Model.Id})" class="form-faq">
-                                    <div class="form-faq-row mt-4">
-                                        <div class="form-faq-col">
-                                            <div class="ui-textarea">
-                                                <input id="userEmailQuestion" style="transition:all 2s;" required asp-for="Question.Email" placeholder="ایمیل" class="form-control" />
-                                                <input hidden type="hidden" asp-for="Question.ProductId" value="@Model.Id" class="form-control" />
-                                                <span style="color:red" asp-validation-for="Question.Email"></span>
+                            <div class="tab-pane fade" id="question-and-answer" role="tabpanel" aria-labelledby="question-and-answer-tab">
+                                <div class="faq">
+                                    <h2 class="params-headline">
+                                        پرسش و پاسخ
+                                        <span>پرسش خود را در مورد محصول مطرح نمایید</span>
+                                    </h2>
+                                    <form asp-action="AskQuestion" asp-controller="Product"
+                                          method="post"
+                                          asp-route-returnUrl="@this.Url.Action("Description", "Product", new {productId=Model.Id})" class="form-faq">
+                                        <div class="form-faq-row mt-4">
+                                            <div class="form-faq-col">
+                                                <div class="ui-textarea">
+                                                    <input id="userEmailQuestion" style="transition:all 2s;" required asp-for="Question.Email" placeholder="ایمیل" class="form-control" />
+                                                    <input hidden type="hidden" asp-for="Question.ProductId" value="@Model.Id" class="form-control" />
+                                                    <span style="color:red" asp-validation-for="Question.Email"></span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="form-faq-row mt-4">
-                                        <div class="form-faq-col">
-                                            <label for="password">ربات نیستم</label>
-                                            <div class="g-recaptcha" data-sitekey="@configuration["reCAPTCHA:SiteKey"]"></div>
-                                        </div>
-                                    </div>
-                                    <div class="form-faq-row mt-4">
-                                        <div class="form-faq-col">
-                                            <div class="ui-textarea">
-                                                <textarea required asp-for="Question.Text" title="متن سوال" class="ui-textarea-field"></textarea>
-                                                <input value="0" asp-for="Question.ReplayId" type="hidden" id="ReplayId" />
-                                                <span style="color:red" asp-validation-for="Question.Text"></span>
+                                        <div class="form-faq-row mt-4">
+                                            <div class="form-faq-col">
+                                                <div class="ui-textarea">
+                                                    <textarea required asp-for="Question.Text" title="متن سوال" class="ui-textarea-field"></textarea>
+                                                    <input value="0" asp-for="Question.ReplayId" type="hidden" id="ReplayId" />
+                                                    <span style="color:red" asp-validation-for="Question.Text"></span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="form-faq-row mt-4">
-                                        <div class="form-faq-col form-faq-col-submit">
-                                            <button class="btn-tertiary btn btn-secondary" type="submit">ثبت پرسش</button>
-                                            @if (ViewData["Success"] != null)
+                                        <div class="form-faq-row mt-4">
+                                            <div class="form-faq-col">
+                                                <label for="password">ربات نیستم</label>
+                                                <div class="g-recaptcha" data-sitekey="@configuration["reCAPTCHA:SiteKey"]"></div>
+                                            </div>
+                                        </div>
+                                        <div class="form-faq-row mt-4">
+                                            <div class="form-faq-col form-faq-col-submit">
+                                                <button class="btn-tertiary btn btn-secondary" type="submit">ثبت پرسش</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div id="product-questions-list">
+                                        @foreach (var question in Model.Questions)
+                                        {
+                                            @if (question.Counter == 0)
                                             {
-                                                <div class="alert alert-success">
-                                                    @ViewData["Success"]
+                                                <div class="questions-list">
+                                                    <ul class="faq-list">
+                                                        <li class="is-question">
+                                                            <div class="section">
+                                                                <div class="faq-header">
+                                                                    <span class="icon-faq">?</span>
+                                                                    <p class="h5">
+                                                                        پرسش :
+                                                                        <span>@question.Email</span>
+                                                                    </p>
+                                                                </div>
+                                                                <p>@question.Text</p>
+                                                                <div class="faq-date">
+                                                                    @*<em>۱۴ فروردین ۱۳۹۹</em>*@
+                                                                </div>
+                                                                <input value="@question.Id" id="CommentId" type="hidden" />
+                                                                <button id="ReplayButton" class="js-add-answer-btn btn-outline-info">
+                                                                    به این پرسش پاسخ
+                                                                    دهید
+                                                                </button>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
                                                 </div>
                                             }
-                                            @if (ViewData["Error"] != null)
+                                            else
                                             {
-                                                <div class="alert alert-danger">
-                                                    @ViewData["Error"]
+                                                <div class="questions-list answer-questions">
+                                                    <ul class="faq-list">
+                                                        <li class="is-question">
+                                                            <div class="section">
+                                                                <div class="faq-header">
+                                                                    <span class="icon-faq"><i class="mdi mdi-storefront"></i></span>
+                                                                    <p class="h5">
+                                                                        پاسخ :
+                                                                        <span>@question.Email</span>
+                                                                    </p>
+                                                                </div>
+                                                                <p>@question.Text</p>
+                                                                <div class="faq-date">
+                                                                    @*<em>۱۴ فروردین ۱۳۹۹</em>*@
+                                                                </div>
+                                                                <input value="@question.Id" id="CommentId" type="hidden" />
+                                                            </div>
+                                                        </li>
+                                                    </ul>
                                                 </div>
                                             }
-                                        </div>
+                                        }
                                     </div>
-                                </form>
-                                <div id="product-questions-list">
-                                    @foreach (var question in Model.Questions)
-                                    {
-                                        @if (question.Counter == 0)
-                                        {
-                                            <div class="questions-list">
-                                                <ul class="faq-list">
-                                                    <li class="is-question">
-                                                        <div class="section">
-                                                            <div class="faq-header">
-                                                                <span class="icon-faq">?</span>
-                                                                <p class="h5">
-                                                                    پرسش :
-                                                                    <span>@question.Email</span>
-                                                                </p>
-                                                            </div>
-                                                            <p>@question.Text</p>
-                                                            <div class="faq-date">
-                                                                @*<em>۱۴ فروردین ۱۳۹۹</em>*@
-                                                            </div>
-                                                            <input value="@question.Id" id="CommentId" type="hidden" />
-                                                            <button id="ReplayButton" class="js-add-answer-btn btn-outline-info">
-                                                                به این پرسش پاسخ
-                                                                دهید
-                                                            </button>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="questions-list answer-questions">
-                                                <ul class="faq-list">
-                                                    <li class="is-question">
-                                                        <div class="section">
-                                                            <div class="faq-header">
-                                                                <span class="icon-faq"><i class="mdi mdi-storefront"></i></span>
-                                                                <p class="h5">
-                                                                    پاسخ :
-                                                                    <span>@question.Email</span>
-                                                                </p>
-                                                            </div>
-                                                            <p>@question.Text</p>
-                                                            <div class="faq-date">
-                                                                @*<em>۱۴ فروردین ۱۳۹۹</em>*@
-                                                            </div>
-                                                            <input value="@question.Id" id="CommentId" type="hidden" />
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        }
-                                    }
                                 </div>
                             </div>
                         </div>
@@ -650,7 +557,6 @@
             </div>
         </div>
     </div>
-</div>
 </div>
 <!-- arshive-product----------------------->
 

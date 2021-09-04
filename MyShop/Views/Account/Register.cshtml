@@ -37,36 +37,36 @@
                                         <div class="form-account-title">
                                             <label for="email-phone">ایمیل</label>
                                             <input type="text" class="number-email-input" id="email-phone" required autofocus asp-for="Email">
-                                            <span asp-validation-for="Email" class="red"></span>
+                                            <span asp-validation-for="Email" style="color:red;"></span>
                                         </div>
                                         <div class="form-account-title">
                                             <label for="email-phone">نام کاربری</label>
                                             <input type="text" class="number-email-input" id="email-phone" required asp-for="UserName">
-                                            <span asp-validation-for="UserName" class="red"></span>
+                                            <span asp-validation-for="UserName" style="color:red;"></span>
                                         </div>
                                         <div class="form-account-title">
                                             <label for="password">رمز عبور</label>
                                             <input type="password" class="password-input" required asp-for="PassWord">
-                                            <span asp-validation-for="PassWord" class="red"></span>
+                                            <span asp-validation-for="PassWord" style="color:red;"></span>
                                         </div>
                                         <div class="form-account-title">
                                             <label for="password">تکرار رمز عبور</label>
                                             <input type="password" class="password-input" required asp-for="RePassWord">
-                                            <span asp-validation-for="RePassWord" class="red"></span>
+                                            <span asp-validation-for="RePassWord" style="color:red;"></span>
                                         </div>
                                         <div class="form-account-title">
                                             <label for="password">ربات نیستم</label>
                                             <div class="g-recaptcha" data-sitekey="@configuration["reCAPTCHA:SiteKey"]"></div>
                                         </div>
-                                        <div class="form-auth-row">
+                                        @*<div class="form-auth-row">
                                             <label for="#" class="ui-checkbox mt-1">
                                                 <input type="checkbox" value="1" name="login" id="remember">
                                                 <span class="ui-checkbox-check"></span>
                                             </label>
                                             <label for="remember" class="remember-me mr-0"><a href="#">حریم خصوصی</a> و <a href="#">شرایط قوانین </a>استفاده از سرویس های سایت دیجی‌اسمارت را مطالعه نموده و با کلیه موارد آن موافقم.</label>
-                                        </div>
+                                        </div>*@
                                         <div class="form-row-account">
-                                            <button class="btn btn-primary btn-register" type="submit">ثبت نام فروشگاه من</button>
+                                            <button class="btn btn-primary btn-register d-none" id="submit" type="submit">ثبت نام فروشگاه من</button>
                                             @if (ViewData["Error"] != null)
                                             {
                                                 <div class="alert alert-danger">
@@ -105,5 +105,19 @@
     <script src="/assets/js/vendor/nouislider.min.js"></script>
 
     <script src="https://www.google.com/recaptcha/api.js?hl=fa" async defer></script>
+
+    <script>
+
+        $("#remember").on("checked", function () {
+            $("#submit").removeClass("d-none");
+        });
+
+        @*$("#remember").is(":checked")
+
+            }
+            else {
+            $("#submit").addClass("d-none");
+        }*@
+    </script>
 
 }

@@ -1,5 +1,5 @@
 ﻿<footer class="footer-main-site">
-    <section class="d-block d-xl-block d-lg-block d-md-block d-sm-block order-1">
+    @*<section class="d-block d-xl-block d-lg-block d-md-block d-sm-block order-1">
         <div class="footer-shopping-features">
             <div class="container-fluid">
                 <div class="col-12">
@@ -41,7 +41,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section>*@
     <section class="d-block d-xl-block d-lg-block d-md-block d-sm-block order-1">
         <div class="container-fluid">
             <div class="col-12">
@@ -53,28 +53,18 @@
                                     <section class="footer-links-col">
                                         <div class="headline-links">
                                             <a href="#">
-                                                با دیجی اسمارت
+                                                با فروشگاه من
                                             </a>
                                         </div>
                                         <ul class="footer-menu-ul">
                                             <li class="menu-item-type-custom">
-                                                <a href="#">
-                                                    اتاق خبر دیجی اسمارت
+                                                <a href="https://localhost:44373/Product?filter=New&categoriesId=System.Collections.Generic.List%601%5BSystem.Int32%5D">
+                                                   محصولات جدید
                                                 </a>
                                             </li>
                                             <li class="menu-item-type-custom">
-                                                <a href="#">
-                                                    فروش در دیجی اسمارت
-                                                </a>
-                                            </li>
-                                            <li class="menu-item-type-custom">
-                                                <a href="#">
-                                                    همکاری با سازمان‌ها
-                                                </a>
-                                            </li>
-                                            <li class="menu-item-type-custom">
-                                                <a href="#">
-                                                    فرصت‌های شغلی
+                                                <a href="https://localhost:44373/Product?filter=Cheaper&categoriesId=System.Collections.Generic.List%601%5BSystem.Int32%5D">
+                                                    محصولات ارزان
                                                 </a>
                                             </li>
                                         </ul>
@@ -91,52 +81,47 @@
                                         </div>
                                         <ul class="footer-menu-ul">
                                             <li class="menu-item-type-custom">
-                                                <a href="#">
-                                                    پاسخ به پرسش‌های متداول
+                                                <a asp-action="ContactUs" asp-controller="Account">
+                                                   ارتباط با ما
                                                 </a>
                                             </li>
-                                            <li class="menu-item-type-custom">
-                                                <a href="#">
-                                                    رویه‌های بازگرداندن کالا
-                                                </a>
-                                            </li>
-                                            <li class="menu-item-type-custom">
-                                                <a href="#">
-                                                    شرایط استفاده
-                                                </a>
-                                            </li>
-                                            <li class="menu-item-type-custom">
-                                                <a href="#">
-                                                    حریم خصوصی
-                                                </a>
+                                            <li class="menu-item-type-custom d-none">
+                                                <p style="color:darkgray" href="#">
+                                                    پرسش و پاسخ 
+                                                </p>
                                             </li>
                                         </ul>
                                     </section>
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-md-3 col-xs-12 pr">
+                            <div class="col-lg-5 col-md-5 col-xs-12 pr">
                                 <div class="row">
                                     <section class="footer-links-col">
                                         <div class="headline-links">
-                                            <a href="#">
-                                                راهنمای خرید از دیجی اسمارت
-                                            </a>
+                                            <p>
+                                               درباره ما
+                                            </p>
                                         </div>
                                         <ul class="footer-menu-ul">
                                             <li class="menu-item-type-custom">
-                                                <a href="#">
-                                                    نحوه ثبت سفارش
-                                                </a>
+                                                <p>
+                                                    مالک سایت : امیرحسین طهان پور مقدم
+                                                </p>
                                             </li>
                                             <li class="menu-item-type-custom">
-                                                <a href="#">
-                                                    رویه ارسال سفارش
-                                                </a>
+                                                <p>
+                                                    آدرس : خراسان رضوی - مشهد - الهیه
+                                                </p>
                                             </li>
                                             <li class="menu-item-type-custom">
-                                                <a href="#">
-                                                    شیوه‌های پرداخت
-                                                </a>
+                                                <p>
+                                                    شماره تماس : 09363796401
+                                                </p>
+                                            </li>
+                                            <li class="menu-item-type-custom">
+                                                <p>
+                                                    ایمیل : amirhosin6402@gmail.com
+                                                </p>
                                             </li>
                                         </ul>
                                     </section>
@@ -146,7 +131,7 @@
                     </div>
                     <div class="col-lg-4 d-block pl">
                         <div class="shortcode-widget-area">
-                            <form action="#" class="form-newsletter">
+                            <form action="#" class="form-newsletter d-none">
                                 <fieldset>
                                     <span class="form-newsletter-title"> با عضویت در خبرنامه از آخرین اخبار و محصولات سایت مطلع شوید...</span>
                                     <div class="input-group-newsletter">
@@ -157,16 +142,16 @@
                             </form>
                         </div>
                     </div>
-                    <div class="footer-more-info">
+                    <div class="footer-more-info d-none ">
                         <div class="col-lg-10 pr">
                             <div class="footer-content d-block">
                                 <div class="text pr-1">
-                                    <h2 class="title">فروشگاه اینترنتی دیجی اسمارت</h2>
+                                    <h2 class="title">فروشگاه اینترنتی فروشگاه من</h2>
                                     <p class="desc"> دیجی اسمارت به عنوان یکی از قدیمی‌ترین فروشگاه های اینترنتی با بیش از یک دهه تجربه، با پایبندی به سه اصل کلیدی، پرداخت در محل، 7 روز ضمانت بازگشت کالا و تضمین اصل‌بودن کالا، موفق شده تا همگام با فروشگاه‌های معتبر جهان، به بزرگ‌ترین فروشگاه اینترنتی ایران تبدیل شود. به محض ورود به دیجی اسمارت با یک سایت پر از کالا رو به رو می‌شوید! هر آنچه که نیاز دارید و به ذهن شما خطور می‌کند در اینجا پیدا خواهید کرد.</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-2 pl">
+                        <div class="col-lg-2 pl d-none>
                             <div class="footer-safety-partner">
                                 <div class="widget widget-product card mb-0">
                                     <div class="product-carousel-symbol owl-carousel owl-theme owl-rtl owl-loaded owl-drag">
@@ -194,7 +179,7 @@
                         </div>
                         <div class="footer-copyright">
                             <div class="footer-copyright-text">
-                                <p>تمامی مطالب، عکس ها و... متعلق به سایت فروشگاهی دیجی اسمارت می باشد.</p>
+                                <p>تمامی مطالب، عکس ها و... متعلق به سایت فروشگاهی فروشگاه من می باشد.</p>
                             </div>
                         </div>
                     </div>

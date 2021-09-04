@@ -110,11 +110,11 @@
                                         <label for="projectinput2" class="col-md-12">خرید محصول را پیشنهاد میکند ؟</label>
                                         @if (Model.Suggest)
                                         {
-                                            <text>کاربر خرید محصول را پیشنهاد کرده است ...</text>
+                                            <p class="success border border-success" style="padding:10px;margin:2px">کاربر خرید محصول را پیشنهاد کرده است ...</p>
                                         }
                                         else
                                         {
-                                            <text>کاربر خرید محصول را پیشنهاد نمی کند !!!</text>
+                                            <p class="danger border border-danger" style="padding:10px;margin:2px">کاربر خرید محصول را پیشنهاد نمی کند !!!</p>
                                         }
                                     </div>
                                 </div>
@@ -124,7 +124,7 @@
                                 <button type="submit" class="btn btn-success">
                                     <i class="icon-pencil"></i> ویرایش و نمایش در سایت
                                 </button>
-                                <a asp-action="Index" asp-controller="AccountManager" class="btn btn-primary">
+                                <a asp-action="Comments" asp-controller="AccountManager"  class="btn btn-primary">
                                     برگشت به لیست
                                 </a>
                             </div>

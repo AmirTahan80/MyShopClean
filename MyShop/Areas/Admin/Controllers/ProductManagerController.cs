@@ -22,56 +22,63 @@ namespace Areas.Admin.Controllers
 
         #endregion
 
-        public async Task<IActionResult> Index(int? pageNumber,string searchProduct="",string filter="")
+        public async Task<IActionResult> Index(int? pageNumber, string search = "", string filter = "")
         {
             var products = await _porudctServices.GetAllProductsAsync();
 
             ViewBag.Filter = "جدید ترین";
-            ViewBag.FilterValue = "newest";
+            ViewBag.FilterName = "newest";
 
-            if (!string.IsNullOrWhiteSpace(searchProduct))
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                products = products.Where(p => p.Name.Contains(searchProduct) || p.CategoryName.Contains(searchProduct));
-                ViewBag.SearchProduct = searchProduct;
+                products = products.Where(p => p.Name.Contains(search) || p.CategoryName.Contains(search));
+                ViewBag.Search = search;
             }
 
-            if(!string.IsNullOrWhiteSpace(filter))
+            if (!string.IsNullOrWhiteSpace(filter))
             {
                 switch (filter)
                 {
                     case "newest":
                         products = products.OrderByDescending(p => p.Id);
-                        ViewBag.Filter = "جدید ترین";
+                        ViewBag.FilterName = "جدید ترین";
+                        ViewBag.Filter = "newest";
                         break;
                     case "older":
                         products = products.OrderBy(p => p.Id);
-                        ViewBag.Filter = "قدیمی ترین";
+                        ViewBag.FilterName = "قدیمی ترین";
+                        ViewBag.Filter = "older";
                         break;
                     case "lower10":
                         products = products.Where(p => p.Count <= 10);
-                        ViewBag.Filter = "کمتر از 10";
+                        ViewBag.FilterName = "کمتر از 10";
+                        ViewBag.Filter = "lower10";
                         break;
                     case "lower20":
                         products = products.Where(p => p.Count <= 20);
-                        ViewBag.Filter = "کمتر از 20";
+                        ViewBag.FilterName = "کمتر از 20";
+                        ViewBag.Filter = "lower20";
                         break;
                     case "finish":
                         products = products.Where(p => p.Count <= 1);
-                        ViewBag.Filter = "اتمام یافته";
+                        ViewBag.FilterName = "اتمام یافته";
+                        ViewBag.Filter = "finish";
                         break;
                     case "expensive":
                         products = products.OrderByDescending(p => p.Price);
-                        ViewBag.Filter = "گران ترین";
+                        ViewBag.FilterName = "گران ترین";
+                        ViewBag.Filter = "expensive";
                         break;
                     case "cheaper":
                         products = products.OrderBy(p => p.Price);
-                        ViewBag.Filter = "ارزان ترین";
+                        ViewBag.FilterName = "ارزان ترین";
+                        ViewBag.Filter = "cheaper";
                         break;
                 }
                 ViewBag.FilterValue = filter;
             }
 
-            var paging = new PagingList<GetProductsAndImageSrcViewModel>(products,10, pageNumber?? 1);
+            var paging = new PagingList<GetProductsAndImageSrcViewModel>(products, 10, pageNumber ?? 1);
             var productsPaging = paging.QueryResult;
 
 
@@ -129,7 +136,7 @@ namespace Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> EditProduct(GetProductViewModel model)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return View(model);
             }
@@ -152,7 +159,7 @@ namespace Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteProduct(IEnumerable<GetProductsAndImageSrcViewModel> models)
         {
-            if(models==null)
+            if (models == null)
             {
                 TempData["Error"] = "عملیات حذف به درستی انجام نشد ! ";
                 return RedirectToAction("Index");
@@ -175,7 +182,7 @@ namespace Areas.Admin.Controllers
             return View(result);
         }
         [HttpGet]
-        public  IActionResult CreateDiscount()
+        public IActionResult CreateDiscount()
         {
             return View();
         }
@@ -187,7 +194,7 @@ namespace Areas.Admin.Controllers
 
             var result = await _porudctServices.CreateDiscountAsync(model);
 
-            if(result.Status)
+            if (result.Status)
             {
                 ViewData["Success"] = result.SuccesMessage;
             }
@@ -213,7 +220,7 @@ namespace Areas.Admin.Controllers
 
             var result = await _porudctServices.EditDiscountAsync(model);
 
-            if(result.Status==true)
+            if (result.Status == true)
             {
                 ViewData["Success"] = result.SuccesMessage;
             }

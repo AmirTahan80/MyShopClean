@@ -22,7 +22,7 @@ namespace Application.Services.User
         {
             var categories = await _categoryRepository.GetAllCategoriesAsync();
 
-            var categoriesReturn = categories.Select(p => new GetCategoriesTreeViewViewModel()
+            var categoriesReturn = categories.Where(p=>p.Parent==null).Select(p => new GetCategoriesTreeViewViewModel()
             {
                 Id = p.Id,
                 Name = p.Name,
@@ -33,6 +33,14 @@ namespace Application.Services.User
             return categoriesReturn;
         }
 
+        public async Task<IEnumerable<GetCategoriesTreeViewViewModel>> GetResponsiveCategoriesAsync()
+        {
+            var categories = await _categoryRepository.GetAllCategoriesAsync();
+
+            var categoriesReturn = GetCategoriesTreeView(categories);
+
+            return categoriesReturn;
+        }
 
         #region Private Methode
 
@@ -128,7 +136,7 @@ namespace Application.Services.User
             return Item;
         }
 
-        private IEnumerable<GetCategoriesTreeViewViewModel> GetChildrenCategory(IEnumerable<Category> categories, int categoryId)
+        private ICollection<GetCategoriesTreeViewViewModel> GetChildrenCategory(IEnumerable<Category> categories, int categoryId)
         {
             var returnChild = categories.Where(p => p.ParentId == categoryId).Select(p => new GetCategoriesTreeViewViewModel()
             {
@@ -147,6 +155,7 @@ namespace Application.Services.User
 
 
             var categoriesTreeView = new List<GetCategoriesTreeViewViewModel>();
+            var subCategoeies = new List<GetCategoriesTreeViewViewModel>();
 
             if (parents != null)
             {
@@ -162,8 +171,20 @@ namespace Application.Services.User
                     categoriesTreeView.Add(item);
 
                     if (parent.Children != null)
+                    {
                         GetCategoriesChild(parent, 1);
-
+                        var categoryReturn= categoriesTreeView.SingleOrDefault(p => p.Id == parent.Id);
+                        foreach (var child in subCategoeies)
+                        {
+                            categoryReturn.Children.Add(new GetCategoriesTreeViewViewModel()
+                            {
+                                Id = child.Id,
+                                Name = child.Name,
+                                Count = child.Count
+                            });
+                        }
+                    }
+                    subCategoeies.Clear();
                 }
 
                 void GetCategoriesChild(Category category, int counter)
@@ -179,7 +200,7 @@ namespace Application.Services.User
                             Count = counter
                         };
 
-                        categoriesTreeView.Add(item);
+                        subCategoeies.Add(item);
 
                         if (replay.Children != null)
                         {
@@ -187,7 +208,6 @@ namespace Application.Services.User
                             GetCategoriesChild(replay, counter);
                             counter--;
                         }
-
                     }
 
                 }
@@ -195,6 +215,7 @@ namespace Application.Services.User
 
             return categoriesTreeView;
         }
+
 
         #endregion
     }

@@ -42,37 +42,46 @@
                                 <div class="product-filter">
                                     <div class="card">
                                         <form class="form-group" method="get" asp-action="Index" asp-controller="Product" id="categoryForm">
-                                            @foreach (var item in Model.CategoriesTreeView)
-                                            {
-                                                if (item.Count == 0)
+                                            <input type="hidden" value="@ViewBag.FilterName" name="filter" />
+                                            <input type="hidden" value="@ViewBag.SearchProduct" name="searchProduct" />
+                                            <div class="collapse show" id="headingOne">
+                                                <div class="card-main mb-0">
+                                                    <div class="form-auth-row">
+                                                        <label for="#" class="ui-checkbox">
+                                                            <input type="checkbox" value="0" @(Model.CategoriesId.Any(p => p == 0) ? "checked" : "") name="categoriesId" class="categorySelectAll">
+                                                            <span class="ui-checkbox-check"></span>
+                                                        </label>
+                                                        <label for="remember" class="remember-me">همه</label>
+                                                    </div>
+                                                </div>
+                                                @foreach (var item in Model.CategoriesTreeView)
                                                 {
-                                                    <div class="collapse show" id="headingOne">
+                                                    @if (item.Count == 0)
+                                                    {
                                                         <div class="card-main mb-0">
                                                             <div class="form-auth-row">
                                                                 <label for="#" class="ui-checkbox">
-                                                                    <input type="checkbox" value="@item.Id" @(Model.CategoriesId.Any(p=>item.Id==p) ? "checked":"") name="categoriesId" class="categorySelect">
+                                                                    <input type="checkbox" value="@item.Id" @(Model.CategoriesId.Any(p => item.Id == p) ? "checked" : "") name="categoriesId" class="categorySelect">
                                                                     <span class="ui-checkbox-check"></span>
                                                                 </label>
                                                                 <label for="remember" class="remember-me">@item.Name</label>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <div class="collapse show" id="headingOne" style="margin-right:@(item.Count*2)px">
-                                                        <div class="card-main mb-0">
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="card-main mb-0" style="margin-right:@(item.Count*2)px">
                                                             <div class="form-auth-row">
                                                                 <label for="#" class="ui-checkbox">
-                                                                    <input type="checkbox" value="@item.Id" @(Model.CategoriesId.Any(p=>item.Id==p) ? "checked":"") name="categoriesId" class="categorySelect">
+                                                                    <input type="checkbox" value="@item.Id" @(Model.CategoriesId.Any(p => item.Id == p) ? "checked" : "") name="categoriesId" class="categorySelect">
                                                                     <span class="ui-checkbox-check"></span>
                                                                 </label>
                                                                 <label for="remember" class="remember-me">@item.Name</label>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    }
                                                 }
-                                            }
+                                            </div>
                                         </form>
                                     </div>
                                 </div>
@@ -93,7 +102,7 @@
                                                 <div class="box-data">
                                                     <form asp-action="index" asp-controller="product">
                                                         <div class="mt-5 mb-4">
-                                                            <div id="slider-non-linear-step" ></div>
+                                                            <div id="slider-non-linear-step"></div>
                                                         </div>
                                                         <div class="filter-range mt-2 mb-2 pr">
                                                             <span>قیمت: </span>
@@ -124,17 +133,31 @@
                                 <h4>مرتب‌سازی بر اساس :</h4>
                             </div>
                             <div class="nav-sort-tabs-res">
-                                <ul class="nav sort-tabs-options" id="myTab" role="tablist">
-                                    <li class="nav-item">
-                                        <a asp-action="Index" asp-controller="Product" asp-route-filter="New" class="nav-link @(ViewData["Filter"].ToString()=="1"?"active":"")">جدیدترین</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a asp-action="Index" asp-controller="Product" asp-route-filter="Cheaper" class="nav-link @(ViewData["Filter"].ToString()=="3"?"active":"")">ارزان‌ترین</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a asp-action="Index" asp-controller="Product" asp-route-filter="Expensive" class="nav-link @(ViewData["Filter"].ToString()=="2"?"active":"")">گران‌ترین</a>
-                                    </li>
-                                </ul>
+                                <form class="form-group" asp-action="Index" asp-controller="Product" id="filterForm" method="get" enctype="text/plain">
+                                    @if (ViewBag.SearchProduct != null)
+                                    {
+                                        <input type="hidden" value="@ViewBag.SearchProduct" name="searchProduct" />
+                                    }
+                                    @if (ViewBag.CategoriesId != null)
+                                    {
+                                        @foreach (var item in Model.CategoriesId)
+                                        {
+                                            <input type="hidden" value="@item" name="categoriesId" />
+                                        }
+                                    }
+                                    <input type="hidden" name="filter" id="filterInput" />
+                                    <ul class="nav sort-tabs-options" id="myTab" role="tablist">
+                                        <li class="nav-item">
+                                            <small style="padding-top:3px" class="nav-link @(ViewData["Filter"].ToString()=="1"?"active":"") filterNew">جدیدترین</small>
+                                        </li>
+                                        <li class="nav-item">
+                                            <small style="padding-top:3px" class="nav-link @(ViewData["Filter"].ToString()=="3"?"active":"") filterCheaper">ارزان‌ترین</small>
+                                        </li>
+                                        <li class="nav-item">
+                                            <small style="padding-top:3px" class="nav-link @(ViewData["Filter"].ToString()=="2"?"active":"") filterExpensive">گران‌ترین</small>
+                                        </li>
+                                    </ul>
+                                </form>
                             </div>
                         </div>
                         <div class="product-items">
@@ -158,7 +181,7 @@
                                                                 <div class="discount-d">
                                                                     <span>20%</span>
                                                                 </div>*@
-                                                            <img src="/Images/ProductImages/@product.ImageSrc">
+                                                            <img src="/Images/ProductImages/@product.ImageSrc" style="max-height: 195px; width: 191px; ">
                                                         </a>
                                                     </div>
                                                     <div class="title">
@@ -204,12 +227,28 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $(".categorySelect").change(function () {
+                $(".categorySelectAll").attr("checked", false);
                 $("#categoryForm").submit();
             });
 
+            $(".categorySelectAll").change(function () {
+                $(".categorySelect").attr("checked", false);
+                $("#categoryForm").submit();
+            });
+
+            $(".filterNew").click(function () {
+                $("#filterInput").val("New");
+                $("#filterForm").submit();
+            });
+            $(".filterCheaper").click(function () {
+                $("#filterInput").val("Cheaper");
+                $("#filterForm").submit();
+            });
+            $(".filterExpensive").click(function () {
+                $("#filterInput").val("Expensive");
+                $("#filterForm").submit();
+            });
         });
     </script>
 
 }
-
-

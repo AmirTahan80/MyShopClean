@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 namespace MyShop.Components
 {
-    public class CategoryComponent : ViewComponent
+    public class ResponsiveCategoryComponent : ViewComponent
     {
         #region Injections
         private readonly ICategoryUserServices _categoryUserServices;
-        public CategoryComponent(ICategoryUserServices categoryUserServices)
+        public ResponsiveCategoryComponent(ICategoryUserServices categoryUserServices)
         {
             _categoryUserServices = categoryUserServices;
         }
@@ -16,9 +16,8 @@ namespace MyShop.Components
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var categories = await _categoryUserServices.GetCategoriesTreeViewAsync();
-            return View("/Views/Components/CategoryComponent.cshtml", categories);
+            var categories = await _categoryUserServices.GetResponsiveCategoriesAsync();
+            return View("/Views/Components/ResponsiveCategoryComponent.cshtml", categories);
         }
-
     }
 }

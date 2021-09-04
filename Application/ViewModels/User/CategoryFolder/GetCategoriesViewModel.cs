@@ -26,7 +26,7 @@ namespace Application.ViewModels.User
 
 
         //Navigation
-        public IEnumerable<GetCategoriesTreeViewViewModel> Children { get; set; }
+        public ICollection<GetCategoriesTreeViewViewModel> Children { get; set; }
 
         public GetParentCategoryViewModel Parent { get; set; }
     }

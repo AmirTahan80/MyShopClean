@@ -28,7 +28,7 @@ namespace MyShop.Controllers
         #endregion
 
         [HttpGet]
-        public async Task<IActionResult> Index(IEnumerable<int> categoriesId, int? pageNumber = 1, string searchProduct = "", string filter = "")
+        public async Task<IActionResult> Index(ICollection<int> categoriesId, int? pageNumber = 1, string searchProduct = "", string filter = "")
         {
             var retrunModel = await _productUserServices.GetProductsListAsync(categoriesId);
             retrunModel.Products = retrunModel.Products.OrderByDescending(p => p.Id);
@@ -40,6 +40,7 @@ namespace MyShop.Controllers
             }
 
             ViewData["Filter"] = "1";
+            ViewBag.FilterName = "New";
             if (!string.IsNullOrWhiteSpace(filter))
             {
                 switch (filter)
@@ -47,14 +48,17 @@ namespace MyShop.Controllers
                     case "New":
                         retrunModel.Products = retrunModel.Products.OrderByDescending(p => p.Id);
                         ViewData["Filter"] = "1";
+                        ViewBag.FilterName = "New";
                         break;
                     case "Expensive":
                         retrunModel.Products = retrunModel.Products.OrderByDescending(p => p.Price);
                         ViewData["Filter"] = "2";
+                        ViewBag.FilterName = "Expensive";
                         break;
                     case "Cheaper":
                         retrunModel.Products = retrunModel.Products.OrderBy(p => p.Price);
                         ViewData["Filter"] = "3";
+                        ViewBag.FilterName = "Cheaper";
                         break;
                 }
             }
@@ -74,8 +78,16 @@ namespace MyShop.Controllers
             ViewBag.Controller = "Product";
             #endregion
 
+            if(categoriesId.Count()>0)
+            {
+                if(categoriesId.Any(p=>p==0))
+                {
+                    categoriesId.Clear();
+                    categoriesId.Add(0);
+                }
+            }
             ViewData["CategoryId"]= categoriesId;
-
+            ViewBag.CategoriesId= categoriesId;
 
 
             return View(retrunModel);

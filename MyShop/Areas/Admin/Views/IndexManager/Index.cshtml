@@ -14,9 +14,9 @@
                         <h4 class="card-title col-md-12">بنرها</h4>
                         <div class="col-md-12">
                             <form class="form-group row" enctype="text/plain" method="get" asp-action="Index" asp-controller="IndexManager">
-                                <input type="text" class="form-control m-1 col-md-4" placeholder="عنوان و یا لینک را وارد کنید ..." value="@ViewBag.SearchBaner" name="searchBaner" />
+                                <input type="text" class="form-control m-1 col-md-4" placeholder="عنوان و یا لینک را وارد کنید ..." value="@ViewBag.Search" name="search" />
                                 <select class="form-control col-md-4 m-1" name="filter">
-                                    <option class="bg-blue white" value="@ViewBag.FilterValue">@ViewBag.Filter</option>
+                                    <option class="bg-blue white" value="@ViewBag.Filter">@ViewBag.FilterName</option>
                                     <option value="slider">اسلایدر</option>
                                     <option value="newest">جدید ترین</option>
                                     <option value="older">قدیمی ترین</option>

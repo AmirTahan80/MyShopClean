@@ -15,9 +15,9 @@
                         <h4 class="card-title">ارتباطات</h4>
                         <div class="col-md-12">
                             <form class="row form-group" asp-action="GetUserContacts" asp-controller="AccountManager" enctype="text/plain" method="get">
-                                <input type="text" class="form-control col-md-4 m-1" value="@ViewBag.SearchContact" placeholder="ایمیل کاربر ، عنوان و یا متن را وارد کنید ..." name="searchContact" />
+                                <input type="text" class="form-control col-md-4 m-1" value="@ViewBag.search" placeholder="ایمیل کاربر ، عنوان و یا متن را وارد کنید ..." name="search" />
                                 <select class="form-control col-md-4 m-1" name="filter">
-                                    <option class="bg-blue white">@ViewBag.Filter</option>
+                                    <option class="bg-blue white" value="@ViewBag.Filter">@ViewBag.FilterName</option>
                                     <option value="newest">جدید ترین</option>
                                     <option value="older">قدیمی ترین</option>
                                     <option value="noAwnser">پاسخ داده نشده</option>

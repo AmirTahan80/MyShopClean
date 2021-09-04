@@ -2,7 +2,6 @@
 using Application.Utilities;
 using Application.ViewModels.Admin;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,40 +21,44 @@ namespace MyShop.Areas.Admin.Controllers
         #endregion
 
         [HttpGet]
-        public async Task<IActionResult> Index(string searchBaner, int? pageNumber, string filter)
+        public async Task<IActionResult> Index(string search, int? pageNumber, string filter)
         {
             var baners = await _banerServices.GetBanersAsync();
 
-            if (!string.IsNullOrWhiteSpace(searchBaner))
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                baners = baners.Where(p => p.Link.Contains(searchBaner) || p.Text.Contains(searchBaner)).ToList();
+                baners = baners.Where(p => p.Link.Contains(search) || p.Text.Contains(search)).ToList();
 
-                ViewBag.SearcgBaner = searchBaner;
+                ViewBag.Search = search;
             }
 
-            ViewBag.Filter = "جدید ترین";
+            ViewBag.Filter = "newest";
+            ViewBag.FilterName = "جدید ترین";
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
                 switch (filter)
                 {
                     case "slider":
-                        baners = baners.Where(p=>p.ImageLocation=="Slider").ToList();
-                        ViewBag.Filter = "اسلایدر";
+                        baners = baners.Where(p => p.ImageLocation == "Slider").ToList();
+                        ViewBag.Filter = "slider";
+                        ViewBag.FilterName = "اسلایدر";
                         break;
                     case "newest":
-                        baners = baners.OrderByDescending(p=>p.Id).ToList();
-                        ViewBag.Filter = "جدید ترین";
+                        baners = baners.OrderByDescending(p => p.Id).ToList();
+                        ViewBag.Filter = "newest";
+                        ViewBag.FilterName = "جدید ترین";
                         break;
                     case "older":
                         baners = baners.OrderBy(p => p.Id).ToList();
-                        ViewBag.Filter = "قدیمی ترین";
+                        ViewBag.Filter = "older";
+                        ViewBag.FilterName = "قدیمی ترین";
                         break;
                 }
             }
 
 
-            var paging = new PagingList<BanerViewModel>(baners , 10, pageNumber ?? 1);
+            var paging = new PagingList<BanerViewModel>(baners, 10, pageNumber ?? 1);
             var banersPaging = paging.QueryResult;
 
             #region ViewBagForPaging

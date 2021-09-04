@@ -13,37 +13,36 @@ namespace MyShop.Areas.Admin.Controllers
     [Area("Admin")]
     public class AccountManagerController : Controller
     {
-        //Ingections
+        #region Ingections
         private readonly IAccountServices _accountServices;
         public AccountManagerController(IAccountServices accountServices)
         {
             _accountServices = accountServices;
         }
-
-        //End Injections
-
-
-        public async Task<IActionResult> Index(int? pageNumber, string searchUser, string filter)
+        #endregion
+        [HttpGet]
+        public async Task<IActionResult> Index(int? pageNumber, string search, string filter)
         {
             var userLogIn = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var users = await _accountServices.GetAllUsersListAsync(userLogIn);
 
 
-            if (!string.IsNullOrWhiteSpace(searchUser))
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                if (searchUser.Contains("@"))
+                if (search.Contains("@"))
                 {
-                    users = users.Where(p => p.UserEmail.ToLower().Contains(searchUser.ToLower())).ToList();
+                    users = users.Where(p => p.UserEmail.ToLower().Contains(search.ToLower())).ToList();
                 }
                 else
                 {
-                    users = users.Where(p => p.UserName.ToLower().Contains(searchUser.ToLower())).ToList();
+                    users = users.Where(p => p.UserName.ToLower().Contains(search.ToLower())).ToList();
                 }
 
-                ViewBag.SearchUser = searchUser;
+                ViewBag.Search = search;
             }
 
-            ViewBag.Filter = "همه";
+            ViewBag.Filter = "all";
+            ViewBag.FilterName = "همه";
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
@@ -51,19 +50,23 @@ namespace MyShop.Areas.Admin.Controllers
                 {
                     case "all":
                         users = users.ToList();
-                        ViewBag.Filter = "همه";
+                        ViewBag.Filter = "all";
+                        ViewBag.FilterName = "همه";
                         break;
                     case "admin":
                         users = users.Where(p => p.RoleName == "Manager").ToList();
-                        ViewBag.Filter = "مدیریت کنندگان";
+                        ViewBag.Filter = "admin";
+                        ViewBag.FilterName = "مدیریت کنندگان";
                         break;
                     case "admin2":
                         users = users.Where(p => p.RoleName == "Writer").ToList();
-                        ViewBag.Filter = "نویسندگان";
+                        ViewBag.Filter = "admin2";
+                        ViewBag.FilterName = "نویسندگان";
                         break;
                     case "customer":
                         users = users.Where(p => p.RoleName == "Customer").ToList();
-                        ViewBag.Filter = "مشتریان";
+                        ViewBag.Filter = "customer";
+                        ViewBag.FilterName = "مشتریان";
                         break;
                 }
             }
@@ -178,20 +181,21 @@ namespace MyShop.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Comments(int? pageNumber, string searchComment, string filter)
+        public async Task<IActionResult> Comments(int? pageNumber, string search, string filter)
         {
             var comments = await _accountServices.GetCommentsAsync();
             comments = comments.OrderByDescending(p => p.CommentId);
 
-            if (!string.IsNullOrWhiteSpace(searchComment))
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                comments = comments.Where(p => p.CommentText.Contains(searchComment) || p.CommentTopic.Contains(searchComment)
-                  || p.UserEmail.Contains(searchComment) || p.UserName.Contains(searchComment) || p.ProductName.Contains(searchComment));
+                comments = comments.Where(p => p.CommentText.Contains(search) || p.CommentTopic.Contains(search)
+                  || p.UserEmail.Contains(search) || p.UserName.Contains(search) || p.ProductName.Contains(search));
 
-                ViewBag.SearchComment = searchComment;
+                ViewBag.Search = search;
             }
 
-            ViewBag.Filter = "جدید ترین";
+            ViewBag.Filter = "New";
+            ViewBag.FilterName = "جدید ترین ";
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
@@ -199,19 +203,23 @@ namespace MyShop.Areas.Admin.Controllers
                 {
                     case "New":
                         comments = comments.OrderByDescending(p => p.CommentId);
-                        ViewBag.Filter = "جدید ترین";
+                        ViewBag.Filter = "New";
+                        ViewBag.FilterName = "جدید ترین ";
                         break;
                     case "Old":
                         comments = comments.OrderBy(p => p.CommentId);
-                        ViewBag.Filter = "قدیمی ترین";
+                        ViewBag.Filter = "Old";
+                        ViewBag.FilterName = "قدیمی ترین";
                         break;
                     case "NotShow":
                         comments = comments.Where(p => !p.IsShow).ToList();
-                        ViewBag.Filter = "تایید نشده";
+                        ViewBag.Filter = "NotShow";
+                        ViewBag.FilterName = "تایید نشده";
                         break;
                     case "Show":
                         comments = comments.Where(p => p.IsShow).ToList();
-                        ViewBag.Filter = "تایید شده";
+                        ViewBag.Filter = "Show";
+                        ViewBag.FilterName = "تایید شده";
                         break;
                 }
             }
@@ -259,25 +267,28 @@ namespace MyShop.Areas.Admin.Controllers
                 ViewData["Error"] = result.ErrorMessage;
             }
 
-            return View(model);
+            var comment = await _accountServices.GetCommentAsync(model.CommentId);
+
+            return View(comment);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetQuestions(string searchQuestion, int? pageNumber, string filter)
+        public async Task<IActionResult> GetQuestions(string search, int? pageNumber, string filter)
         {
             var questions = await _accountServices.GetQuestionsAsync();
 
 
-            if (!string.IsNullOrWhiteSpace(searchQuestion))
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                searchQuestion = searchQuestion.Trim();
-                questions = questions.Where(p => p.Text.Contains(searchQuestion)
-                || p.Email.Contains(searchQuestion) || p.ProductName.Contains(searchQuestion)).ToList();
+                search = search.Trim();
+                questions = questions.Where(p => p.Text.Contains(search)
+                || p.Email.Contains(search) || p.ProductName.Contains(search)).ToList();
 
-                ViewBag.SearchQuestion = searchQuestion;
+                ViewBag.Search = search;
             }
 
-            ViewBag.Filter = "جدید ترین";
+            ViewBag.FilterName = "جدید ترین";
+            ViewBag.Filter = "newest";
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
@@ -285,15 +296,18 @@ namespace MyShop.Areas.Admin.Controllers
                 {
                     case "newest":
                         questions = questions.OrderByDescending(p => p.Id).ToList();
-                        ViewBag.Filter = "جدید ترین";
+                        ViewBag.FilterName = "جدید ترین";
+                        ViewBag.Filter = "newest";
                         break;
                     case "older":
                         questions = questions.OrderBy(p => p.Id).ToList();
-                        ViewBag.Filter = "قدیمی ترین";
+                        ViewBag.FilterName = "قدیمی ترین";
+                        ViewBag.Filter = "older";
                         break;
                     case "noAwnser":
                         questions = questions.Where(p => p.Replaise == null).ToList();
-                        ViewBag.Filter = "پاسخ داده نشده";
+                        ViewBag.FilterName = "پاسخ داده نشده";
+                        ViewBag.Filter = "noAwnser";
                         break;
                 }
             }
@@ -364,9 +378,67 @@ namespace MyShop.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFactors()
+        public async Task<IActionResult> GetFactors(int? pageNumber,string search="",string filter="")
         {
             var result = await _accountServices.GetFactorsAsync();
+            result = result.OrderByDescending(p => p.Id);
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                result = result.Where(p => p.RefId==int.Parse(search)|| p.UserEmail.Contains(search));
+
+                ViewBag.Search = search;
+            }
+
+            ViewBag.Filter = "New";
+            ViewBag.FilterName = "جدید ترین ";
+
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                switch (filter)
+                {
+                    case "New":
+                        result = result.OrderByDescending(p => p.Id);
+                        ViewBag.Filter = "New";
+                        ViewBag.FilterName = "جدید ترین ";
+                        break;
+                    case "Old":
+                        result = result.OrderBy(p => p.Id);
+                        ViewBag.Filter = "Old";
+                        ViewBag.FilterName = "قدیمی ترین";
+                        break;
+                    case "Cansel":
+                        result = result.Where(p => p.FactorStatus== "لغو شده").ToList();
+                        ViewBag.Filter = "Cansel";
+                        ViewBag.FilterName = "لغو شده ها";
+                        break;
+                    case "Progssess":
+                        result = result.Where(p => p.FactorStatus == "در حال انجام").ToList();
+                        ViewBag.Filter = "Progssess";
+                        ViewBag.FilterName = "در حال اجرا";
+                        break;
+                    case "Success":
+                        result = result.Where(p => p.FactorStatus == "اتمام یافته").ToList();
+                        ViewBag.Filter = "Success";
+                        ViewBag.FilterName = "اتمام یافته";
+                        break;
+                }
+            }
+
+
+            var paging = new Paging<FactorViewModel>(result, 10, pageNumber ?? 1);
+            var userPaging = paging.QueryResult;
+
+            #region ViewBagForPaging
+            ViewBag.PageNumber = pageNumber ?? 1;
+            ViewBag.FirstPage = paging.FirstPage;
+            ViewBag.LastPage = paging.LastPage;
+            ViewBag.PrevPage = paging.PreviousPage;
+            ViewBag.NextPage = paging.NextPage;
+            ViewBag.Count = paging.LastPage;
+            ViewBag.Action = "GetFactors";
+            ViewBag.Controller = "AccountManager";
+            #endregion
 
             return View(result);
         }
@@ -396,20 +468,21 @@ namespace MyShop.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUserContacts(int? pageNumber,string searchContact,string filter)
+        public async Task<IActionResult> GetUserContacts(int? pageNumber,string search,string filter)
         {
             var result = await _accountServices.GetContactsAsync();
 
-            if (!string.IsNullOrWhiteSpace(searchContact))
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                searchContact = searchContact.Trim();
-                result = result.Where(p => p.Text.Contains(searchContact)
-                || p.UserEmail.Contains(searchContact) || p.Topic.Contains(searchContact)).ToList();
+                search = search.Trim();
+                result = result.Where(p => p.Text.Contains(search)
+                || p.UserEmail.Contains(search) || p.Topic.Contains(search)).ToList();
 
-                ViewBag.SearchContact = searchContact;
+                ViewBag.Search = search;
             }
 
-            ViewBag.Filter = "جدید ترین";
+            ViewBag.Filter = "newest";
+            ViewBag.FilterName = "جدید ترین";
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
@@ -417,15 +490,18 @@ namespace MyShop.Areas.Admin.Controllers
                 {
                     case "newest":
                         result = result.OrderByDescending(p => p.Id).ToList();
-                        ViewBag.Filter = "جدید ترین";
+                        ViewBag.Filter = "newest";
+                        ViewBag.FilterName = "جدید ترین";
                         break;
                     case "older":
                         result = result.OrderBy(p => p.Id).ToList();
-                        ViewBag.Filter = "قدیمی ترین";
+                        ViewBag.Filter = "older";
+                        ViewBag.FilterName = "قدیمی ترین";
                         break;
                     case "noAwnser":
                         result = result.Where(p => p.Awnser == null || p.Awnser=="").ToList();
-                        ViewBag.Filter = "پاسخ داده نشده";
+                        ViewBag.Filter = "noAwnser";
+                        ViewBag.FilterName = "پاسخ داده نشده";
                         break;
                 }
             }

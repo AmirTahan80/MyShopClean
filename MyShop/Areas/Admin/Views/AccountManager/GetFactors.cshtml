@@ -13,14 +13,14 @@
                         <h4 class="card-title">کاربران</h4>
                         <div class="col-md-12">
                             <form class="row form-group" asp-action="GetFactors" asp-controller="AccountManager" enctype="text/plain" method="get">
-                                <input type="text" class="form-control col-md-4 m-1" value="@ViewBag.SearchFactor" placeholder="نام کاربری و یا کد رهگیری را وارد کنید ..." name="searchFactor" />
+                                <input type="text" class="form-control col-md-4 m-1" value="@ViewBag.Search" placeholder="ایمیل کاربر و یا کد رهگیری را وارد کنید ..." name="search" />
                                 <select class="form-control col-md-4 m-1" name="filter">
-                                    <option class="bg-blue white">@ViewBag.Filter</option>
-                                    <option value="newest">جدید ترین</option>
-                                    <option value="older">قدیمی ترین</option>
-                                    <option value="progsess">در حال اجرا</option>
-                                    <option value="cansels">لغو شده ها</option>
-                                    <option value="finish">تایید شده</option>
+                                    <option class="bg-blue white" value="@ViewBag.Filter">@ViewBag.FilterName</option>
+                                    <option value="New">جدید ترین</option>
+                                    <option value="Old">قدیمی ترین</option>
+                                    <option value="Progssess">در حال اجرا</option>
+                                    <option value="Cansel">لغو شده ها</option>
+                                    <option value="Success">اتمام یافته</option>
                                 </select>
                                 <button class="btn btn-outline-primary m-1"><i class="icon-magnifier"></i> جست و جو</button>
                             </form>

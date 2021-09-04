@@ -14,9 +14,9 @@
                         <h4 class="card-title">نظرات</h4>
                         <div class="col-md-12">
                             <form class="row form-group" asp-action="Comments" asp-controller="AccountManager" enctype="text/plain" method="get">
-                                <input type="text" class="form-control col-md-4 m-1" value="@ViewBag.SearchComment" placeholder="نام کاربری و یا ایمیل کاربر نظر دهنده ، محصول و موضوع یا متن نظر را وارد کنید ..." name="searchComment" />
+                                <input type="text" class="form-control col-md-4 m-1" value="@ViewBag.Search" placeholder="نام کاربری و یا ایمیل کاربر نظر دهنده ، محصول و موضوع یا متن نظر را وارد کنید ..." name="Search" />
                                 <select class="form-control col-md-4 m-1" name="filter">
-                                    <option class="bg-blue white">@ViewBag.Filter</option>
+                                    <option class="bg-blue white" value="@ViewBag.Filter">@ViewBag.FilterName</option>
                                     <option value="New">جدید ترین</option>
                                     <option value="Old">قدیمی ترین</option>
                                     <option value="Show">تایید شده</option>
@@ -49,7 +49,6 @@
                                     <thead>
                                         <tr>
                                             <th class="border-top-0">#</th>
-                                            <th class="border-top-0"><button type="submit" class="btn btn-outline-danger"><i class="icon-trash"></i></button></th>
                                             <th class="border-top-0">ایمیل کاربر</th>
                                             <th class="border-top-0">نام محصول</th>
                                             <th class="border-top-0">نظر</th>
@@ -62,10 +61,6 @@
                                             <tr>
                                                 <td class="text-truncate">
                                                     @i
-                                                </td>
-                                                <td>
-                                                    @*<input type="checkbox" asp-for="@Model[b].IsSelected" />
-                                                        <input asp-for="@Model[b].UserId" type="hidden" />*@
                                                 </td>
                                                 <td class="text-truncate">
                                                     @if (Model[b].UserEmail.Length > 10)

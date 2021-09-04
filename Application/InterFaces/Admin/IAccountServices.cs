@@ -28,7 +28,7 @@ namespace Application.InterFaces.Admin
         /// </summary>
         /// <param name="userId"></param>
         /// <returns>UserDetailViewModel</returns>
-        Task<UserDetailViewModel> FinUserById(string userId,string userLoginId);
+        Task<UserDetailViewModel> FinUserById(string userId, string userLoginId);
         /// <summary>
         /// ساخت و جنریت لینک برای تاییدیه ایمیل و ارسال به جیمیل کاربر
         /// Generate Link And Send To User Email For Confirm Email
@@ -90,7 +90,7 @@ namespace Application.InterFaces.Admin
         /// </summary>
         /// <param name="editQuestion"></param>
         /// <returns>ResultDto</returns>
-        Task<ResultDto> EditQuestionAsync(QuestionViewModel editQuestion,string userId);
+        Task<ResultDto> EditQuestionAsync(QuestionViewModel editQuestion, string userId);
         /// <summary>
         /// حذف سوال یا سوالات
         /// </summary>
