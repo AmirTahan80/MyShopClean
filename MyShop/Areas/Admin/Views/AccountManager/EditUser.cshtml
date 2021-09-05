@@ -35,7 +35,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="projectinput2">مقام کاربر</label>
-                                        <select asp-for="RoleName" class="form-control" required ></select>
+                                        <select asp-for="RoleName" asp-items="@Model.RolesName" class="form-control" required ></select>
                                         <span class="red" asp-validation-for="RoleName"></span>
                                     </div>
                                 </div>
@@ -51,13 +51,13 @@
                             </div>
                             @if (ViewData["Success"] != null)
                             {
-                                <div class="alert alert-success round">
+                                <div class="alert alert-success">
                                     <p><strong>موفقیت ! </strong>@ViewData["Success"]</p>
                                 </div>
                             }
                             @if (ViewData["Error"] != null)
                             {
-                                <div class="alert alert-danger round">
+                                <div class="alert alert-danger">
                                     <p><strong>خطا ! </strong>@ViewData["Error"]</p>
                                 </div>
                             }

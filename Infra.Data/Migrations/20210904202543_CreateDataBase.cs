@@ -24,6 +24,22 @@ namespace Infra.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Baners",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Link = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BanerPlace = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Baners", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Categories",
                 columns: table => new
                 {
@@ -42,6 +58,22 @@ namespace Infra.Data.Migrations
                         principalTable: "Categories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Discounts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CodeName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DiscountPrice = table.Column<int>(type: "int", nullable: false),
+                    InsertTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpireTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Discounts", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -317,9 +349,8 @@ namespace Infra.Data.Migrations
                 {
                     CartId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CreateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TotalPrice = table.Column<int>(type: "int", nullable: false),
                     IsFinally = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -330,26 +361,29 @@ namespace Infra.Data.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Comments",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    CommentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ReplayId = table.Column<int>(type: "int", nullable: true),
                     CommentTopic = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CommentText = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CommentInsertTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProductGoodNess = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProductBads = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsShow = table.Column<bool>(type: "bit", nullable: false),
+                    Suggest = table.Column<bool>(type: "bit", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.PrimaryKey("PK_Comments", x => x.CommentId);
                     table.ForeignKey(
                         name: "FK_Comments_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -360,7 +394,7 @@ namespace Infra.Data.Migrations
                         name: "FK_Comments_Comments_ReplayId",
                         column: x => x.ReplayId,
                         principalTable: "Comments",
-                        principalColumn: "Id",
+                        principalColumn: "CommentId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Comments_Products_ProductId",
@@ -368,6 +402,93 @@ namespace Infra.Data.Migrations
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ContactUs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Text = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Topic = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    AwnserTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsHaveAwnser = table.Column<bool>(type: "bit", nullable: false),
+                    Awnser = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContactUs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ContactUs_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Factors",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CartId = table.Column<int>(type: "int", nullable: false),
+                    TotalPrice = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserPhone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserFamilly = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    RefId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Factors", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Factors_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Question",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Topic = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    QuestionText = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ReplayOnId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Question", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Question_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Question_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Question_Question_ReplayOnId",
+                        column: x => x.ReplayOnId,
+                        principalTable: "Question",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -446,6 +567,110 @@ namespace Infra.Data.Migrations
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CartDiscount",
+                columns: table => new
+                {
+                    CartsCartId = table.Column<int>(type: "int", nullable: false),
+                    DiscountsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CartDiscount", x => new { x.CartsCartId, x.DiscountsId });
+                    table.ForeignKey(
+                        name: "FK_CartDiscount_Carts_CartsCartId",
+                        column: x => x.CartsCartId,
+                        principalTable: "Carts",
+                        principalColumn: "CartId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CartDiscount_Discounts_DiscountsId",
+                        column: x => x.DiscountsId,
+                        principalTable: "Discounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RequestPays",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DatePay = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Amount = table.Column<int>(type: "int", nullable: false),
+                    IsPay = table.Column<bool>(type: "bit", nullable: false),
+                    RefId = table.Column<int>(type: "int", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CartId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RequestPays", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RequestPays_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RequestPays_Carts_CartId",
+                        column: x => x.CartId,
+                        principalTable: "Carts",
+                        principalColumn: "CartId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DiscountFactor",
+                columns: table => new
+                {
+                    DiscountsId = table.Column<int>(type: "int", nullable: false),
+                    FactorsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DiscountFactor", x => new { x.DiscountsId, x.FactorsId });
+                    table.ForeignKey(
+                        name: "FK_DiscountFactor_Discounts_DiscountsId",
+                        column: x => x.DiscountsId,
+                        principalTable: "Discounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DiscountFactor_Factors_FactorsId",
+                        column: x => x.FactorsId,
+                        principalTable: "Factors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FactorDetails",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProductCount = table.Column<int>(type: "int", nullable: false),
+                    ProductPrice = table.Column<int>(type: "int", nullable: false),
+                    TotalPrice = table.Column<int>(type: "int", nullable: false),
+                    AttributesName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AttributesValue = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImageSrc = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FactorId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FactorDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FactorDetails_Factors_FactorId",
+                        column: x => x.FactorId,
+                        principalTable: "Factors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -544,6 +769,11 @@ namespace Infra.Data.Migrations
                 column: "TemplatesAttributeTemplateId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CartDiscount_DiscountsId",
+                table: "CartDiscount",
+                column: "DiscountsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Carts_UserId",
                 table: "Carts",
                 column: "UserId");
@@ -569,6 +799,26 @@ namespace Infra.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ContactUs_UserId",
+                table: "ContactUs",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DiscountFactor_FactorsId",
+                table: "DiscountFactor",
+                column: "FactorsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FactorDetails_FactorId",
+                table: "FactorDetails",
+                column: "FactorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Factors_UserId",
+                table: "Factors",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProductAttributes_ProductId",
                 table: "ProductAttributes",
                 column: "ProductId");
@@ -587,6 +837,31 @@ namespace Infra.Data.Migrations
                 name: "IX_Products_CategoryId",
                 table: "Products",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Question_ProductId",
+                table: "Question",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Question_ReplayOnId",
+                table: "Question",
+                column: "ReplayOnId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Question_UserId",
+                table: "Question",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RequestPays_ApplicationUserId",
+                table: "RequestPays",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RequestPays_CartId",
+                table: "RequestPays",
+                column: "CartId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserFavorites_UserId",
@@ -626,16 +901,37 @@ namespace Infra.Data.Migrations
                 name: "AttributeValues");
 
             migrationBuilder.DropTable(
+                name: "Baners");
+
+            migrationBuilder.DropTable(
                 name: "CartDetails");
 
             migrationBuilder.DropTable(
+                name: "CartDiscount");
+
+            migrationBuilder.DropTable(
                 name: "Comments");
+
+            migrationBuilder.DropTable(
+                name: "ContactUs");
+
+            migrationBuilder.DropTable(
+                name: "DiscountFactor");
+
+            migrationBuilder.DropTable(
+                name: "FactorDetails");
 
             migrationBuilder.DropTable(
                 name: "ProductImages");
 
             migrationBuilder.DropTable(
                 name: "ProductProperties");
+
+            migrationBuilder.DropTable(
+                name: "Question");
+
+            migrationBuilder.DropTable(
+                name: "RequestPays");
 
             migrationBuilder.DropTable(
                 name: "UserFavoritesDetails");
@@ -648,6 +944,12 @@ namespace Infra.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AttributeTemplates");
+
+            migrationBuilder.DropTable(
+                name: "Discounts");
+
+            migrationBuilder.DropTable(
+                name: "Factors");
 
             migrationBuilder.DropTable(
                 name: "Carts");

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infra.Data.Migrations
 {
     [DbContext(typeof(AppWebContext))]
-    [Migration("20210818212031_CreateBanerModel")]
-    partial class CreateBanerModel
+    [Migration("20210904202543_CreateDataBase")]
+    partial class CreateDataBase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -34,6 +34,21 @@ namespace Infra.Data.Migrations
                     b.HasIndex("DiscountsId");
 
                     b.ToTable("CartDiscount");
+                });
+
+            modelBuilder.Entity("DiscountFactor", b =>
+                {
+                    b.Property<int>("DiscountsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FactorsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DiscountsId", "FactorsId");
+
+                    b.HasIndex("FactorsId");
+
+                    b.ToTable("DiscountFactor");
                 });
 
             modelBuilder.Entity("Domain.Models.AttributeTemplate", b =>
@@ -98,9 +113,6 @@ namespace Infra.Data.Migrations
 
                     b.Property<bool>("IsFinally")
                         .HasColumnType("bit");
-
-                    b.Property<int>("TotalPrice")
-                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -228,6 +240,42 @@ namespace Infra.Data.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("Domain.Models.ContactUs", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Awnser")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("AwnserTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsHaveAwnser")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Topic")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ContactUs");
+                });
+
             modelBuilder.Entity("Domain.Models.Discount", b =>
                 {
                     b.Property<int>("Id")
@@ -253,12 +301,106 @@ namespace Infra.Data.Migrations
                     b.ToTable("Discounts");
                 });
 
+            modelBuilder.Entity("Domain.Models.Factor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RefId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalPrice")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserFamilly")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserPhone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Factors");
+                });
+
+            modelBuilder.Entity("Domain.Models.FactorDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AttributesName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AttributesValue")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("FactorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageSrc")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductPrice")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalPrice")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FactorId");
+
+                    b.ToTable("FactorDetails");
+                });
+
             modelBuilder.Entity("Domain.Models.IndexFolder.Baner", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("BanerPlace")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Image")
                         .IsRequired()
@@ -423,6 +565,41 @@ namespace Infra.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Question");
+                });
+
+            modelBuilder.Entity("Domain.Models.RequestPay", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("CartId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DatePay")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsPay")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RefId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("CartId");
+
+                    b.ToTable("RequestPays");
                 });
 
             modelBuilder.Entity("Domain.Models.UserDetail", b =>
@@ -755,6 +932,21 @@ namespace Infra.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("DiscountFactor", b =>
+                {
+                    b.HasOne("Domain.Models.Discount", null)
+                        .WithMany()
+                        .HasForeignKey("DiscountsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.Factor", null)
+                        .WithMany()
+                        .HasForeignKey("FactorsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Models.AttributeTemplate", b =>
                 {
                     b.HasOne("Domain.Models.Product", "Product")
@@ -845,6 +1037,35 @@ namespace Infra.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Models.ContactUs", b =>
+                {
+                    b.HasOne("Domain.Models.ApplicationUser", "User")
+                        .WithMany("ContactUs")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Models.Factor", b =>
+                {
+                    b.HasOne("Domain.Models.ApplicationUser", "User")
+                        .WithMany("Factors")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Models.FactorDetail", b =>
+                {
+                    b.HasOne("Domain.Models.Factor", "Factor")
+                        .WithMany("FactorDetails")
+                        .HasForeignKey("FactorId");
+
+                    b.Navigation("Factor");
+                });
+
             modelBuilder.Entity("Domain.Models.Product", b =>
                 {
                     b.HasOne("Domain.Models.Category", "Category")
@@ -908,6 +1129,21 @@ namespace Infra.Data.Migrations
                     b.Navigation("ReplayOn");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Models.RequestPay", b =>
+                {
+                    b.HasOne("Domain.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("RequestPays")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("Domain.Models.Cart", "Cart")
+                        .WithMany()
+                        .HasForeignKey("CartId");
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Cart");
                 });
 
             modelBuilder.Entity("Domain.Models.UserFavorite", b =>
@@ -1019,6 +1255,11 @@ namespace Infra.Data.Migrations
                     b.Navigation("Replies");
                 });
 
+            modelBuilder.Entity("Domain.Models.Factor", b =>
+                {
+                    b.Navigation("FactorDetails");
+                });
+
             modelBuilder.Entity("Domain.Models.Product", b =>
                 {
                     b.Navigation("AttributeTemplates");
@@ -1055,7 +1296,13 @@ namespace Infra.Data.Migrations
 
                     b.Navigation("Comments");
 
+                    b.Navigation("ContactUs");
+
+                    b.Navigation("Factors");
+
                     b.Navigation("Questions");
+
+                    b.Navigation("RequestPays");
 
                     b.Navigation("UserFavorite");
                 });

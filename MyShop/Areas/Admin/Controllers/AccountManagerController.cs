@@ -1,12 +1,11 @@
 ﻿using Application.InterFaces.Admin;
+using Application.Utilities;
 using Application.ViewModels.Admin;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Application.Utilities;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace MyShop.Areas.Admin.Controllers
 {
@@ -120,7 +119,14 @@ namespace MyShop.Areas.Admin.Controllers
                 ViewData["Error"] = "در ساخت اکانت کاربر مشکلی به وجود آمده است لطفا دوباره تلاش کنید در صورت رفع نشدن خطا با نام کاربری و ایمیل دیگری امتحان کنید !";
                 return View(model);
             }
-            return View();
+            var userLoginId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var roles = await _accountServices.GetRolesAsync(userLoginId);
+            var modelForReturnToView = new CreateAccountViewModel()
+            {
+                RolesItem = roles
+            };
+
+            return View(modelForReturnToView);
 
         }
 
@@ -145,7 +151,14 @@ namespace MyShop.Areas.Admin.Controllers
             else
                 ViewData["Error"] = "عملیات ویرایش با موفقیت انجام نشد !";
 
-            return View();
+            var userLoginId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var roles = await _accountServices.GetRolesAsync(userLoginId);
+            var modelForReturnToView = new CreateAccountViewModel()
+            {
+                RolesItem = roles
+            };
+
+            return View(modelForReturnToView);
         }
 
         [HttpPost]
@@ -378,14 +391,14 @@ namespace MyShop.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFactors(int? pageNumber,string search="",string filter="")
+        public async Task<IActionResult> GetFactors(int? pageNumber, string search = "", string filter = "")
         {
             var result = await _accountServices.GetFactorsAsync();
             result = result.OrderByDescending(p => p.Id);
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                result = result.Where(p => p.RefId==int.Parse(search)|| p.UserEmail.Contains(search));
+                result = result.Where(p => p.RefId == int.Parse(search) || p.UserEmail.Contains(search));
 
                 ViewBag.Search = search;
             }
@@ -408,7 +421,7 @@ namespace MyShop.Areas.Admin.Controllers
                         ViewBag.FilterName = "قدیمی ترین";
                         break;
                     case "Cansel":
-                        result = result.Where(p => p.FactorStatus== "لغو شده").ToList();
+                        result = result.Where(p => p.FactorStatus == "لغو شده").ToList();
                         ViewBag.Filter = "Cansel";
                         ViewBag.FilterName = "لغو شده ها";
                         break;
@@ -468,7 +481,7 @@ namespace MyShop.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUserContacts(int? pageNumber,string search,string filter)
+        public async Task<IActionResult> GetUserContacts(int? pageNumber, string search, string filter)
         {
             var result = await _accountServices.GetContactsAsync();
 
@@ -499,7 +512,7 @@ namespace MyShop.Areas.Admin.Controllers
                         ViewBag.FilterName = "قدیمی ترین";
                         break;
                     case "noAwnser":
-                        result = result.Where(p => p.Awnser == null || p.Awnser=="").ToList();
+                        result = result.Where(p => p.Awnser == null || p.Awnser == "").ToList();
                         ViewBag.Filter = "noAwnser";
                         ViewBag.FilterName = "پاسخ داده نشده";
                         break;

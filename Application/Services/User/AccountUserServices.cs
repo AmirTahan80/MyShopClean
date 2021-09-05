@@ -1,6 +1,5 @@
 ﻿using Application.InterFaces.Both;
 using Application.InterFaces.User;
-using Application.Security.Recaptcha;
 using Application.ViewModels;
 using Application.ViewModels.User;
 using Domain.InterFaces;
@@ -12,11 +11,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace Application.Services.User
@@ -25,7 +22,7 @@ namespace Application.Services.User
     {
         #region Injections
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IMessageSenderServices _messageSender;
+        private readonly IMessageSendMailKit _messageSender;
         private static IHttpContextAccessor _httpContextAccessor;
         private readonly IHostingEnvironment _env;
         private readonly LinkGenerator _linkGenerator;
@@ -38,7 +35,7 @@ namespace Application.Services.User
         private readonly IContactUsRepository _contactUsRepository;
 
         public AccountUserServices(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor,
-            IHostingEnvironment env, LinkGenerator linkGenerator, IMessageSenderServices messageSender,
+            IHostingEnvironment env, LinkGenerator linkGenerator, IMessageSendMailKit messageSender,
             SignInManager<ApplicationUser> signInManager, IProductRepository productRepository,
             ICartRepository cartRepository, IQuestionRepository questionReposiotry,
             RoleManager<RoleModel> roleManager, IPayRepository payRepository, IContactUsRepository contactUsRepository)
@@ -464,7 +461,7 @@ namespace Application.Services.User
                 else
                 {
                     var findTemplate = product.AttributeTemplates.SingleOrDefault(p => p.AttributeTemplateId == templateId);
-                    if(findTemplate==null)
+                    if (findTemplate == null)
                     {
                         returnResult.ErrorMessage = "این نوع محصول موجود نمیباشد لطفا نوع دیگری را انتخاب کنید !!!";
                         returnResult.Status = false;
@@ -1276,7 +1273,7 @@ namespace Application.Services.User
             builder = builder.Replace("{link}", callBackUrl);
             builder = builder.Replace("{userName}", user.UserName);
             builder = builder.Replace("{userEmail}", user.Email);
-            await _messageSender.SendEmailAsync(user.Email, passForReturn, builder, true);
+            await _messageSender.SendMessageAsync(user.Email, user.UserName, builder, "تایید ایمیل");
 
             return true;
         }
@@ -1325,7 +1322,7 @@ namespace Application.Services.User
             builder = builder.Replace("{link}", callBackUrl);
             builder = builder.Replace("{userName}", user.UserName);
             builder = builder.Replace("{userEmail}", user.Email);
-            await _messageSender.SendEmailAsync(user.Email, "ResetPassword", builder, true);
+            await _messageSender.SendMessageAsync(user.Email, user.UserName, builder, "فراموشی رمز عبور");
 
             return true;
         }
@@ -1373,7 +1370,7 @@ namespace Application.Services.User
             builder = builder.Replace("{link}", callBackUrl);
             builder = builder.Replace("{userName}", user.UserName);
             builder = builder.Replace("{userEmail}", user.Email);
-            await _messageSender.SendEmailAsync(user.Email, "ResetPassword", builder, true);
+            await _messageSender.SendMessageAsync(user.Email, user.UserName, builder, message);
 
             return true;
         }

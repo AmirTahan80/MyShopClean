@@ -33,6 +33,7 @@ namespace Infra.Ioc.Dependencies
             services.AddScoped<IProductUserServices, ProductUserServices>();
 
             services.AddScoped<IMessageSenderServices, MessageSenderServices>();
+            services.AddScoped<IMessageSendMailKit, MessageSendMailKit>();
 
             services.AddScoped<IAccountServices, AccountServices>();
             services.AddScoped<IAccountUserServices, AccountUserServices>();
@@ -55,7 +56,7 @@ namespace Infra.Ioc.Dependencies
             services.AddScoped<IPayRepository, PayRepository>();
             services.AddScoped<IPayUserServices, PayUserServices>();
 
-            services.AddScoped<IContactUsRepository,ContactUsRepository>();
+            services.AddScoped<IContactUsRepository, ContactUsRepository>();
 
 
 

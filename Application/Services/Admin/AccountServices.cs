@@ -25,9 +25,7 @@ namespace Application.Services.Admin
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMessageSenderServices _messageSender;
-        private static IHttpContextAccessor _httpContextAccessor;
         private readonly IHostingEnvironment _env;
-        private readonly LinkGenerator _linkGenerator;
         private readonly RoleManager<RoleModel> _roleManager;
         private readonly ICommentRepository _commentRepository;
         private readonly IQuestionRepository _questionRepository;
@@ -36,9 +34,7 @@ namespace Application.Services.Admin
 
         public AccountServices(SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
-            IMessageSenderServices messageSender, IHostingEnvironment env,
-            IHttpContextAccessor httpContextAccessor,
-            LinkGenerator linkGenerator, RoleManager<RoleModel> roleManager,
+            IMessageSenderServices messageSender, IHostingEnvironment env, RoleManager<RoleModel> roleManager,
             ICommentRepository commentRepository,
             IQuestionRepository questionRepository, IPayRepository payRepository, IContactUsRepository contactUsrepository)
         {
@@ -46,8 +42,6 @@ namespace Application.Services.Admin
             _userManager = userManager;
             _messageSender = messageSender;
             _env = env;
-            _httpContextAccessor = httpContextAccessor;
-            _linkGenerator = linkGenerator;
             _roleManager = roleManager;
             _commentRepository = commentRepository;
             _questionRepository = questionRepository;
@@ -69,17 +63,20 @@ namespace Application.Services.Admin
                     return false;
                 }
 
+                var userDetail = new UserDetail();
+
                 var applicationUser = new ApplicationUser()
                 {
                     UserName = user.UserName,
                     Email = user.UserEmail,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    UserDetail= userDetail
                 };
                 var result = await _userManager.CreateAsync(applicationUser, userPassword);
                 if (result.Succeeded)
                 {
 
-                    var findRoleById = await _roleManager.FindByIdAsync(user.RoleId);
+                    var findRoleById = await _roleManager.FindByNameAsync(user.RoleId);
                     if (findRoleById != null)
                     {
                         var resultAddToRole = await _userManager.AddToRoleAsync(applicationUser, findRoleById.Name);
@@ -130,7 +127,8 @@ namespace Application.Services.Admin
             {
                 UserName = p.UserName,
                 UserEmail = p.Email,
-                RoleName = _userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault(),
+                RoleName = _roleManager.Roles.SingleOrDefault(c=>c.Name==_userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault())
+                .RoleNamePersian,
                 UserId = p.Id
             }).ToList();
             return usersReturn;
@@ -141,12 +139,14 @@ namespace Application.Services.Admin
 
             var correctRolesGet = await GetRoles(userLoginId);
 
+            var userRole = await _userManager.GetRolesAsync(user);
+
             var userReturn = new UserDetailViewModel()
             {
                 UserId = user.Id,
                 UserName = user.UserName,
                 UserEmail = user.Email,
-                RoleName = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().FirstOrDefault(),
+                RoleName = userRole.FirstOrDefault(),
                 RolesName = correctRolesGet
             };
             return userReturn;
@@ -181,7 +181,8 @@ namespace Application.Services.Admin
                     UserName = editUser.UserName,
                     Email = editUser.UserEmail,
                 };
-                var userRole = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().SingleOrDefault();
+                var userRoles =await _userManager.GetRolesAsync(user);
+                var userRole = userRoles.SingleOrDefault();
                 if (userRole != editUser.RoleName)
                 {
                     var resultFordeleteRole = await _userManager.RemoveFromRoleAsync(user, userRole);
@@ -679,8 +680,8 @@ namespace Application.Services.Admin
             {
                 listOfRoleItem.Add(new SelectListItem()
                 {
-                    Value = role.Id,
-                    Text = role.Name == "Manager" ? "ادمین | مدیریت کننده" : role.Name == "Writer" ? "نویسنده" : role.Name == "Customer" ? "مشتری" : role.Name == "Founder" ? "سازنده سایت" : ""
+                    Value = role.Name,
+                    Text = role.RoleNamePersian
                 });
             }
 

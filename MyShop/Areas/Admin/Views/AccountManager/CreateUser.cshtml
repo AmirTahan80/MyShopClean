@@ -21,7 +21,7 @@
                                         <div class="form-group">
                                             <p>نام کاربری</p>
                                             <div class="position-relative has-icon-left">
-                                                <input asp-for="UserName" required autofocus class="form-control round">
+                                                <input asp-for="UserName" required autofocus class="form-control">
                                                 <span asp-validation-for="UserName" class="red"></span>
                                             </div>
                                         </div>
@@ -29,28 +29,28 @@
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <p>ایمیل کاربر (پست الکترونیکی(</p>
-                                            <input asp-for="UserEmail" required class="form-control round">
+                                            <input asp-for="UserEmail" required class="form-control">
                                             <span asp-validation-for="UserEmail" class="red"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <p>مقام کاربر در وبسایت</p>
-                                            <select asp-items="Model.RolesItem" asp-for="RoleId"></select>
+                                            <select asp-items="Model.RolesItem" asp-for="RoleId" class="form-control"></select>
                                             <span asp-validation-for="RoleId" class="red"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <p>گذرواژه</p>
-                                            <input asp-for="UserPassWord" required class="form-control round">
+                                            <input asp-for="UserPassWord" required class="form-control">
                                             <span asp-validation-for="UserPassWord" class="red"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <p>تکرار گذرواژه</p>
-                                            <input asp-for="UserRePassWord" required class="form-control round">
+                                            <input asp-for="UserRePassWord" required class="form-control">
                                             <span asp-validation-for="UserRePassWord" class="red"></span>
                                         </div>
                                     </div>
@@ -63,12 +63,12 @@
                                             </div>
                                             @if (ViewData["Error"] != null)
                                             {
-                                                <div class="alert alert-danger round">
+                                                <div class="alert alert-danger">
                                                     <strong>خطا! </strong>  @ViewData["Error"]
                                                 </div>}
                                             @if (ViewData["Success"] != null)
                                             {
-                                                <div class="alert alert-success round">
+                                                <div class="alert alert-success">
                                                     <strong>موفقیت! </strong>  @ViewData["Success"]
                                                 </div>}
                                         </div>
