@@ -3,6 +3,7 @@ using Domain.Models;
 using Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Data.Repositories.AdminRepositories
@@ -57,6 +58,23 @@ namespace Data.Repositories.AdminRepositories
         public async Task DeleteCategoryByIdAsync(int categoryId)
         {
             var category = await _context.Categories.SingleOrDefaultAsync(p => p.Id == categoryId);
+            if (category.Products != null)
+            {
+                var categoryToProducts = await _context.CategoryToProducts
+                    .Where(p => p.CategoryId == category.Id)
+                    .ToListAsync();
+                var products = await _context.Products
+                    .Where(p => p.Categories.Any(c => c.CategoryId == category.Id))
+                    .ToListAsync();
+                foreach (var item in products)
+                {
+                    foreach (var categoryToProduct in categoryToProducts)
+                    {
+                        item.Categories.Remove(categoryToProduct);
+                        _context.CategoryToProducts.Remove(categoryToProduct);
+                    }
+                }
+            }
             _context.Categories.Remove(category);
         }
 

@@ -188,6 +188,28 @@ namespace Infra.Data.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("Domain.Models.CategoryToProduct", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId1")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProductId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ProductId1");
+
+                    b.ToTable("CategoryToProducts");
+                });
+
             modelBuilder.Entity("Domain.Models.Comment", b =>
                 {
                     b.Property<int>("CommentId")
@@ -309,6 +331,9 @@ namespace Infra.Data.Migrations
                     b.Property<int>("CartId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("RefId")
                         .HasColumnType("int");
 
@@ -424,9 +449,6 @@ namespace Infra.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Count")
                         .HasColumnType("int");
 
@@ -449,8 +471,6 @@ namespace Infra.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
                 });
@@ -535,6 +555,9 @@ namespace Infra.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("InserTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("ProductId")
                         .HasColumnType("int");
@@ -907,6 +930,9 @@ namespace Infra.Data.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
+                    b.Property<DateTime>("RegisterTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("UserDetailId")
                         .HasColumnType("int");
 
@@ -1012,6 +1038,25 @@ namespace Infra.Data.Migrations
                     b.Navigation("Parent");
                 });
 
+            modelBuilder.Entity("Domain.Models.CategoryToProduct", b =>
+                {
+                    b.HasOne("Domain.Models.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.Product", "Product")
+                        .WithMany("Categories")
+                        .HasForeignKey("ProductId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Domain.Models.Comment", b =>
                 {
                     b.HasOne("Domain.Models.Product", "Product")
@@ -1062,17 +1107,6 @@ namespace Infra.Data.Migrations
                         .HasForeignKey("FactorId");
 
                     b.Navigation("Factor");
-                });
-
-            modelBuilder.Entity("Domain.Models.Product", b =>
-                {
-                    b.HasOne("Domain.Models.Category", "Category")
-                        .WithMany("Products")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Domain.Models.ProductAttribute", b =>
@@ -1261,6 +1295,8 @@ namespace Infra.Data.Migrations
             modelBuilder.Entity("Domain.Models.Product", b =>
                 {
                     b.Navigation("AttributeTemplates");
+
+                    b.Navigation("Categories");
 
                     b.Navigation("Comments");
 

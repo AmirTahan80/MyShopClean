@@ -11,7 +11,7 @@ namespace Application.ViewModels.User
         [Required]
         public string ImageSrc { get; set; }
         [Required]
-        public string Price { get; set; }
+        public int Price { get; set; }
         [Required]
         public int Count { get; set; }
 

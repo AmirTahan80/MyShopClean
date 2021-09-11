@@ -1,6 +1,7 @@
 ﻿using Application.InterFaces.Admin;
 using Application.Utilities;
 using Application.ViewModels.Admin;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 namespace MyShop.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize("Manager")]
     public class AccountManagerController : Controller
     {
         #region Ingections
@@ -92,6 +94,7 @@ namespace MyShop.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [Authorize("Founder")]
         public async Task<IActionResult> CreateUser()
         {
             var userLoginId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -162,6 +165,7 @@ namespace MyShop.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [Authorize("Founder")]
         public async Task<IActionResult> DeleteUsers(IEnumerable<UsersListViewModel> model)
         {
             if (model.Count() <= 0) return NotFound();
@@ -371,7 +375,9 @@ namespace MyShop.Areas.Admin.Controllers
                 ViewData["Error"] = result.ErrorMessage;
             }
 
-            return View(model);
+            var question = await _accountServices.GetQuestionAsync(model.Id);
+
+            return View(question);
         }
         [HttpPost]
         public async Task<IActionResult> DeleteQuestion(IList<QuestionViewModel> models)
@@ -477,7 +483,9 @@ namespace MyShop.Areas.Admin.Controllers
                 ViewData["Error"] = result.ErrorMessage;
             }
 
-            return View(model);
+            var factor= await _accountServices.GetFactorAsync(model.Id);
+
+            return View(factor);
         }
 
         [HttpGet]

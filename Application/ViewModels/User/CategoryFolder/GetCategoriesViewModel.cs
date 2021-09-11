@@ -23,6 +23,7 @@ namespace Application.ViewModels.User
         public int? ParentId { get; set; }
 
         public bool IsCategoryHasChild { get; set; } = false;
+        public int ProductCount { get; set; }
 
 
         //Navigation

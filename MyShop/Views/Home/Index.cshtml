@@ -9,6 +9,7 @@
 
 }
 
+
 <!-- adplacement------------------------------->
 <div class="container-main">
     <div class="col-lg-3 col-md-3 col-xs-12 pr">
@@ -80,7 +81,7 @@
                                 <div class="owl-item active tab-item" style="width: 296.75px; margin-left: 10px;">
                                     <div class="item">
                                         <a asp-action="Description" asp-controller="Product" asp-route-productId="@newProduct.Id" class="d-block hover-img-link">
-                                            <img src="~/Images/ProductImages/@newProduct.ImageSrc" class="img-fluid" alt="@newProduct.Name" style="max-height: 220px; max-width: 307px; ">
+                                            <img src="~/Images/ProductImages/@newProduct.ImageSrc" class="img-fluid" alt="@newProduct.Name" style="height: 220px; width: 307px; ">
                                         </a>
                                         <h2 class="post-title">
                                             <a asp-action="Description" asp-controller="Product" asp-route-productId="@newProduct.Id">
@@ -88,7 +89,7 @@
                                             </a>
                                         </h2>
                                         <div class="price">
-                                            <ins><span>@newProduct.Price<span>تومان</span></span></ins>
+                                            <ins><span>@newProduct.Price.ToString("#,0")<span>تومان</span></span></ins>
                                         </div>
                                     </div>
                                 </div>
@@ -98,7 +99,7 @@
                                 <div class="owl-item tab-item" style="width: 296.75px; margin-left: 10px;">
                                     <div class="item">
                                         <a asp-action="Description" asp-controller="Product" asp-route-productId="@newProduct.Id" class="d-block hover-img-link">
-                                            <img src="~/Images/ProductImages/@newProduct.ImageSrc" class="img-fluid" alt="@newProduct.Name" style="max-height: 220px; max-width: 307px;">
+                                            <img src="~/Images/ProductImages/@newProduct.ImageSrc" class="img-fluid" alt="@newProduct.Name" style="height: 220px; width: 307px;">
                                         </a>
                                         <h2 class="post-title">
                                             <a asp-action="Description" asp-controller="Product" asp-route-productId="@newProduct.Id">
@@ -106,7 +107,7 @@
                                             </a>
                                         </h2>
                                         <div class="price">
-                                            <ins><span>@newProduct.Price<span>تومان</span></span></ins>
+                                            <ins><span>@newProduct.Price.ToString("#,0")<span>تومان</span></span></ins>
                                         </div>
                                     </div>
                                 </div>
@@ -146,7 +147,7 @@
                                 <div class="owl-item active tab-item" style="width: 296.75px; margin-left: 10px;">
                                     <div class="item">
                                         <a asp-action="Description" asp-controller="Product" asp-route-productId="@cheapProduct.Id" class="d-block hover-img-link">
-                                            <img src="~/Images/ProductImages/@cheapProduct.ImageSrc" class="img-fluid" alt="@cheapProduct.Name" style="max-height: 220px; max-width: 307px;">
+                                            <img src="~/Images/ProductImages/@cheapProduct.ImageSrc" class="img-fluid" alt="@cheapProduct.Name" style="height: 220px; width: 307px;">
                                         </a>
                                         <h2 class="post-title">
                                             <a asp-action="Description" asp-controller="Product" asp-route-productId="@cheapProduct.Id">
@@ -154,7 +155,7 @@
                                             </a>
                                         </h2>
                                         <div class="price">
-                                            <ins><span>@cheapProduct.Price<span>تومان</span></span></ins>
+                                            <ins><span>@cheapProduct.Price.ToString("#,0")<span>تومان</span></span></ins>
                                         </div>
                                     </div>
                                 </div>
@@ -164,7 +165,7 @@
                                 <div class="owl-item tab-item" style="width: 296.75px; margin-left: 10px;">
                                     <div class="item">
                                         <a asp-action="Description" asp-controller="Product" asp-route-productId="@cheapProduct.Id" class="d-block hover-img-link">
-                                            <img src="~/Images/ProductImages/@cheapProduct.ImageSrc" class="img-fluid" alt="@cheapProduct.Name" style="max-height: 220px; width: 307px;">
+                                            <img src="~/Images/ProductImages/@cheapProduct.ImageSrc" class="img-fluid" alt="@cheapProduct.Name" style="height: 220px; width: 307px;">
                                         </a>
                                         <h2 class="post-title">
                                             <a asp-action="Description" asp-controller="Product" asp-route-productId="@cheapProduct.Id">
@@ -172,7 +173,7 @@
                                             </a>
                                         </h2>
                                         <div class="price">
-                                            <ins><span>@cheapProduct.Price<span>تومان</span></span></ins>
+                                            <ins><span>@cheapProduct.Price.ToString("#,0")<span>تومان</span></span></ins>
                                         </div>
                                     </div>
                                 </div>
@@ -232,7 +233,7 @@
                                 <div class="owl-item active tab-item" style="width: 296.75px; margin-left: 10px;">
                                     <div class="item">
                                         <a asp-action="Description" asp-controller="Product" asp-route-productId="@mostSalerProduct.Id" class="d-block hover-img-link">
-                                            <img src="~/Images/ProductImages/@mostSalerProduct.ImageSrc" class="img-fluid" alt="@mostSalerProduct.Name" style="max-height: 220px; max-width: 307px;">
+                                            <img src="~/Images/ProductImages/@mostSalerProduct.ImageSrc" class="img-fluid" alt="@mostSalerProduct.Name" style="height: 220px; width: 307px;">
                                         </a>
                                         <h2 class="post-title">
                                             <a asp-action="Description" asp-controller="Product" asp-route-productId="@mostSalerProduct.Id">
@@ -240,7 +241,7 @@
                                             </a>
                                         </h2>
                                         <div class="price">
-                                            <ins><span>@mostSalerProduct.Price<span>تومان</span></span></ins>
+                                            <ins><span>@mostSalerProduct.Price.ToString("#,0")<span>تومان</span></span></ins>
                                         </div>
                                     </div>
                                 </div>
@@ -250,7 +251,7 @@
                                 <div class="owl-item tab-item" style="width: 296.75px; margin-left: 10px;">
                                     <div class="item">
                                         <a asp-action="Description" asp-controller="Product" asp-route-productId="@mostSalerProduct.Id" class="d-block hover-img-link">
-                                            <img src="~/Images/ProductImages/@mostSalerProduct.ImageSrc" class="img-fluid" alt="@mostSalerProduct.Name" style="max-height: 220px; max-width: 307px;">
+                                            <img src="~/Images/ProductImages/@mostSalerProduct.ImageSrc" class="img-fluid" alt="@mostSalerProduct.Name" style="height: 220px; width: 307px;">
                                         </a>
                                         <h2 class="post-title">
                                             <a asp-action="Description" asp-controller="Product" asp-route-productId="@mostSalerProduct.Id">
@@ -258,7 +259,7 @@
                                             </a>
                                         </h2>
                                         <div class="price">
-                                            <ins><span>@mostSalerProduct.Price<span>تومان</span></span></ins>
+                                            <ins><span>@mostSalerProduct.Price.ToString("#,0")<span>تومان</span></span></ins>
                                         </div>
                                     </div>
                                 </div>

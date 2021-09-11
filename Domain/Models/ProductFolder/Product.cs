@@ -22,12 +22,10 @@ namespace Domain.Models
         [Required]
         public DateTime InsertTime{ get; set; }
         [Required]
-        public int CategoryId { get; set; }
-        [Required]
         public bool IsProductHaveAttributes { get; set; }
 
         // NavigationBar       
-        public Category Category { get; set; }
+        public ICollection<CategoryToProduct> Categories { get; set; }
         public ICollection<ProductImages> ProductImages { get; set; }
         public ICollection<ProductProperty> Properties { get; set; }
         public ICollection<ProductAttribute> ProductAttributes { get; set; }

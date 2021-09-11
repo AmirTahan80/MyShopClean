@@ -1,6 +1,7 @@
 using Application.InterFaces.Admin;
 using Application.Utilities;
 using Application.ViewModels.Admin;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 namespace Areas.Admin.Controllers
 {
     [Area("Admin")]
-    //[Authorize("Writer")]
+    [Authorize("Manager")]
     public class ProductManagerController : Controller
     {
         #region Injections
@@ -26,8 +27,8 @@ namespace Areas.Admin.Controllers
         {
             var products = await _porudctServices.GetAllProductsAsync();
 
-            ViewBag.Filter = "جدید ترین";
-            ViewBag.FilterName = "newest";
+            ViewBag.Filter = "newest";
+            ViewBag.FilterName = "جدید ترین";
 
             if (!string.IsNullOrWhiteSpace(search))
             {

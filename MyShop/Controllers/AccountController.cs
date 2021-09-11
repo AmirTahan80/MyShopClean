@@ -36,23 +36,21 @@ namespace MyShop.Controllers
         #endregion
 
         [HttpGet]
+        [Route("Register")]
         public IActionResult Register()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Profile");
+            }
             return View();
         }
         [HttpPost]
         public async Task<IActionResult> Register(RegisetUserForLoginViewModel model)
         {
+            var recaptchaResponse = Request.Form["g-recaptcha-response"];
+            var url = "https://www.google.com/recaptcha/api/siteverify";
 
-            //string recaptchaResponse = Request.Form["g-recaptcha-response"];
-            //var url = "https://www.google.com/recaptcha/api/siteverify";
-            //var response = await _httpClient.PostAsync($"{url}? secret={_configuration["reCAPTCHA:SecretKey"]}&response={recaptchaResponse}",
-            //    new StringContent(""));
-            //var responseString = await response.Content.ReadAsStringAsync();
-            //dynamic  jsonResponse = JObject.Parse(responseString);
-
-            string recaptchaResponse = this.Request.Form["g-recaptcha-response"];
-            var client = HttpClientFactory.Create();
             var parameters = new Dictionary<string, string>
             {
                 {"secret", _configuration["reCAPTCHA:SecretKey"]},
@@ -60,12 +58,12 @@ namespace MyShop.Controllers
                 {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
             };
 
-            HttpResponseMessage response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", new FormUrlEncodedContent(parameters));
-            response.EnsureSuccessStatusCode();
+            var response = await _httpClient.PostAsync($"{url}"
+                , new FormUrlEncodedContent(parameters));
 
-            string apiResponse = await response.Content.ReadAsStringAsync();
-            dynamic apiJson = JObject.Parse(apiResponse);
 
+            var responseString = await response.Content.ReadAsStringAsync();
+            dynamic apiJson = JObject.Parse(responseString);
 
             if (!ModelState.IsValid || apiJson.success != true)
             {
@@ -99,15 +97,25 @@ namespace MyShop.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login()
+        [Route("Login")]
+        public IActionResult Login(string returnUrl = "")
         {
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)
+            {
+                TempData["returnUrl"] = returnUrl;
+            }
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Profile");
+            }
             return View();
         }
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            string recaptchaResponse = this.Request.Form["g-recaptcha-response"];
-            var client = HttpClientFactory.Create();
+            var recaptchaResponse = Request.Form["g-recaptcha-response"];
+            var url = "https://www.google.com/recaptcha/api/siteverify";
+
             var parameters = new Dictionary<string, string>
             {
                 {"secret", _configuration["reCAPTCHA:SecretKey"]},
@@ -115,13 +123,14 @@ namespace MyShop.Controllers
                 {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
             };
 
-            HttpResponseMessage response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", new FormUrlEncodedContent(parameters));
-            response.EnsureSuccessStatusCode();
-
-            string apiResponse = await response.Content.ReadAsStringAsync();
-            dynamic apiJson = JObject.Parse(apiResponse);
+            var response = await _httpClient.PostAsync($"{url}"
+                , new FormUrlEncodedContent(parameters));
 
 
+            var responseString = await response.Content.ReadAsStringAsync();
+            dynamic apiJson = JObject.Parse(responseString);
+
+            var returnUrl = TempData["returnUrl"].ToString();
             if (!ModelState.IsValid || apiJson.success != true)
             {
                 if (apiJson.success != true)
@@ -134,6 +143,10 @@ namespace MyShop.Controllers
             var result = await _accountUserServices.LoginAsync(model);
             if (result.Status)
             {
+                if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
                 return RedirectToAction("Profile");
             }
             else
@@ -174,8 +187,9 @@ namespace MyShop.Controllers
         [Authorize]
         public async Task<IActionResult> PersonalInfo(ProfileViewModel model)
         {
-            string recaptchaResponse = this.Request.Form["g-recaptcha-response"];
-            var client = HttpClientFactory.Create();
+            var recaptchaResponse = Request.Form["g-recaptcha-response"];
+            var url = "https://www.google.com/recaptcha/api/siteverify";
+
             var parameters = new Dictionary<string, string>
             {
                 {"secret", _configuration["reCAPTCHA:SecretKey"]},
@@ -183,11 +197,12 @@ namespace MyShop.Controllers
                 {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
             };
 
-            HttpResponseMessage response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", new FormUrlEncodedContent(parameters));
-            response.EnsureSuccessStatusCode();
+            var response = await _httpClient.PostAsync($"{url}"
+                , new FormUrlEncodedContent(parameters));
 
-            string apiResponse = await response.Content.ReadAsStringAsync();
-            dynamic apiJson = JObject.Parse(apiResponse);
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            dynamic apiJson = JObject.Parse(responseString);
 
 
             if (!ModelState.IsValid || apiJson.success != true)
@@ -232,9 +247,9 @@ namespace MyShop.Controllers
         [Authorize]
         public async Task<IActionResult> ChangePassword(NewPassWordViewModel model)
         {
+            var recaptchaResponse = Request.Form["g-recaptcha-response"];
+            var url = "https://www.google.com/recaptcha/api/siteverify";
 
-            string recaptchaResponse = this.Request.Form["g-recaptcha-response"];
-            var client = HttpClientFactory.Create();
             var parameters = new Dictionary<string, string>
             {
                 {"secret", _configuration["reCAPTCHA:SecretKey"]},
@@ -242,11 +257,12 @@ namespace MyShop.Controllers
                 {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
             };
 
-            HttpResponseMessage response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", new FormUrlEncodedContent(parameters));
-            response.EnsureSuccessStatusCode();
+            var response = await _httpClient.PostAsync($"{url}"
+                , new FormUrlEncodedContent(parameters));
 
-            string apiResponse = await response.Content.ReadAsStringAsync();
-            dynamic apiJson = JObject.Parse(apiResponse);
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            dynamic apiJson = JObject.Parse(responseString);
 
 
             if (!ModelState.IsValid || apiJson.success != true)
@@ -284,8 +300,9 @@ namespace MyShop.Controllers
         [HttpPost]
         public async Task<IActionResult> ForgotPassWord(ForgotPassWordViewModel model)
         {
-            string recaptchaResponse = this.Request.Form["g-recaptcha-response"];
-            var client = HttpClientFactory.Create();
+            var recaptchaResponse = Request.Form["g-recaptcha-response"];
+            var url = "https://www.google.com/recaptcha/api/siteverify";
+
             var parameters = new Dictionary<string, string>
             {
                 {"secret", _configuration["reCAPTCHA:SecretKey"]},
@@ -293,11 +310,12 @@ namespace MyShop.Controllers
                 {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
             };
 
-            HttpResponseMessage response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", new FormUrlEncodedContent(parameters));
-            response.EnsureSuccessStatusCode();
+            var response = await _httpClient.PostAsync($"{url}"
+                , new FormUrlEncodedContent(parameters));
 
-            string apiResponse = await response.Content.ReadAsStringAsync();
-            dynamic apiJson = JObject.Parse(apiResponse);
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            dynamic apiJson = JObject.Parse(responseString);
 
 
             if (!ModelState.IsValid || apiJson.success != true)
@@ -335,8 +353,9 @@ namespace MyShop.Controllers
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
-            string recaptchaResponse = this.Request.Form["g-recaptcha-response"];
-            var client = HttpClientFactory.Create();
+            var recaptchaResponse = Request.Form["g-recaptcha-response"];
+            var url = "https://www.google.com/recaptcha/api/siteverify";
+
             var parameters = new Dictionary<string, string>
             {
                 {"secret", _configuration["reCAPTCHA:SecretKey"]},
@@ -344,11 +363,12 @@ namespace MyShop.Controllers
                 {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
             };
 
-            HttpResponseMessage response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", new FormUrlEncodedContent(parameters));
-            response.EnsureSuccessStatusCode();
+            var response = await _httpClient.PostAsync($"{url}"
+                , new FormUrlEncodedContent(parameters));
 
-            string apiResponse = await response.Content.ReadAsStringAsync();
-            dynamic apiJson = JObject.Parse(apiResponse);
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            dynamic apiJson = JObject.Parse(responseString);
 
 
             if (!ModelState.IsValid || apiJson.success != true)
@@ -553,8 +573,9 @@ namespace MyShop.Controllers
         [HttpPost]
         public async Task<IActionResult> AddComment(GetProductDescriptionViewModel model, string returnUrl = "")
         {
-            string recaptchaResponse = this.Request.Form["g-recaptcha-response"];
-            var client = HttpClientFactory.Create();
+            var recaptchaResponse = Request.Form["g-recaptcha-response"];
+            var url = "https://www.google.com/recaptcha/api/siteverify";
+
             var parameters = new Dictionary<string, string>
             {
                 {"secret", _configuration["reCAPTCHA:SecretKey"]},
@@ -562,11 +583,12 @@ namespace MyShop.Controllers
                 {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
             };
 
-            HttpResponseMessage response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", new FormUrlEncodedContent(parameters));
-            response.EnsureSuccessStatusCode();
+            var response = await _httpClient.PostAsync($"{url}"
+                , new FormUrlEncodedContent(parameters));
 
-            string apiResponse = await response.Content.ReadAsStringAsync();
-            dynamic apiJson = JObject.Parse(apiResponse);
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            dynamic apiJson = JObject.Parse(responseString);
 
 
             if (model.Comment.ProductId == 0 || string.IsNullOrWhiteSpace(model.Comment.Topic) || string.IsNullOrWhiteSpace(model.Comment.Text) || apiJson.success != true)
@@ -605,7 +627,7 @@ namespace MyShop.Controllers
 
             var result = await _commentUserServices.GetUserComments(userId);
 
-            var paging = new PagingList<UserCommentsViewModel>(result.Comments, 5, pageNumber ?? 1);
+            var paging = new PagingList<UserCommentsViewModel>(result.Comments, 10, pageNumber ?? 1);
             result.Comments = paging.QueryResult;
 
             #region ViewBagForPaging
@@ -767,6 +789,7 @@ namespace MyShop.Controllers
 
         [Authorize]
         [HttpGet]
+        [Route("ContactUs")]
         public IActionResult ContactUs()
         {
             return View();
@@ -776,8 +799,9 @@ namespace MyShop.Controllers
         [Authorize]
         public async Task<IActionResult> ContactUs(ContactUsViewModel model)
         {
-            string recaptchaResponse = this.Request.Form["g-recaptcha-response"];
-            var client = HttpClientFactory.Create();
+            var recaptchaResponse = Request.Form["g-recaptcha-response"];
+            var url = "https://www.google.com/recaptcha/api/siteverify";
+
             var parameters = new Dictionary<string, string>
             {
                 {"secret", _configuration["reCAPTCHA:SecretKey"]},
@@ -785,11 +809,12 @@ namespace MyShop.Controllers
                 {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
             };
 
-            HttpResponseMessage response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", new FormUrlEncodedContent(parameters));
-            response.EnsureSuccessStatusCode();
+            var response = await _httpClient.PostAsync($"{url}"
+                , new FormUrlEncodedContent(parameters));
 
-            string apiResponse = await response.Content.ReadAsStringAsync();
-            dynamic apiJson = JObject.Parse(apiResponse);
+
+            var responseString = await response.Content.ReadAsStringAsync();
+            dynamic apiJson = JObject.Parse(responseString);
 
 
             if (!ModelState.IsValid || apiJson.success != true)
@@ -823,5 +848,13 @@ namespace MyShop.Controllers
             var result = _accountUserServices.UploadFileEditor(upload);
             return result;
         }
+        
+        [HttpGet]
+        [Route("Work-With-MyShop")]
+        public IActionResult RequestForWork()
+        {
+            return View();
+        }
+
     }
 }

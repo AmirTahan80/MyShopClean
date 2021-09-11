@@ -22,8 +22,8 @@ namespace Application.ViewModels.Admin
         [Required(ErrorMessage = " فیلد {0}اجباری است! ")]
         public int Count { get; set; }
         [Display(Name = "نام دسته بندی")]
-        public string CategoryName { get; set; }
-        public int CategoryId { get; set; }
+        public IEnumerable<string> CategoryName { get; set; }
+        public IEnumerable<int> CategoriesId { get; set; }
 
         public IList<string> Valuetype { get; set; }
         public IList<string> ValueName { get; set; }

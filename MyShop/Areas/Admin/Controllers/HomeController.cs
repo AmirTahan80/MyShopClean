@@ -1,28 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Application.InterFaces.Admin;
+using Application.ViewModels.Admin;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize("Writer")]
     public class HomeController : Controller
     {
         #region Context,IOC
-        //private readonly IIndexManagerRepository _indexManager;
-        //public HomeController(IIndexManagerRepository indexManager)
-        //{
-        //    _indexManager = indexManager;
-        //}
-        #endregion
-        public IActionResult Index()
+        private readonly IAdminIndexManagerServices _adminIndexManager;
+        public HomeController(IAdminIndexManagerServices adminIndexManager)
         {
-            return View();
+            _adminIndexManager = adminIndexManager;
+        }
+        #endregion
+        public async Task<IActionResult> Index()
+        {
+            int todayUsersCount = await _adminIndexManager.GetTodayUserRegisterAsync();
+            int usersCount = await _adminIndexManager.GetUserCountAsync();
+            int todayProductsCount = await _adminIndexManager.GetTodayProductCreateAsync();
+            int productsCount = await _adminIndexManager.GetProductCountAsync();
+            int todayFactorsCount = await _adminIndexManager.GetTodayFactorsAsync();
+            int todayCommentsCount = await _adminIndexManager.GetTodayCommentsAsync();
+            int todayQuestionsCount = await _adminIndexManager.GetTodayQuestionsAsync();
+            var factors = await _adminIndexManager.GetFactorsAsync();
+            var model = new AdminIndexViewModel()
+            {
+                TodayUserCount = todayUsersCount,
+                UserCount = usersCount,
+                TodayProductCount = todayProductsCount,
+                ProductCount = productsCount,
+                TodayCommentsCount = todayCommentsCount,
+                TodayQuestionsCount = todayQuestionsCount,
+                TodayFactorsCount = todayFactorsCount,
+                Factors= factors
+            };
+            return View(model);
         }
         //[HttpGet]
         //[Authorize("Writer")]

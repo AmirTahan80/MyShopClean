@@ -29,22 +29,22 @@
                 </div>
                 <div class="col-lg">
                     <div class="product type-product">
+                        @if (ViewData["Error"] != null)
+                        {
+                            <div class="alert alert-danger">
+                                خطا ! @ViewData["Error"]
+                            </div>
+                        }
+                        @if (ViewData["Success"] != null)
+                        {
+                            <div class="alert alert-success">
+                                موفقیت ! @ViewData["Success"]
+                            </div>
+                        }
                         <div class="col-lg-5 col-xs-12 pr d-block" style="padding: 0;">
                             <section class="product-gallery">
                                 <div class="gallery">
                                     <div class="gallery-item">
-                                        @if (ViewData["Error"] != null)
-                                        {
-                                            <div class="alert alert-danger">
-                                                خطا ! @ViewData["Error"]
-                                            </div>
-                                        }
-                                        @if (ViewData["Success"] != null)
-                                        {
-                                            <div class="alert alert-success">
-                                                موفقیت ! @ViewData["Success"]
-                                            </div>
-                                        }
                                         <div>
                                             <ul class="gallery-actions">
                                                 <li>
@@ -153,18 +153,18 @@
                                             <input id="templateCountInput" value="@Model.Templates.Count()" type="hidden" />
                                         </div>
                                     }
-                                    @if (Model.PropertyName.Count > 0)
+                                    @if (Model.Properties!=null)
                                     {
                                         <div class="product-params pt-3">
                                             <ul data-title="ویژگی‌های محصول">
-                                                @if (Model.PropertyName.Count >= 2)
-                                                    @for (int i = 0; i < 2; i++)
-                                                    {
-                                                        <li>
-                                                            <span>@Model.PropertyValue[i]: </span>
-                                                            <span>@Model.PropertyName[i]</span>
-                                                        </li>
-                                                    }
+                                                @foreach (var item in Model.Properties.Take(3))
+                                                {
+                                                    <li>
+                                                        <span>@item.PropertyValue: </span>
+                                                        <span>@item.PropertyName</span>
+                                                    </li>
+
+                                                }
                                             </ul>
                                         </div>
                                     }
@@ -274,15 +274,15 @@
                                     </h2>
                                     <section>
                                         <ul class="params-list">
-                                            @for (int i = 0; i < Model.PropertyName.Count; i++)
+                                            @foreach (var item in Model.Properties)
                                             {
                                                 <li class="params-list-item">
                                                     <div class="params-list-key">
-                                                        <span class="block">@Model.PropertyValue[i]</span>
+                                                        <span class="block">@item.PropertyValue</span>
                                                     </div>
                                                     <div class="params-list-value">
                                                         <span class="block">
-                                                            @Model.PropertyName[i]
+                                                            @item.PropertyName
                                                         </span>
                                                     </div>
                                                 </li>

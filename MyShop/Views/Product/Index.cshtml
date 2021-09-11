@@ -64,7 +64,10 @@
                                                                     <input type="checkbox" value="@item.Id" @(Model.CategoriesId.Any(p => item.Id == p) ? "checked" : "") name="categoriesId" class="categorySelect">
                                                                     <span class="ui-checkbox-check"></span>
                                                                 </label>
-                                                                <label for="remember" class="remember-me">@item.Name</label>
+                                                                <label for="remember" class="remember-me">
+                                                                    @item.Name
+                                                                    <span class="badge badge-primary badge-pill" style="font-size:medium">@item.ProductCount</span>
+                                                                </label>
                                                             </div>
                                                         </div>
                                                     }
@@ -76,7 +79,10 @@
                                                                     <input type="checkbox" value="@item.Id" @(Model.CategoriesId.Any(p => item.Id == p) ? "checked" : "") name="categoriesId" class="categorySelect">
                                                                     <span class="ui-checkbox-check"></span>
                                                                 </label>
-                                                                <label for="remember" class="remember-me">@item.Name</label>
+                                                                <label for="remember" class="remember-me">
+                                                                    @item.Name
+                                                                    <span class="badge badge-primary badge-pill" style="font-size:medium">@item.ProductCount</span>
+                                                                </label>
                                                             </div>
                                                         </div>
                                                     }
@@ -181,7 +187,7 @@
                                                                 <div class="discount-d">
                                                                     <span>20%</span>
                                                                 </div>*@
-                                                            <img src="/Images/ProductImages/@product.ImageSrc" style="max-height: 195px; width: 191px; ">
+                                                            <img src="/Images/ProductImages/@product.ImageSrc" style="height: 195px; width: 191px; ">
                                                         </a>
                                                     </div>
                                                     <div class="title">
@@ -189,7 +195,7 @@
                                                     </div>
                                                     <div class="price">
                                                         <span class="amount">
-                                                            @product.Price
+                                                            @product.Price.ToString("#,0")
                                                             <span>تومان</span>
                                                         </span>
                                                     </div>

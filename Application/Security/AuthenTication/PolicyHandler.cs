@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Application.Security.AuthenTication

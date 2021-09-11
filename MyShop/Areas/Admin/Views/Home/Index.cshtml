@@ -1,3 +1,179 @@
-@{
-    ViewData["Title"]="ادمین - فروشگاه من";
+@model AdminIndexViewModel
+@{ ViewData["Title"] = "ادمین - فروشگاه من"; }
+<!--Statistics cards Starts-->
+<div class="row">
+    <div class="col-xl-3 col-lg-6 col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="media align-items-stretch">
+                    <div class="p-2 text-center bg-info rounded-right pt-3">
+                        <i class="icon-camera font-large-2 text-white"></i>
+                    </div>
+                    <div class="p-2 media-body">
+                        <a asp-area="Admin" asp-controller="ProductManager" asp-action="Index">
+                            <h6>محصولات</h6>
+                            <h5 class="text-bold-400 mb-0">@Model.ProductCount</h5>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="media align-items-stretch">
+                    <div class="p-2 text-center bg-danger rounded-right pt-3">
+                        <i class="icon-user font-large-2 text-white"></i>
+                    </div>
+                    <div class="p-2 media-body">
+                        <a asp-area="Admin" asp-controller="AccountManager" asp-action="Index">
+                            <h6>کاربران جدید</h6>
+                            <h5 class="text-bold-400 mb-0">@Model.TodayUserCount</h5>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="media align-items-stretch">
+                    <div class="p-2 text-center bg-success rounded-right pt-3">
+                        <i class="icon-basket-loaded font-large-2 text-white"></i>
+                    </div>
+                    <div class="p-2 media-body">
+                        <a asp-area="Admin" asp-controller="AccountManager" asp-action="GetFactors">
+                            <h6>سفارشات جدید</h6>
+                            <h5 class="text-bold-400 mb-0">@Model.TodayFactorsCount</h5>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="media align-items-stretch">
+                    <div class="p-2 text-center bg-warning rounded-right pt-3">
+                        <i class="icon-pencil font-large-2 text-white"></i>
+                    </div>
+                    <div class="p-2 media-body">
+                        <a asp-area="Admin" asp-controller="AccountManager" asp-action="Comments">
+                            <h6>دیدگاهای جدید</h6>
+                            <h5 class="text-bold-400 mb-0">@Model.TodayCommentsCount</h5>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="media align-items-stretch">
+                    <div class="p-2 text-center bg-warning rounded-right pt-3">
+                        <i class="icon-question font-large-2 text-white"></i>
+                    </div>
+                    <div class="p-2 media-body">
+                        <a asp-area="Admin" asp-controller="AccountManager" asp-action="GetQuestions">
+                            <h6>سوالات جدید</h6>
+                            <h5 class="text-bold-400 mb-0">
+                                @Model.TodayQuestionsCount
+                            </h5>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="media align-items-stretch">
+                    <div class="p-2 text-center bg-danger rounded-right pt-3">
+                        <i class="icon-user font-large-2 text-white"></i>
+                    </div>
+                    <div class="p-2 media-body">
+                        <a asp-area="Admin" asp-controller="AccountManager" asp-action="Index">
+                            <h6>کاربران</h6>
+                            <h5 class="text-bold-400 mb-0">@Model.UserCount</h5>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row match-height">
+    <div class="col-12 col-md-12" id="recent-sales">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title-wrap bar-primary">
+                    <h4 class="card-title">
+                        سفارشات اخیر
+                    </h4>
+                </div>
+                <a class="heading-elements-toggle">
+                    <i class="la la-ellipsis-v font-medium-3"></i>
+                </a>
+            </div>
+            <div class="card-content mt-1">
+                <div class="table-responsive">
+                    <table class="table table-hover table-xl mb-0" id="recent-orders">
+                        <thead>
+                            <tr>
+                                <th class="border-top-0">
+                                    مشتریان
+                                </th>
+                                <th class="border-top-0">کد تخفیف</th>
+                                <th class="border-top-0">میزان</th>
+                                <th class="border-top-0"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Factors)
+                            {
+                <tr>
+                    <td class="text-truncate">@item.UserName</td>
+                    <td>
+                        @if (item.DisCountNames != null)
+                        {
+        <div class="col-md-6">
+            @foreach (var discountName in item.DisCountNames)
+            {
+<p>@discountName</p>}
+        </div>
+                            <div class="col-md-6">
+                                @foreach (var discountPrice in item.DisCountPrices)
+                                {
+            <p>@discountPrice</p>}
+                            </div>}
+                    </td>
+                    <td class="text-truncate">@item.TotalPrice</td>
+                    <td>
+                        <a asp-area="Admin"
+                           asp-controller="AccountManager"
+                           asp-action="EditFactor"
+                           asp-route-factorId="@item.Id" class="btn btn-success">جزئیات</a>
+                    </td>
+                </tr>
+}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Statistics cards Ends-->
+@section Scripts{
+    <!-- BEGIN PAGE VENDOR JS-->
+    <script src="~/admin/vendors/js/chartist.min.js"></script>
+    <!-- END PAGE VENDOR JS-->
+    <!-- BEGIN PAGE LEVEL JS-->
+    <script src="~/admin/js/dashboard-ecommerce.js"></script>
+    <!-- END PAGE LEVEL JS-->
 }

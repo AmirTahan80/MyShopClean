@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Models
@@ -26,6 +27,7 @@ namespace Domain.Models
         public FactorStatus Status { get; set; }
         [Required]
         public int RefId { get; set; }
+        public DateTime CreateTime { get; set; }
 
         public ApplicationUser User { get; set; }
         public ICollection<FactorDetail> FactorDetails { get; set; }

@@ -6,10 +6,8 @@ using Application.ViewModels.Admin;
 using Domain.InterFaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -70,7 +68,7 @@ namespace Application.Services.Admin
                     UserName = user.UserName,
                     Email = user.UserEmail,
                     EmailConfirmed = true,
-                    UserDetail= userDetail
+                    UserDetail = userDetail
                 };
                 var result = await _userManager.CreateAsync(applicationUser, userPassword);
                 if (result.Succeeded)
@@ -97,6 +95,33 @@ namespace Application.Services.Admin
 
         public async Task<IList<UsersListViewModel>> GetAllUsersListAsync(string userLoginId)
         {
+
+            //var createRole = new List<RoleModel>();
+            //createRole.Add(new RoleModel()
+            //{
+            //    Name = "Founder",
+            //    RoleNamePersian = "سازنده سایت"
+            //});
+            //createRole.Add(new RoleModel()
+            //{
+            //    Name = "Manager",
+            //    RoleNamePersian = "مدیر"
+            //});
+            //createRole.Add(new RoleModel()
+            //{
+            //    Name = "Writer",
+            //    RoleNamePersian = "نویسنده"
+            //});
+            //createRole.Add(new RoleModel()
+            //{
+            //    Name = "Customer",
+            //    RoleNamePersian = "مشتری"
+            //});
+
+            //foreach (var item in createRole)
+            //{
+            //    await _roleManager.CreateAsync(item);
+            //}
 
             var users = await _userManager.Users.ToListAsync();
 
@@ -127,8 +152,7 @@ namespace Application.Services.Admin
             {
                 UserName = p.UserName,
                 UserEmail = p.Email,
-                RoleName = _roleManager.Roles.SingleOrDefault(c=>c.Name==_userManager.GetRolesAsync(p).GetAwaiter().GetResult().FirstOrDefault())
-                .RoleNamePersian,
+                RoleName = RolePersianName(p).GetAwaiter().GetResult(),
                 UserId = p.Id
             }).ToList();
             return usersReturn;
@@ -181,7 +205,7 @@ namespace Application.Services.Admin
                     UserName = editUser.UserName,
                     Email = editUser.UserEmail,
                 };
-                var userRoles =await _userManager.GetRolesAsync(user);
+                var userRoles = await _userManager.GetRolesAsync(user);
                 var userRole = userRoles.SingleOrDefault();
                 if (userRole != editUser.RoleName)
                 {
@@ -686,6 +710,14 @@ namespace Application.Services.Admin
             }
 
             return listOfRoleItem;
+        }
+        private async Task<string> RolePersianName(ApplicationUser user)
+        {
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var userRole = userRoles.SingleOrDefault();
+            var role = await _roleManager.Roles.SingleOrDefaultAsync(p => p.Name == userRole);
+
+            return role.RoleNamePersian;
         }
         #endregion
 

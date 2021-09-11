@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Application.InterFaces.User;
+﻿using Application.InterFaces.User;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Models;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Controllers
 {
@@ -14,15 +11,18 @@ namespace Controllers
     {
         #region Injections
         private readonly IHomePageServices _hoemPageServices;
+        private readonly HttpContextAccessor _httpContextaccessor;
         public HomeController(IHomePageServices hoemPageServices)
         {
             _hoemPageServices = hoemPageServices;
+            _httpContextaccessor = new HttpContextAccessor();
         }
         #endregion
 
         public async Task<IActionResult> Index()
         {
             var getHomePage = await _hoemPageServices.GetBanersAndProductsAsync();
+            //ViewData["Ip"] = _httpContextaccessor.HttpContext.Connection.RemoteIpAddress;
             return View(getHomePage);
         }
 

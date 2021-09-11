@@ -1,6 +1,7 @@
 ﻿using Application.InterFaces.Admin;
 using Application.Utilities;
 using Application.ViewModels.Admin;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 namespace MyShop.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize("Writer")]
     public class IndexManagerController : Controller
     {
 
@@ -127,7 +129,9 @@ namespace MyShop.Areas.Admin.Controllers
                 ViewData["Error"] = result.ErrorMessage;
             }
 
-            return View(model);
+            var baner = await _banerServices.GetBanerAsync(model.Id);
+
+            return View(baner);
         }
 
         [HttpPost]

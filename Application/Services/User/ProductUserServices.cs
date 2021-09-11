@@ -34,25 +34,28 @@ namespace Application.Services.User
 
         public async Task<ProductIndexViewModel> GetProductsListAsync(ICollection<int> categoriesId)
         {
-            var products = await _productRepository.GetAllProductsAsync();
+            var allProducts = await _productRepository.GetAllProductsAsync();
             var categories = await _categoryRepository.GetAllCategoriesAsync();
 
+            var products = new List<Product>();
             if (categoriesId.Count() > 0)
             {
                 if (!categoriesId.Any(p => p == 0))
                 {
-                    products = products.Where(p => categoriesId.Any(t => p.CategoryId == t)).ToList();
+                    products = allProducts.Where(p => categoriesId.Any(t => p.Categories.Any(e=>e.CategoryId ==t))).ToList();
                 }
                 else
                 {
                     categoriesId.Clear();
                     categoriesId.Add(0);
+                    products = allProducts.ToList();
                 }
             }
             else
             {
                 categoriesId.Clear();
                 categoriesId.Add(0);
+                products = allProducts.ToList();
             }
 
             var returnCorrentProduct = products.Select(p => new GetListOfProductViewModel()
@@ -61,9 +64,9 @@ namespace Application.Services.User
                 Name = p.Name,
                 Count = p.Count,
                 ImageSrc = p.ProductImages.FirstOrDefault().ImgFile + "/" + p.ProductImages.FirstOrDefault().ImgSrc,
-                Price = p.Price.ToString("#,0")
+                Price = p.Price
             });
-            var retrunCategoriesTreeView = GetCategoriesTreeView(categories);
+            var retrunCategoriesTreeView = GetCategoriesTreeView(categories, allProducts);
 
             var retrunProductsAndCategories = new ProductIndexViewModel()
             {
@@ -145,13 +148,17 @@ namespace Application.Services.User
                 {
                     ImgSrc = p.ImgFile + "/" + p.ImgSrc,
                 }),
-                CategoryId = product.CategoryId,
-                CategoryName = product.Category.Name,
+                CategoryId = product.Categories.Select(p => p.CategoryId).LastOrDefault(),
+                CategoryName = product.Categories.Select(p => p.Category.Name).LastOrDefault(),
                 Description = product.Detail,
                 IsProductHaveAttributes = product.IsProductHaveAttributes,
-                PropertyName = product.Properties.Select(p => p.ValueName).ToList(),
-                PropertyValue = product.Properties.Select(p => p.ValueType).ToList(),
-                Attributes = product.IsProductHaveAttributes == true ? product.ProductAttributes.Select(p => new ProductAttributeViewModel()
+                Properties = product.Properties != null ? product.Properties.Select(p => new PropertiesViewModel()
+                {
+                    PropertyName = p.ValueName,
+                    PropertyValue = p.ValueType
+                }):null,
+                Attributes = product.IsProductHaveAttributes == true ? product.ProductAttributes.OrderBy(p=>p.AttributeId)
+                .Select(p => new ProductAttributeViewModel()
                 {
                     AttributesName = p.AttributeName,
                     AttributesValue = p.AttributeValues.Select(p => new SelectListItem()
@@ -160,14 +167,16 @@ namespace Application.Services.User
                         Text = p.ValueName
                     })
                 }).ToList() : null,
-                Templates = product.AttributeTemplates.Select(p => new ProductAttributesTemplate()
+                Templates = product.AttributeTemplates
+                .Select(p => new ProductAttributesTemplate()
                 {
                     Id = p.AttributeTemplateId,
                     Template = p.Template,
                     Count = p.AttrinbuteTemplateCount,
                     Price = p.AttrinbuteTemplatePrice
                 }),
-                Comments = product.Comments.Where(p => p.IsShow).Select(p => new ProductCommentViewModel()
+                Comments = product.Comments.Where(p => p.IsShow)
+                .Select(p => new ProductCommentViewModel()
                 {
                     Id = p.CommentId,
                     Text = p.CommentText,
@@ -207,7 +216,7 @@ namespace Application.Services.User
 
 
         #region PrivateMethodes
-        private IEnumerable<GetCategoriesTreeViewViewModel> GetCategoriesTreeView(IEnumerable<Category> categories)
+        private IEnumerable<GetCategoriesTreeViewViewModel> GetCategoriesTreeView(IEnumerable<Category> categories,IEnumerable<Product> products)
         {
             var parents = categories.Where(p => p.Parent == null).ToList();
 
@@ -218,11 +227,13 @@ namespace Application.Services.User
             {
                 foreach (var parent in parents)
                 {
+                    var productCount = products.Where(p => p.Categories.Any(t=>t.CategoryId == parent.Id)).Count();
                     var item = new GetCategoriesTreeViewViewModel()
                     {
                         Id = parent.Id,
                         Name = parent.Name,
-                        Count = 0
+                        Count = 0,
+                        ProductCount= productCount
                     };
 
                     categoriesTreeView.Add(item);
@@ -237,12 +248,14 @@ namespace Application.Services.User
 
                     foreach (var replay in category.Children)
                     {
+                        var productCount = products.Where(p => p.Categories.Any(t => t.CategoryId == replay.Id)).Count();
 
                         var item = new GetCategoriesTreeViewViewModel()
                         {
                             Id = replay.Id,
                             Name = replay.Name,
-                            Count = counter
+                            Count = counter,
+                            ProductCount= productCount
                         };
 
                         categoriesTreeView.Add(item);

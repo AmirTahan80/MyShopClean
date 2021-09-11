@@ -48,6 +48,7 @@ namespace Application.Services.Admin
             {
                 Id = banerFind.Id,
                 ImagePath = banerFind.Image,
+                ImageLocation=banerFind.BanerPlace,
                 Link = banerFind.Link,
                 Text = banerFind.Text
             };
@@ -173,7 +174,7 @@ namespace Application.Services.Admin
                         return returnResult;
                     }
 
-                }   
+                }
 
                 _banerRepository.DeleteBaners(baners);
 

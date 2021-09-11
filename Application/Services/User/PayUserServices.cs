@@ -188,7 +188,7 @@ namespace Application.Services.User
                     var factor = new Factor()
                     {
                         CartId = cart.CartId,
-                        RefId= requestPay.RefId,
+                        RefId = requestPay.RefId,
                         TotalPrice = requestPay.Amount,
                         UserAddress = requestPay.ApplicationUser.UserDetail.Address,
                         UserEmail = requestPay.ApplicationUser.Email,
@@ -198,6 +198,7 @@ namespace Application.Services.User
                         UserId = requestPay.ApplicationUser.Id,
                         User = requestPay.ApplicationUser,
                         Status = FactorStatus.Progssess,
+                        CreateTime = ConverToShamsi.GetDateYeadAndMonthAndDay(DateTime.Now)
                     };
 
                     await _payRepository.AddFactor(factor);

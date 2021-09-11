@@ -1,6 +1,7 @@
 using Application.InterFaces.Admin;
 using Application.Utilities;
 using Application.ViewModels.Admin;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace Areas.Admin.Controllers
 {
     [Area("Admin")]
-    //[Authorize("Manager")]
+    [Authorize("Writer")]
     public class CategoryManagerController : Controller
     {
         #region Ingections
@@ -104,6 +105,7 @@ namespace Areas.Admin.Controllers
             else
                 ViewData["Success"] = "افزودن دسته بندی با موفقیت انجا شد";
 
+            model = null;
             var categories = await _categoryServices.GetCategoriesTreeForAdd();
             return View(categories);
         }

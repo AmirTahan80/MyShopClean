@@ -45,10 +45,17 @@ namespace Infra.Data
 
         public DbSet<ContactUs> ContactUs { get; set; }
 
+        public DbSet<CategoryToProduct> CategoryToProducts{ get; set; }
+
         #endregion
         #region ModelCreating
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<CategoryToProduct>(option =>
+            {
+                option.HasKey(p => p.CategoryId);
+                option.HasKey(p => p.ProductId);
+            });
             base.OnModelCreating(builder);
         }
         #endregion

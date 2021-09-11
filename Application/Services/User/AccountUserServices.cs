@@ -80,6 +80,7 @@ namespace Application.Services.User
 
                 if (resultCreate.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(userCreate, "Customer");
                     var resultSendEmail = await SendConfirmEmailAsync(userCreate);
                     if (!resultSendEmail)
                         return false;
@@ -103,8 +104,6 @@ namespace Application.Services.User
 
                 var result = await _userManager.ConfirmEmailAsync(findUser, token);
                 if (!result.Succeeded) return false;
-
-                await _userManager.AddToRoleAsync(findUser, "Customer");
 
                 await _signInManager.SignInAsync(findUser, false);
 

@@ -18,10 +18,6 @@ namespace Application.ViewModels.User
         [Required]
         public string Description { get; set; }
         [Required]
-        public List<string> PropertyName { get; set; }
-        [Required]
-        public List<string> PropertyValue { get; set; }
-        [Required]
         public string CategoryName { get; set; }
         [Required]
         public int CategoryId { get; set; }
@@ -36,6 +32,7 @@ namespace Application.ViewModels.User
         public IEnumerable<ProductAttributesTemplate> Templates { get; set; }
         public IEnumerable<ProductCommentViewModel> Comments { get; set; }
         public IEnumerable<QuestionViewModel> Questions { get; set; }
+        public IEnumerable<PropertiesViewModel> Properties { get; set; }
 
         public CommentViewModel Comment { get; set; }
         public QuestionViewModel Question { get; set; }

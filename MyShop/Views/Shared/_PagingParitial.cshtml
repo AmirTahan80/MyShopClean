@@ -1,25 +1,79 @@
 ﻿@if (ViewBag.Count > 1)
 {
+    <input type="hidden" value="@ViewBag.Count" id="pageTotal" />
     <div class="col-lg-6 col-md-12">
         <nav aria-label="Page navigation mb-3">
-            <ul class="pagination justify-content-center">
-                <li class="page-item">
-                    <a class="page-link" style="@((ViewBag.PageNumber == 1) ? "background-color:deepskyblue; color:white" : "") " asp-action="@ViewBag.Action"
-                       asp-controller="@ViewBag.Controller" asp-route-PageNumber="@ViewBag.PrevPage" asp-route-categoryId="@ViewBag.CategoryId" aria-label="Previous">«</a>
-                </li>
-                @for (var i = 1; i <= ViewBag.Count; i++)
+            <form asp-controller="@ViewBag.Controller"
+                  asp-action="@ViewBag.Action"
+                  method="get"
+                  id="pagingForm"
+                  enctype="text/plain">
+                @if (ViewData["Filter"] != null)
                 {
-                    <li class="page-item">
-                        <a class="page-link" style="@((ViewBag.PageNumber == i) ? "background-color:deepskyblue; color:white" : "") " asp-action="@ViewBag.Action"
-                           asp-controller="@ViewBag.Controller" asp-route-PageNumber="@i" asp-route-categoryId="@ViewBag.CategoryId">@i</a>
-                    </li>
+                @if (ViewBag.SearchProduct != null)
+                {
+                    <input value="@ViewBag.SearchProduct" type="hidden" name="searchProduct" />
                 }
+                @if (ViewBag.FilterName != null)
+                {
+                    <input value="@ViewBag.FilterName" type="hidden" name="filter" />
+                }
+                @if (ViewBag.CategoriesId[0] != 0)
+                {
+                    foreach (var item in ViewBag.CategoriesId)
+                    {
+                        <input type="hidden" value="@item" name="categoriesId" />
+                        }
+                    }
+                }
+                <ul class="pagination justify-content-center">
+                    <li class="page-item">
+                        <button class="page-link" style="@((ViewBag.PageNumber == 1) ? "background-color:deepskyblue; color:white" : "")"
+                                aria-label="Previous" id="prevPage"
+                                value="@ViewBag.PrevPage" name="PageNumber">
+                            «
+                        </button>
+                    </li>
+                    @for (var i = 1; i <= ViewBag.Count; i++)
+                    {
+                        <li class="page-item">
+                            <button class="page-link pageNumber@(i)"
+                                    style="@((ViewBag.PageNumber == i) ? "background-color:deepskyblue; color:white" : "") "
+                                    value="@i" name="PageNumber">
+                                @i
+                            </button>
+                        </li>
+                    }
 
-                <li class="page-item">
-                    <a class="page-link" style="@((ViewBag.PageNumber == ViewBag.Count) ? "background-color:deepskyblue; color:white" : "") " asp-action="@ViewBag.Action"
-                       asp-controller="@ViewBag.Controller" asp-route-PageNumber="@ViewBag.NextPage" asp-route-categoryId="@ViewBag.CategoryId" aria-label="Next">»</a>
-                </li>
-            </ul>
+                    <li class="page-item">
+                        <button class="page-link"
+                                style="@((ViewBag.PageNumber == ViewBag.Count) ? "background-color:deepskyblue; color:white" : "")"
+                                aria-label="Next" id="pageNext"
+                                value="@ViewBag.NextPage" name="PageNumber">
+                            »
+                        </button>
+                    </li>
+                </ul>
+            </form>
         </nav>
     </div>
 }
+
+@*<script type="text/javascript">
+        $('#prevPage').click(function () {
+            $("#prevPageInput").attr("name", "PageNumber");
+            $("#pagingForm").submit();
+        });
+        $('#pageNext').click(function () {
+            $("#prevPageInput").attr("name", "PageNumber");
+            $("#pagingForm").submit();
+        });
+
+        var pageTotal = $("#pageTotal").val;
+        for (var i = 0; i < pageTotal; i++) {
+            $('.pageNumber' + i).click(function () {
+                $("#prevPageInput" + i).attr("name", "PageNumber");
+                $("#pagingForm").submit();
+            });
+        }
+    </script>*@

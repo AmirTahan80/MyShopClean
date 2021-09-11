@@ -11,6 +11,7 @@ using Domain.InterFaces.AdminInterFaces;
 using Domain.Models;
 using Infra.Data;
 using Infra.Data.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -59,8 +60,11 @@ namespace Infra.Ioc.Dependencies
             services.AddScoped<IContactUsRepository, ContactUsRepository>();
 
 
+            services.AddScoped<IAdminIndexManagerServices, AdminIndexManagerServices>();
 
 
+
+            services.AddScoped<IAuthorizationHandler, PolicyHandler>();
             //Authorization
 
             services.AddAuthorizationCore(option =>

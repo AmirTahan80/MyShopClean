@@ -23,7 +23,7 @@ namespace Application.ViewModels.Admin
         public int Price { get; set; }
         [Required(ErrorMessage = "فیلد {0} اجباری است")]
         [Display(Name = "دسته بندی")]
-        public int CatId { get; set; }
+        public IEnumerable<int> CategoriesId { get; set; }
 
         //ProductProperties
         public List<string> ValueName { get; set; }
@@ -42,12 +42,12 @@ namespace Application.ViewModels.Admin
 
 
         // NavigationBar
-
         [Required(ErrorMessage = "فیلد {0} اجباری است")]
         [Display(Name = "عکس محصول")]
         [ImageSize(5 * 1024 * 1024)]
         [ImageCount()]
         public IEnumerable<IFormFile> Images { get; set; }
+
         public IEnumerable<SelectListItem> CategoriesTreeView { get; set; }
     }
 }

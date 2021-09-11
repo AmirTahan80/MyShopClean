@@ -63,7 +63,7 @@ namespace MyShop.Controllers
                 }
             }
 
-            var paging = new Paging<GetListOfProductViewModel>(retrunModel.Products, 6, pageNumber ?? 1);
+            var paging = new Paging<GetListOfProductViewModel>(retrunModel.Products, 8, pageNumber ?? 1);
             retrunModel.Products = paging.QueryResult;
 
 
@@ -78,16 +78,16 @@ namespace MyShop.Controllers
             ViewBag.Controller = "Product";
             #endregion
 
-            if(categoriesId.Count()>0)
+            if (categoriesId.Count() > 0)
             {
-                if(categoriesId.Any(p=>p==0))
+                if (categoriesId.Any(p => p == 0))
                 {
                     categoriesId.Clear();
                     categoriesId.Add(0);
                 }
             }
-            ViewData["CategoryId"]= categoriesId;
-            ViewBag.CategoriesId= categoriesId;
+            ViewData["CategoryId"] = categoriesId;
+            ViewBag.CategoriesId = categoriesId;
 
 
             return View(retrunModel);

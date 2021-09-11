@@ -40,9 +40,15 @@ namespace Application.Services.Admin
                 Count = p.Count,
                 Name = p.Name,
                 Price = p.Price,
-                ImageSrc = p.ProductImages.OrderBy(c => c.Id).Select(c => c.ImgFile + "/" + c.ImgSrc).Take(2),
-                CategoryId = p.CategoryId,
-                CategoryName = _categoryServices.GetCategoryAsync(p.CategoryId).GetAwaiter().GetResult().Name,
+                ImageSrc = p.ProductImages
+                .OrderBy(c => c.Id)
+                .Select(c => c.ImgFile + "/" + c.ImgSrc)
+                .Take(2),
+                CategoryId = p.Categories
+                .Select(c=>c.CategoryId)
+                .LastOrDefault(),
+                CategoryName = _categoryServices.GetCategoryAsync(p.Categories.LastOrDefault().CategoryId)
+                .GetAwaiter().GetResult().Name,
                 ImagesCount = p.ProductImages.Count - 2
             }).ToList();
             return productsReturn;
@@ -56,10 +62,10 @@ namespace Application.Services.Admin
                 Id = product.Id,
                 Count = product.Count,
                 Name = product.Name,
-                CategoryId = product.CategoryId,
+                CategoriesId = product.Categories.Select(p=> p.CategoryId).ToList(),
                 Detail = product.Detail,
                 Price = product.Price,
-                CategoryName = product.Category.Name,
+                CategoryName = product.Categories.Select(p=>p.Category.Name).ToList(),
                 Images = product.ProductImages.Select(p => new GetImagesViewModel()
                 {
                     ImgSrc = p.ImgFile + "/" + p.ImgSrc,
@@ -107,8 +113,13 @@ namespace Application.Services.Admin
         {
             try
             {
-                var category = await FindCategory(addProduct.CatId);
-                if (category == null)
+                var categories = new List<Category>();
+                foreach (var item in addProduct.CategoriesId)
+                {
+                    var findCategory = await FindCategory(item);
+                    categories.Add(findCategory);
+                }
+                if (categories.Count()==0)
                 {
                     return false;
                 }
@@ -153,10 +164,14 @@ namespace Application.Services.Admin
                     Count = addProduct.Count,
                     Price = addProduct.Price,
                     Detail = addProduct.Detail,
-                    CategoryId = addProduct.CatId,
-                    InsertTime = ConverToShamsi.GetDate(DateTime.Now),
-                    IsProductHaveAttributes = addProduct.IsProductHaveAttributes == true ? true : false
+                    InsertTime = ConverToShamsi.GetDateYeadAndMonthAndDay(DateTime.Now),
+                    IsProductHaveAttributes = addProduct.IsProductHaveAttributes == true ? true : false,
+                    Categories=categories.Select(p=>new CategoryToProduct()
+                    {
+                        CategoryId=p.Id
+                    }).ToList()
                 };
+
                 await _productRepository.AddProductAsync(productForAdd);
 
                 if (addProduct.ValueName != null && addProduct.ValueType != null)
@@ -264,6 +279,7 @@ namespace Application.Services.Admin
                 }
 
                 await _productRepository.SaveAsync();
+
                 return true;
             }
             catch (Exception error)
@@ -282,17 +298,59 @@ namespace Application.Services.Admin
 
                 if (editProduct.IsProductHaveAttributes)
                 {
-                    editProduct.Price = 0;
-                    editProduct.Count = 0;
+                    var LowerPriceOfAttributes = 0;
+                    var CountOfLowerPrice = 0;
+                    for (int i = 0; i < editProduct.AttributePrice.Count; i++)
+                    {
+                        if (LowerPriceOfAttributes == 0)
+                        {
+                            if (editProduct.AttributeCount[i] != null && editProduct.AttributeCount[i] != null)
+                            {
+                                var intPrice = Convert.ToInt32(editProduct.AttributePrice[i]);
+                                var intCount = Convert.ToInt32(editProduct.AttributeCount[i]);
+                                LowerPriceOfAttributes = intPrice;
+                                CountOfLowerPrice = intCount;
+                            }
+                        }
+                        else
+                        {
+                            if (editProduct.AttributeCount[i] != null && editProduct.AttributeCount[i] != null)
+                            {
+                                var intPrice = Convert.ToInt32(editProduct.AttributePrice[i]);
+                                var intCount = Convert.ToInt32(editProduct.AttributeCount[i]);
+                                if (intPrice < LowerPriceOfAttributes)
+                                {
+                                    LowerPriceOfAttributes = intPrice;
+                                    CountOfLowerPrice = intCount;
+                                }
+                            }
+                        }
+                    }
+                    editProduct.Count = CountOfLowerPrice;
+                    editProduct.Price = LowerPriceOfAttributes;
+
                 }
 
                 var findProductById = await _productRepository.GetProductAsync(editProduct.Id);
+
+                if(editProduct.CategoriesId.Count()>0)
+                {
+                    var categories = new List<Category>();
+                    foreach (var item in editProduct.CategoriesId)
+                    {
+                        var findCategory = await FindCategory(item);
+                        categories.Add(findCategory);
+                    }
+                    findProductById.Categories = categories.Select(p=>new CategoryToProduct()
+                    {
+                        CategoryId=p.Id
+                    }).ToList();
+                }
 
                 findProductById.Name = editProduct.Name;
                 findProductById.Detail = editProduct.Detail;
                 findProductById.Count = editProduct.Count;
                 findProductById.Price = editProduct.Price;
-                findProductById.CategoryId = editProduct.CategoryId;
                 _productRepository.EditProduct(findProductById);
 
                 if (editProduct.DeletedProductImagesIds != null)
@@ -505,20 +563,40 @@ namespace Application.Services.Admin
             try
             {
                 var getProductIdsFordelete = deleteListOfProducts.Where(p => p.IsSelected).Select(p => p.Id);
+                var carts = await _cartRepository.GetCartsAsync();
 
                 var productsList = new List<Product>();
-                var productImagesList = new List<ProductImages>();
-                var productPropertiesList = new List<ProductProperty>();
-                var productAttributeNames = new List<ProducesAttribute>();
-                var productAttributeValues = new List<AttributeValue>();
-                var productAttributeTemplates = new List<AttributeTemplate>();
 
                 foreach (var productId in getProductIdsFordelete)
                 {
                     var product = await _productRepository.GetProductAsync(productId);
+                    var cartDetails = carts.Select(p => p.CartDetails.Where(p => p.ProductId == productId)).SingleOrDefault();
+                    if(cartDetails!=null)
+                    {
+                        foreach (var cartDetail in cartDetails)
+                        {
+                            _cartRepository.RemoveCartDetail(cartDetail);
+                        }
+                    }
                     productsList.Add(product);
-                    productImagesList = product.ProductImages.ToList();
-                    productPropertiesList = product.Properties.ToList();
+                    var productImagesList = product.ProductImages.ToList();
+                    var productPropertiesList = product.Properties.ToList();
+                    if (productImagesList != null)
+                    {
+                        foreach (var image in productImagesList)
+                        {
+                            var result = DeletePhoto(image.ImgSrc, image.ImgFile);
+                            if (!result)
+                                break;
+                        }
+                        _productRepository.DeletePhoto(productImagesList);
+                    }
+
+                    if (productPropertiesList != null)
+                    {
+                        _productRepository.DeleteProductProperties(productPropertiesList);
+                    }
+
                     if (product.IsProductHaveAttributes)
                     {
                         foreach (var item in product.ProductAttributes)
@@ -528,22 +606,6 @@ namespace Application.Services.Admin
                         _productRepository.DeleteAttributesNamesAndtemplates(product.ProductAttributes,
                             product.AttributeTemplates);
                     }
-                }
-
-                if (productImagesList != null)
-                {
-                    foreach (var image in productImagesList)
-                    {
-                        var result = DeletePhoto(image.ImgSrc, image.ImgFile);
-                        if (!result)
-                            break;
-                    }
-                    _productRepository.DeletePhoto(productImagesList);
-                }
-
-                if (productPropertiesList != null)
-                {
-                    _productRepository.DeleteProductProperties(productPropertiesList);
                 }
 
                 _productRepository.DeleteProduct(productsList);
@@ -653,10 +715,10 @@ namespace Application.Services.Admin
             var discount = discounts.Where(p => p.Id == id).SingleOrDefault();
 
             var discountreturn = new DiscountViewMode()
-            { 
-                Id=discount.Id,
-                CodeName=discount.CodeName,
-                CodePrice=discount.DiscountPrice
+            {
+                Id = discount.Id,
+                CodeName = discount.CodeName,
+                CodePrice = discount.DiscountPrice
             };
 
             return discountreturn;
@@ -669,9 +731,9 @@ namespace Application.Services.Admin
 
                 var returnDiscount = discounts.Select(p => new DiscountViewMode()
                 {
-                    Id=p.Id,
-                    CodeName=p.CodeName,
-                    CodePrice=p.DiscountPrice
+                    Id = p.Id,
+                    CodeName = p.CodeName,
+                    CodePrice = p.DiscountPrice
                 }).ToList();
 
                 return returnDiscount;

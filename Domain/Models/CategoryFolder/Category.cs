@@ -24,6 +24,6 @@ namespace Domain.Models
         // NavigationBars
         public virtual Category Parent  { get; set; }
         public virtual ICollection<Category> Children { get; set; }
-        public ICollection<Product> Products { get; set; }
+        public ICollection<CategoryToProduct> Products { get; set; }
     }
 }

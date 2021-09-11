@@ -17,6 +17,8 @@ namespace Domain.Models
         [Required]
         public string QuestionText { get; set; }
 
+        public DateTime InserTime { get; set; }
+
 
 
         //Navigation

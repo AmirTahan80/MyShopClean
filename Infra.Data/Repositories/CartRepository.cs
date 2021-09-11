@@ -19,7 +19,10 @@ namespace Data.Repositories.AdminRepositories
         #endregion
         public async Task<IEnumerable<Cart>> GetCartsAsync()
         {
-            var carts = await _context.Carts.Include(p => p.CartDetails).Include(p => p.Discounts).ToListAsync();
+            var carts = await _context.Carts.Include(p => p.CartDetails)
+                .ThenInclude(p=>p.Product)
+                .Include(p => p.Discounts)
+                .ToListAsync();
             return carts;
         }
         public async Task<Cart> GetCartAsync(string userId)

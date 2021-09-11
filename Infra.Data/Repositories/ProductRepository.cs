@@ -21,14 +21,19 @@ namespace Data.Repositories.AdminRepositories
 
         public async Task<IEnumerable<Product>> GetAllProductsAsync()
         {
-            var products = await _context.Products.Include(p => p.ProductImages).ToListAsync();
+            var products = await _context.Products
+                .Include(p => p.ProductImages)
+                .Include(p=>p.Categories)
+                .ToListAsync();
             return products;
         }
         public async Task<Product> GetProductAsync(int productId)
         {
-            var product = await _context.Products.Include(p => p.ProductImages).Include(p => p.Properties)
-                .Include(p=>p.ProductAttributes).ThenInclude(p=>p.AttributeValues).Include(p=>p.AttributeTemplates)
-                .Include(p=>p.Category)
+            var product = await _context.Products.Include(p => p.ProductImages)
+                .Include(p => p.Properties)
+                .Include(p=>p.ProductAttributes).ThenInclude(p=>p.AttributeValues)
+                .Include(p=>p.AttributeTemplates)
+                .Include(p=>p.Categories).ThenInclude(p=>p.Category)
                 .Include(p=>p.Comments).ThenInclude(p=>p.User)
                 .Include(p=>p.Questions).ThenInclude(p=>p.User)
                 .SingleOrDefaultAsync(p => p.Id == productId);
@@ -45,9 +50,6 @@ namespace Data.Repositories.AdminRepositories
             var property = await _context.ProductProperties.SingleOrDefaultAsync(p => p.PropertyId == propertyId);
             return property;
         }
-
-
-
 
 
         public async Task SaveAsync()
@@ -91,9 +93,6 @@ namespace Data.Repositories.AdminRepositories
             await _context.AttributeTemplates.AddAsync(t);
         }
 
-
-
-
         public void DeleteProduct(Product t)
         {
             _context.Products.Remove(t);
@@ -132,9 +131,6 @@ namespace Data.Repositories.AdminRepositories
         {
             _context.Products.Update(t);
         }
-
-
-
 
         #endregion
     }
