@@ -9,5 +9,7 @@ namespace Domain.InterFaces
         Task<IEnumerable<ContactUs>> GetContactsUsAsync();
         Task AddContactUsAsync(ContactUs t);
         void RemoveContactUs(IEnumerable<ContactUs> t);
+        Task<IEnumerable<News>> GetAllEmailInNewsAsync();
+        Task JoinToNewsAsync(News t);
     }
 }

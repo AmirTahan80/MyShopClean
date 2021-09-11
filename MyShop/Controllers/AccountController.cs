@@ -100,7 +100,7 @@ namespace MyShop.Controllers
         [Route("Login")]
         public IActionResult Login(string returnUrl = "")
         {
-            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
                 TempData["returnUrl"] = returnUrl;
             }
@@ -854,6 +854,42 @@ namespace MyShop.Controllers
         public IActionResult RequestForWork()
         {
             return View();
+        }
+
+        [HttpGet]
+        [Route("Join")]
+        public async Task<IActionResult> JoinUs(string email,string returnUrl)
+        {
+            if(!string.IsNullOrWhiteSpace(email))
+            {
+                var result = await _accountUserServices.JoinToSendEmailAsync(email);
+                if(result.Status)
+                {
+                    TempData["JoinNewsSuccess"] = result.SuccesMessage;
+                    if(!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Profile");
+                    }
+                }
+                else
+                {
+                    TempData["JoinNewsError"] = result.ErrorMessage;
+                    if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Profile");
+                    }
+                }
+            }
+
+            return NotFound();
         }
 
     }

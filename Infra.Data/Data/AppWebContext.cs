@@ -47,6 +47,8 @@ namespace Infra.Data
 
         public DbSet<CategoryToProduct> CategoryToProducts{ get; set; }
 
+        public DbSet<News> News{ get; set; }
+
         #endregion
         #region ModelCreating
         protected override void OnModelCreating(ModelBuilder builder)

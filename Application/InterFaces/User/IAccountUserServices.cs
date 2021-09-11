@@ -165,5 +165,10 @@ namespace Application.InterFaces.User
         /// <param name="file"></param>
         /// <returns>JsonResult</returns>
         JsonResult UploadFileEditor(IFormFile file);
+        /// <summary>
+        /// عضویت در خبرنامه
+        /// </summary>
+        /// <returns>ResultDto</returns>
+        Task<ResultDto> JoinToSendEmailAsync(string email);
     }
 }

@@ -176,11 +176,56 @@ namespace Areas.Admin.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetDiscount()
+        public async Task<IActionResult> GetDiscount(int? pageNumber,string search="",string filter="")
         {
             var result = await _porudctServices.GetDisCountsAsync();
+            result = result.OrderByDescending(p => p.Id).ToList();
 
-            return View(result);
+            ViewBag.Filter = "newest";
+            ViewBag.FilterName = "جدید ترین";
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                result = result.Where(p => p.CodeName.Contains(search)).ToList();
+                ViewBag.Search = search;
+            }
+
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                switch (filter)
+                {
+                    case "newest":
+                        result = result.OrderByDescending(p => p.Id).ToList();
+                        ViewBag.FilterName = "جدید ترین";
+                        ViewBag.Filter = "newest";
+                        break;
+                    case "older":
+                        result = result.OrderBy(p => p.Id).ToList();
+                        ViewBag.FilterName = "قدیمی ترین";
+                        ViewBag.Filter = "older";
+                        break;
+                }
+                ViewBag.FilterValue = filter;
+            }
+
+            var paging = new PagingList<DiscountViewMode>(result, 10, pageNumber ?? 1);
+            var discountsPaging = paging.QueryResult;
+
+
+            #region ViewBagForPaging
+            ViewBag.PageNumber = pageNumber ?? 1;
+            ViewBag.FirstPage = paging.FirstPage;
+            ViewBag.LastPage = paging.LastPage;
+            ViewBag.PrevPage = paging.PreviousPage;
+            ViewBag.NextPage = paging.NextPage;
+            ViewBag.Count = paging.LastPage;
+            ViewBag.Action = "GetDiscount";
+            ViewBag.Controller = "ProductManager";
+            #endregion
+
+
+
+            return View(discountsPaging);
         }
         [HttpGet]
         public IActionResult CreateDiscount()

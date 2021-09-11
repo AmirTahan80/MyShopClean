@@ -18,16 +18,16 @@
             <section class="page-account-box">
                 <div class="col-lg-6 col-md-6 col-xs-12 mx-auto">
                     <div class="ds-userlogin">
-                        <a asp-action="Index" asp-controller="Home" class="account-box-logo">MyShop</a>
+                        <a asp-action="Index" asp-controller="Home" class="account-box-logo">CloseStore</a>
                         <div class="account-box">
                             <div class="account-box-headline">
                                 <a asp-action="Login" asp-controller="Account" class="login-ds active">
                                     <span class="title">ورود</span>
-                                    <span class="sub-title">به فروشگاه من</span>
+                                    <span class="sub-title">به کلوزاستور</span>
                                 </a>
                                 <a asp-action="Register" asp-controller="Account" class="register-ds">
                                     <span class="title">ثبت نام</span>
-                                    <span class="sub-title">در فروشگاه من</span>
+                                    <span class="sub-title">در کلوزاستور</span>
                                 </a>
                             </div>
                             <div class="Login-to-account mt-4">
@@ -57,7 +57,7 @@
                                             <div class="g-recaptcha" data-sitekey="@configuration["reCAPTCHA:SiteKey"]"></div>
                                         </div>
                                         <div class="form-row-account">
-                                            <button class="btn btn-primary btn-login">ورود به فروشگاه من</button>
+                                            <button class="btn btn-primary btn-login">ورود به کلوزاستور</button>
                                             @if (ViewData["Error"] != null)
                                             {
                                                 <div class="alert alert-danger">

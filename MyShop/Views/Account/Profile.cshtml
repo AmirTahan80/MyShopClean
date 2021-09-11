@@ -43,15 +43,22 @@
                                                 <div class="title">شماره تلفن همراه:</div>
                                                 <div class="value">@Model.PhoneNumber</div>
                                             </td>
-                                            <td>
+                                            @*<td>
                                                 <div class="title">تاریخ عضویت:</div>
                                                 <div class="value">۱۳۹۹/۰۱/۱۲</div>
-                                            </td>
+                                            </td>*@
                                         </tr>
                                         <tr>
                                             <td>
                                                 <div class="title"> دریافت خبرنامه :</div>
-                                                <div class="value">بله</div>
+                                                @if (Model.IsInNews)
+                                                {
+                                                    <div class="value">بله</div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="value">خیر</div>
+                                                }
                                             </td>
                                             <td>
                                                 <div class="title"> کد ملی :</div>

@@ -24,6 +24,8 @@ namespace Application.ViewModels.User
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
 
+        public bool IsInNews { get; set; } = false;
+
         public IEnumerable<UserCommentsViewModel> Comments { get; set; }
         public IEnumerable<QuestionViewModel> Questions { get; set; }
         public IEnumerable<FactorViewModel> Factors { get; set; }

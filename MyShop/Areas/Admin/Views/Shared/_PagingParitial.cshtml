@@ -6,7 +6,7 @@
                 <li class="page-item">
                     <a class="page-link @((ViewBag.PageNumber == 1) ? "bg-blue white" : "")" asp-action="@ViewBag.Action"
                        asp-controller="@ViewBag.Controller" asp-route-PageNumber="@ViewBag.PrevPage" asp-route-search="@ViewBag.Search"
-                       asp-route-filter="@ViewBag.Filter" aria-label="Previous">«</a>
+                       asp-route-filter="@ViewBag.Filter" asp-area="Admin" aria-label="Previous">«</a>
                 </li>
                 @for (var i = 1; i <= ViewBag.Count; i++)
                 {
@@ -14,7 +14,7 @@
                         <a class="page-link @((ViewBag.PageNumber == i) ? "bg-blue white" : "") " asp-action="@ViewBag.Action" 
                            asp-route-search="@ViewBag.Search"
                        asp-route-filter="@ViewBag.Filter" 
-                           asp-controller="@ViewBag.Controller" asp-route-PageNumber="@i">@i</a>
+                           asp-controller="@ViewBag.Controller" asp-route-PageNumber="@i" asp-area="Admin">@i</a>
                     </li>
                 }
 
@@ -22,7 +22,7 @@
                     <a class="page-link @((ViewBag.PageNumber == ViewBag.Count) ? "bg-blue white" : "")" asp-action="@ViewBag.Action"
                        asp-route-search="@ViewBag.Search"
                        asp-route-filter="@ViewBag.Filter" 
-                       asp-controller="@ViewBag.Controller" asp-route-PageNumber="@ViewBag.NextPage" aria-label="Next">»</a>
+                       asp-controller="@ViewBag.Controller" asp-route-PageNumber="@ViewBag.NextPage" asp-area="Admin" aria-label="Next">»</a>
                 </li>
             </ul>
         </nav>

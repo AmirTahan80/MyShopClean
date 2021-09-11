@@ -23,13 +23,17 @@ namespace Controllers
         {
             var getHomePage = await _hoemPageServices.GetBanersAndProductsAsync();
             //ViewData["Ip"] = _httpContextaccessor.HttpContext.Connection.RemoteIpAddress;
+            ViewData["ErrorJoinNews"] = TempData["JoinNewsError"];
+            ViewData["SuccessJoinNews"]= TempData["JoinNewsSuccess"];
             return View(getHomePage);
         }
 
-        //public IActionResult Privacy()
-        //{
-        //    return View();
-        //}
+        [HttpGet]
+        [Route("AboutUs")]
+        public IActionResult AboutUs()
+        {
+            return View();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

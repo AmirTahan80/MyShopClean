@@ -39,5 +39,15 @@ namespace Infra.Data.Repositories
         {
             await _context.SaveChangesAsync();
         }
+        public async Task<IEnumerable<News>> GetAllEmailInNewsAsync()
+        {
+            var news = await _context.News.ToListAsync();
+            return news;
+        }
+        public async Task JoinToNewsAsync(News t)
+        {
+            await _context.News.AddAsync(t);
+        }
+
     }
 }

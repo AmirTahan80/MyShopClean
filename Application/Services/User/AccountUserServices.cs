@@ -189,13 +189,15 @@ namespace Application.Services.User
         {
             var findUser = await _userManager.FindByIdAsync(userId);
             if (findUser == null) return null;
-
+            var newsEmail = await _contactUsRepository.GetAllEmailInNewsAsync();
+            var userInNews = newsEmail.Any(p => p.Email == findUser.Email);
             var returnUserDescription = new ProfileViewModel()
             {
                 Email = findUser.Email,
                 Name = findUser.UserName,
                 RoleName = _userManager.GetRolesAsync(findUser).GetAwaiter().GetResult().FirstOrDefault(),
-                PhoneNumber = findUser.PhoneNumber
+                PhoneNumber = findUser.PhoneNumber,
+                IsInNews=userInNews
             };
 
             return returnUserDescription;
@@ -1208,7 +1210,44 @@ namespace Application.Services.User
             }
         }
 
-
+        public async Task<ResultDto> JoinToSendEmailAsync(string email)
+        {
+            if(email.Contains("@gmail.com"))
+            {
+                var getAllNewsEmail = await _contactUsRepository.GetAllEmailInNewsAsync();
+                var isEmailInNewsEmail = getAllNewsEmail.Any(p => p.Email == email);
+                if(isEmailInNewsEmail)
+                {
+                    var returnResult1 = new ResultDto()
+                    {
+                        ErrorMessage = "این ایمیل در خبرنامه وجود دارد ...",
+                        Status = false
+                    };
+                    return returnResult1;
+                }
+                var createNews = new News()
+                {
+                    Email = email
+                };
+                await _contactUsRepository.JoinToNewsAsync(createNews);
+                await _contactUsRepository.SaveAsync();
+                var returnResult = new ResultDto()
+                {
+                    SuccesMessage = "ایمیل شما در خبرنامه با موفقیت ثبت شد .",
+                    Status = true
+                };
+                return returnResult;
+            }
+            else
+            {
+                var returnResult = new ResultDto()
+                {
+                    ErrorMessage="ایمیل معتبر نیست !!!",
+                    Status = false
+                };
+                return returnResult;
+            }
+        }
 
         #region Private Mehode
         private async Task<bool> IsUserEmailExist(string userEmail)
@@ -1373,6 +1412,7 @@ namespace Application.Services.User
 
             return true;
         }
+
 
         #endregion
 
