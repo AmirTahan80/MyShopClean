@@ -572,7 +572,8 @@ namespace Application.Services.Admin
 
             var returnContactUs = contactsUs.Select(p => new ContactViewModel()
             {
-                UserEmail = p.User.Email,
+                UserEmail = p.Email,
+                UserName=p.UserName,
                 Text = p.Text,
                 Topic = p.Topic,
                 Id = p.Id,
@@ -588,10 +589,10 @@ namespace Application.Services.Admin
 
             var returnContact = new ContactViewModel()
             {
-                UserEmail = contact.User.Email,
+                UserEmail = contact.Email,
                 Text = contact.Text,
                 Topic = contact.Topic,
-                UserId = contact.User.Id,
+                UserName=contact.UserName,
                 Id = contact.Id,
                 Awnser = contact.Awnser
             };

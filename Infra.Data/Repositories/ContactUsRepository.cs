@@ -20,7 +20,7 @@ namespace Infra.Data.Repositories
 
         public async Task<IEnumerable<ContactUs>> GetContactsUsAsync()
         {
-            var contacts = await _context.ContactUs.OrderByDescending(p=>p.Id).Include(p=>p.User).ToListAsync();
+            var contacts = await _context.ContactUs.OrderByDescending(p=>p.Id).ToListAsync();
 
             return contacts;
         }

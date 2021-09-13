@@ -61,18 +61,18 @@ namespace Application.Services.User
             {
                 if (register.PassWord != register.RePassWord) return false;
 
-                var userEmailExist = await IsUserEmailExist(register.Email);
+                var userEmailExist = await IsUserEmailExist(register.Email.ToLower());
                 if (userEmailExist) return false;
 
-                var userNameExist = await IsUserNameExist(register.UserName);
+                var userNameExist = await IsUserNameExist(register.UserName.ToLower());
                 if (userNameExist) return false;
 
                 var userDetail = new UserDetail();
 
                 var userCreate = new ApplicationUser()
                 {
-                    UserName = register.UserName,
-                    Email = register.Email,
+                    UserName = register.UserName.ToLower(),
+                    Email = register.Email.ToLower(),
                     UserDetail = userDetail
                 };
 
@@ -190,7 +190,7 @@ namespace Application.Services.User
             var findUser = await _userManager.FindByIdAsync(userId);
             if (findUser == null) return null;
             var newsEmail = await _contactUsRepository.GetAllEmailInNewsAsync();
-            var userInNews = newsEmail.Any(p => p.Email == findUser.Email);
+            var userInNews = newsEmail.Any(p => p.Email == findUser.Email.ToLower());
             var returnUserDescription = new ProfileViewModel()
             {
                 Email = findUser.Email,
@@ -1149,7 +1149,8 @@ namespace Application.Services.User
                     IsHaveAwnser = false,
                     Text = addContactUs.Text,
                     Topic = addContactUs.Topic,
-                    User = user
+                    Email = addContactUs.Email.ToLower(),
+                    UserName = addContactUs.UserName
                 };
 
                 await _contactUsRepository.AddContactUsAsync(createContact);
@@ -1215,7 +1216,7 @@ namespace Application.Services.User
             if(email.Contains("@gmail.com"))
             {
                 var getAllNewsEmail = await _contactUsRepository.GetAllEmailInNewsAsync();
-                var isEmailInNewsEmail = getAllNewsEmail.Any(p => p.Email == email);
+                var isEmailInNewsEmail = getAllNewsEmail.Any(p => p.Email == email.ToLower());
                 if(isEmailInNewsEmail)
                 {
                     var returnResult1 = new ResultDto()
@@ -1227,7 +1228,7 @@ namespace Application.Services.User
                 }
                 var createNews = new News()
                 {
-                    Email = email
+                    Email = email.ToLower()
                 };
                 await _contactUsRepository.JoinToNewsAsync(createNews);
                 await _contactUsRepository.SaveAsync();

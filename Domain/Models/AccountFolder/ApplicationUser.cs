@@ -18,6 +18,5 @@ namespace Domain.Models
         public ICollection<Question> Questions { get; set; }
         public ICollection<Factor> Factors { get; set; }
         public ICollection<RequestPay> RequestPays { get; set; }
-        public ICollection<ContactUs> ContactUs { get; set; }
     }
 }

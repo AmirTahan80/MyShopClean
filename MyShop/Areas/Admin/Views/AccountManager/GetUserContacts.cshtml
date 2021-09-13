@@ -64,7 +64,7 @@
                                             <td class="text-truncate">
                                                 @if (item.UserEmail.Length > 10)
                                                 {
-                                                    <text> @item.UserEmail.Remove(10) </text> }
+                                                    @item.UserEmail.Remove(10)}
                                                 else
                                                 {
                                                     @item.UserEmail}
@@ -74,7 +74,7 @@
                                                 {
                                                     if (item.Topic.Length > 20)
                                                     {
-                                                        <text> @item.Topic.Remove(20) </text>
+                                                        @item.Topic.Remove(20)
                                                     }
                                                     else
                                                     {

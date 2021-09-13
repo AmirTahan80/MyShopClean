@@ -31,10 +31,19 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="projectinput2">ایمیل</label>
-                                        <a class="form-control" asp-action="EditUser" asp-controller="AccountManager" asp-route-userId="@Model.UserId">
-                                            @Model.UserEmail
-                                            <input type="hidden" asp-for="UserEmail" />
-                                        </a>
+
+                                        @Model.UserEmail
+                                        <input type="hidden" asp-for="UserEmail" />
+
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="projectinput2">نام کاربر</label>
+
+                                        @Model.UserName
+                                        <input type="hidden" asp-for="UserName" />
+
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -47,8 +56,8 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="projectinput2">متن</label>
-                                        <div class="col-md-12 thumb thumb-img border" style="overflow:auto" >
-                                            @Html.Raw(Model.Text)
+                                        <div class="col-md-12" >
+                                            <textarea asp-for="Text" rows="5" class="col-md-12 form-control"></textarea>
                                             <span class="red" asp-validation-for="Text"> </span>
                                         </div>
                                     </div>
@@ -66,7 +75,7 @@
                                 <button type="submit" class="btn btn-success">
                                     <i class="icon-pencil"></i> ثبت تغییرات
                                 </button>
-                                <a asp-action="GetQuestions" asp-controller="AccountManager" class="btn btn-primary">
+                                <a asp-action="GetUserContacts" asp-controller="AccountManager" class="btn btn-primary">
                                     برگشت به لیست
                                 </a>
                             </div>

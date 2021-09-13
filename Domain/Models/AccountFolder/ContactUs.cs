@@ -22,7 +22,12 @@ namespace Domain.Models
         public bool IsHaveAwnser { get; set; }
         public string Awnser { get; set; }
 
-        //Navigation
-        public ApplicationUser User { get; set; }
+        [Required]
+        [MaxLength(150)]
+        public string Email { get; set; }
+
+        [Required]
+        [MaxLength(150)]
+        public string UserName { get; set; }
     }
 }

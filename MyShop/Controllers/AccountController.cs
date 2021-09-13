@@ -24,7 +24,9 @@ namespace MyShop.Controllers
         private readonly HttpClient _httpClient;
         public AccountController(IAccountUserServices accountUserServices,
             ICommentUserServices commentUserServices,
-            IProductUserServices productUserServices, IPayUserServices payUserServices, IConfiguration configuration)
+            IProductUserServices productUserServices,
+            IPayUserServices payUserServices, 
+            IConfiguration configuration)
         {
             _accountUserServices = accountUserServices;
             _commentUserServices = commentUserServices;
@@ -787,7 +789,6 @@ namespace MyShop.Controllers
             return View(result);
         }
 
-        [Authorize]
         [HttpGet]
         [Route("ContactUs")]
         public IActionResult ContactUs()
@@ -796,7 +797,7 @@ namespace MyShop.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Route("ContactUs")]
         public async Task<IActionResult> ContactUs(ContactUsViewModel model)
         {
             var recaptchaResponse = Request.Form["g-recaptcha-response"];
