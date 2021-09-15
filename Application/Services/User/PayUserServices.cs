@@ -8,9 +8,13 @@ using Domain.Models;
 using Dto.Payment;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using ZarinPal.Class;
 
@@ -27,10 +31,13 @@ namespace Application.Services.User
         private readonly Authority _authority;
         private readonly Transactions _transactions;
 
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
+
         Expose expose = new Expose();
 
         public PayUserServices(IPayRepository payRepository, UserManager<ApplicationUser> userManager,
-            ICartRepository cartRepository)
+            ICartRepository cartRepository, IConfiguration configuration)
         {
             _payRepository = payRepository;
             _userManager = userManager;
@@ -39,9 +46,13 @@ namespace Application.Services.User
             _payment = expose.CreatePayment();
             _authority = expose.CreateAuthority();
             _transactions = expose.CreateTransactions();
+
+            _httpClient = new HttpClient();
+            _configuration = configuration;
         }
         #endregion
-        public async Task<ResultDto> AddRequestPayAsync(string userId)
+
+        public async Task<ResultDto> AddRequestPayZarinPallAsync(string userId)
         {
             try
             {
@@ -137,12 +148,274 @@ namespace Application.Services.User
                 return returnResult;
             }
         }
-
-        public async Task<VerificationPayViewModel> Verification(string requestPayId, string authority, string status)
+        public async Task<ResultDto> AddRquestPayIdPayAsync(string userId)
         {
             try
             {
+                var returnResult = new ResultDto();
 
+                int amount = 0;
+
+                var user = await _userManager.Users.Include(p => p.UserDetail).SingleOrDefaultAsync(p => p.Id == userId);
+
+                if (string.IsNullOrWhiteSpace(user.UserDetail.Address) || string.IsNullOrWhiteSpace(user.PhoneNumber))
+                {
+                    returnResult.ErrorMessage = "لطفا کد ملی و شماره تلفن را کامل کنید ...";
+                    returnResult.ReturnRedirect = _configuration["ReturnsUrl:PassUserToUrl"];
+                    returnResult.Status = false;
+                    return returnResult;
+                }
+
+                var requestPaies = await _payRepository.GetRequestPaiesAsync();
+
+                var requestPay = requestPaies.SingleOrDefault(p => p.ApplicationUser.Id == userId && !p.IsPay);
+
+
+                var cart = await _cartRepository.GetCartAsync(userId);
+
+                var discounts = cart.Discounts.ToList();
+
+                int discountsSum = 0;
+
+                foreach (var discount in discounts)
+                {
+                    discountsSum += discount.DiscountPrice;
+                }
+
+                var cartTotalPrice = 0;
+
+                foreach (var cartDetail in cart.CartDetails)
+                {
+                    cartTotalPrice += cartDetail.TotalPrice;
+                }
+
+                amount = cartTotalPrice - discountsSum;
+
+                if (amount <= 0)
+                    amount = 0;
+
+
+                if (requestPay == null)
+                {
+                    var requestPayCreate = new RequestPay()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        IsPay = false,
+                        ApplicationUser = user,
+                        Cart = cart,
+                        CreateTime = ConverToShamsi.GetDateYeadAndMonthAndDay(DateTime.Now),
+                        Amount = amount
+                    };
+                    await _payRepository.AddRequestPay(requestPayCreate);
+                }
+                else
+                {
+                    requestPay.Amount = amount;
+                    requestPay.Cart = cart;
+                    requestPay.CreateTime = ConverToShamsi.GetDateYeadAndMonthAndDay(DateTime.Now);
+                }
+
+                await _payRepository.SaveAsync();
+
+                var result = await CreateRequestForPayingIdPayAsync(amount, user, cart);
+
+                if (!string.IsNullOrWhiteSpace(result))
+                {
+                    returnResult.SuccesMessage = "ثبت در خواست با موفقیت انجام شد ...";
+                    returnResult.Status = true;
+                    returnResult.ReturnRedirect = result;
+                }
+                else
+                {
+                    returnResult.ErrorMessage = "ثبت در خواست با شکست مواجه شد !!!";
+                    returnResult.Status = false;
+                    returnResult.ShowNotFound = true;
+                }
+
+                return returnResult;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                var returnResult = new ResultDto()
+                {
+                    ErrorMessage = "مشکلی در ثبت درخواست پیش آمده لطفا دوباره امتحان کنید !!!",
+                    Status = false
+                };
+                return returnResult;
+            }
+        }
+
+        public async Task<VerificationPayViewModel> VerificationIdPay(GetResponseIdPayValueViewModel response)
+        {
+            try
+            {
+                string apiUrl = "https://api.idpay.ir/v1.1/payment/verify";
+
+                var validateValues = new GetResponseIdPayValueViewModel()
+                {
+                    order_id = response.order_id,
+                    id = response.id
+                };
+
+                var json = JsonConvert.SerializeObject(validateValues);
+
+                StringContent stringContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+                stringContent.Headers.Add("X-API-KEY", "6a7f99eb-7c20-4412-a972-6dfb7cd253a4");
+                stringContent.Headers.Add("X-SANDBOX", "1");
+
+                var retunrResponse = await _httpClient.PostAsync(apiUrl, stringContent);
+
+                var returnContent = await retunrResponse.Content.ReadAsStringAsync();
+                var content = JsonConvert.DeserializeObject<GetResponseIdPayValueViewModel>(returnContent);
+
+                if (retunrResponse.IsSuccessStatusCode)
+                {
+                    var carts = await _cartRepository.GetCartsAsync();
+                    var payingCart = carts.SingleOrDefault(p => p.CartId == Convert.ToInt32(content.order_id));
+                   
+                    var user = await _userManager.Users.Include(p=>p.UserDetail)
+                        .SingleOrDefaultAsync(p=>p.Id== payingCart.UserId);
+
+
+                    var factor = new Factor()
+                    {
+                        CartId = Convert.ToInt32(response.order_id),
+                        CreateTime =  ConverToShamsi.GetDateYeadAndMonthAndDay(DateTime.Now),
+                        Discounts = payingCart.Discounts,
+                        RefId = content.track_id,
+                        Status = FactorStatus.Progssess,
+                        TotalPrice = content.amount,
+                        User = user,
+                        UserAddress = user.UserDetail.Address,
+                        UserEmail = user.Email,
+                        UserFamilly = user.UserDetail.LastName,
+                        UserName = user.UserDetail.FirstName,
+                        UserPhone = user.PhoneNumber,
+                        UserId = user.Id,
+                    };
+
+                    await _payRepository.AddFactor(factor);
+
+                    var templateNames = "";
+                    var templateValues = "";
+
+                    int i = 0;
+                    foreach (var item in payingCart.CartDetails)
+                    {
+                        if (item.Product.IsProductHaveAttributes)
+                        {
+                            foreach (var attribute in item.Product.ProductAttributes)
+                            {
+                                if (i == 0)
+                                {
+                                    templateNames = attribute.AttributeName;
+                                }
+                                else
+                                {
+                                    templateNames += "," + attribute.AttributeName;
+                                }
+                                i++;
+                            }
+                            templateValues = item.Templates.Template;
+                        }
+                    }
+
+                    var factorDetails = payingCart.CartDetails.Select(p => new FactorDetail()
+                    {
+                        ImageSrc = p.Product.ProductImages.FirstOrDefault().ImgFile + "/" +
+                             p.Product.ProductImages.FirstOrDefault().ImgSrc,
+                        AttributesName = templateNames != "" ? templateNames : "",
+                        AttributesValue = templateValues != "" ? templateValues : "",
+                        ProductCount = p.ProductCount,
+                        ProductName = p.Product.Name,
+                        ProductPrice = p.ProductPrice,
+                        TotalPrice = p.TotalPrice,
+                        Factor=factor
+                    });
+
+                    await _payRepository.AddFactorDetails(factorDetails);
+
+                    payingCart.IsFinally = true;
+
+                    foreach (var item in payingCart.CartDetails)
+                    {
+                        if(item.Product.IsProductHaveAttributes)
+                        {
+                            item.Product.AttributeTemplates.SingleOrDefault(p => p.Template == item.Templates.Template).AttrinbuteTemplateCount -= item.ProductCount;
+                        }
+                        else
+                        {
+                            item.Product.Count -= item.ProductCount;
+                        }
+                    }
+
+                    await _payRepository.SaveAsync();
+
+                    var returnResult = new VerificationPayViewModel()
+                    {
+                        Id = content.id,
+                        RefId = content.track_id,
+                        TotalPrice = content.amount,
+                        UserAddress = user.UserDetail.Address,
+                        UserPhoneNumber = user.PhoneNumber,
+                        UserPostCode = user.UserDetail.Province != null ? user.UserDetail.Province : "",
+                        UserEmail = user.Email,
+                        UserFirstName = user.UserDetail.FirstName,
+                        UserLastName = user.UserDetail.LastName,
+                        DisCounts = payingCart.Discounts.Count() > 0 ? payingCart.Discounts.Select(p => new DisCountViewModel()
+                        {
+                            Name = p.CodeName,
+                            Price = p.DiscountPrice
+                        }) : null,
+                        Products = payingCart.CartDetails.Select(p => new VerficationProductsViewModel()
+                        {
+                            ProductName = p.Product.Name,
+                            ProductPrice = p.Product.Price,
+                            TotalPrice = p.TotalPrice
+                        }),
+                        RetrunResult = new ResultDto()
+                        {
+                            SuccesMessage = $"کاربر گرامی {user.UserName} خرید شما با موفقیت ثبت شد ... شماره رهگیری {content.track_id} میباشد لطفا یادداشت کنید ...",
+                            Status = true
+                        }
+                    };
+                    return returnResult;
+                }
+                else
+                {
+                    var returnResult = new VerificationPayViewModel()
+                    {
+                        RetrunResult = new ResultDto()
+                        {
+                            ErrorMessage = "خطایی پیش آمده است در طول 72 ساعت آینده مبلغ پرداختی به حساب شما باز میگردد !",
+                            Status = false
+                        }
+                    };
+                    return returnResult;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                var returnResult = new VerificationPayViewModel()
+                {
+                    RetrunResult = new ResultDto()
+                    {
+                        ErrorMessage = "پرداخت با شکست مواجه شد لطفا به پشتیبان خبر بدید ! پول شما در طول 72 ساعته آینده با حسابتان باز خواهد گشت !!",
+                        Status = false
+                    }
+                };
+                return returnResult;
+            }
+        }
+
+        public async Task<VerificationPayViewModel> VerificationZarinPall(string requestPayId, string authority, string status)
+        {
+            try
+            {
                 var requestPaies = await _payRepository.GetRequestPaiesAsync();
                 var requestPay = requestPaies.SingleOrDefault(p => p.Id == requestPayId);
                 if (requestPay == null)
@@ -165,8 +438,6 @@ namespace Application.Services.User
                     Authority = authority
                 }, Payment.Mode.sandbox);
 
-
-
                 if (verification.Status == 100)
                 {
 
@@ -178,7 +449,7 @@ namespace Application.Services.User
 
                     cart.IsFinally = true;
 
-                    foreach(var item in cart.CartDetails)
+                    foreach (var item in cart.CartDetails)
                     {
                         item.Product.Count -= item.ProductCount;
                     }
@@ -247,18 +518,18 @@ namespace Application.Services.User
                     {
                         Id = requestPay.Id,
                         RefId = requestPay.RefId,
-                        TotalPrice= requestPay.Amount,
+                        TotalPrice = requestPay.Amount,
                         UserAddress = requestPay.ApplicationUser.UserDetail.Address,
                         UserPhoneNumber = requestPay.ApplicationUser.PhoneNumber,
-                        UserPostCode = requestPay.ApplicationUser.UserDetail.Province!=null? requestPay.ApplicationUser.UserDetail.Province:"",
+                        UserPostCode = requestPay.ApplicationUser.UserDetail.Province != null ? requestPay.ApplicationUser.UserDetail.Province : "",
                         UserEmail = requestPay.ApplicationUser.Email,
                         UserFirstName = requestPay.ApplicationUser.UserDetail.FirstName,
                         UserLastName = requestPay.ApplicationUser.UserDetail.LastName,
-                        DisCounts = cart.Discounts.Count()>0?cart.Discounts.Select(p => new DisCountViewModel()
+                        DisCounts = cart.Discounts.Count() > 0 ? cart.Discounts.Select(p => new DisCountViewModel()
                         {
                             Name = p.CodeName,
                             Price = p.DiscountPrice
-                        }):null,
+                        }) : null,
                         Products = cart.CartDetails.Select(p => new VerficationProductsViewModel()
                         {
                             ProductName = p.Product.Name,
@@ -549,6 +820,7 @@ namespace Application.Services.User
         }
 
 
+        #region Privates Methode
         private async Task<string> CreateRequestForPayin(ApplicationUser user, int amount)
         {
             var requestPaies = await _payRepository.GetRequestPaiesAsync();
@@ -571,6 +843,54 @@ namespace Application.Services.User
 
             return createReturn;
         }
+        private async Task<string> CreateRequestForPayingIdPayAsync(int amount, ApplicationUser user, Cart cart)
+        {
+            var apiUrlIdPay = @"https://api.idpay.ir/v1.1/payment";
+
+            var callBackString = _configuration["ReturnsUrl:PassIdPayToUrl"];
+
+            var IdPayContent = new IdPaySendApiViewModel()
+            {
+                order_id = cart.CartId.ToString(),
+                amount = amount,
+                desc = $"پرداخت فاکتور {cart.CartId}",
+                mail = user.Email,
+                name = user.UserName,
+                phone = user.PhoneNumber,
+                callback = callBackString
+            };
+
+            string jsonContent = JsonConvert.SerializeObject(IdPayContent);
+
+            StringContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            content.Headers.Add("X-API-KEY", "6a7f99eb-7c20-4412-a972-6dfb7cd253a4");
+            content.Headers.Add("X-SANDBOX", "1");
+
+            var result = await _httpClient.PostAsync(apiUrlIdPay, content);
+
+
+            var stringContent = await result.Content.ReadAsStringAsync();
+            var contentReturn = JsonConvert.DeserializeObject<IdPayResponseViewModel>(stringContent);
+
+            if (result.IsSuccessStatusCode)
+            {
+                var requestPaies = await _payRepository.GetRequestPaiesAsync();
+                var requestPay = requestPaies.SingleOrDefault(p => p.Cart.CartId == cart.CartId);
+                requestPay.IdReturnIdPay = contentReturn.id;
+                requestPay.ReturnLinkIdPay = contentReturn.link;
+
+                await _payRepository.SaveAsync();
+
+                return contentReturn.link;
+            }
+            else
+            {
+                return contentReturn.link;
+            }
+        }
+
+        #endregion
 
 
     }

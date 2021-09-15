@@ -13,7 +13,7 @@ namespace Application.InterFaces.User
         /// </summary>
         /// <param name="register"></param>
         /// <returns>bool</returns>
-        Task<bool> RegisterUserWithGmail(RegisetUserForLoginViewModel register);
+        Task<ResultDto> RegisterUserWithGmail(RegisetUserForLoginViewModel register);
         /// <summary>
         /// تاییدیه ایمیل و دادن مقام خریدار به شخص تایید کننده ایمیل
         /// </summary>
@@ -170,5 +170,11 @@ namespace Application.InterFaces.User
         /// </summary>
         /// <returns>ResultDto</returns>
         Task<ResultDto> JoinToSendEmailAsync(string email);
+        /// <summary>
+        /// تاییدیه ایمیل
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultDto> ConfirmEmailProfileAsync(string userId);
     }
 }

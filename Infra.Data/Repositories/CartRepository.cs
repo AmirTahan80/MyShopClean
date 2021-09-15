@@ -20,7 +20,7 @@ namespace Data.Repositories.AdminRepositories
         public async Task<IEnumerable<Cart>> GetCartsAsync()
         {
             var carts = await _context.Carts.Include(p => p.CartDetails)
-                .ThenInclude(p=>p.Product)
+                .ThenInclude(p=>p.Product).ThenInclude(p=>p.ProductImages)
                 .Include(p => p.Discounts)
                 .ToListAsync();
             return carts;

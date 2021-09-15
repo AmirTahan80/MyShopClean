@@ -1,5 +1,6 @@
 ﻿using Application.InterFaces.Both;
 using Application.InterFaces.User;
+using Application.Utilities.TagHelper;
 using Application.ViewModels;
 using Application.ViewModels.User;
 using Domain.InterFaces;
@@ -55,17 +56,28 @@ namespace Application.Services.User
         }
         #endregion
 
-        public async Task<bool> RegisterUserWithGmail(RegisetUserForLoginViewModel register)
+        public async Task<ResultDto> RegisterUserWithGmail(RegisetUserForLoginViewModel register)
         {
             try
             {
-                if (register.PassWord != register.RePassWord) return false;
+                var returnResult = new ResultDto();
+
+                if (register.PassWord != register.RePassWord)
+                {
+                    returnResult.ErrorMessage = "رمز عبورتان با تکرار آن یکی نیست !!";
+                    returnResult.Status = false;
+                    return returnResult;
+                }
 
                 var userEmailExist = await IsUserEmailExist(register.Email.ToLower());
-                if (userEmailExist) return false;
-
                 var userNameExist = await IsUserNameExist(register.UserName.ToLower());
-                if (userNameExist) return false;
+
+                if (userEmailExist || userNameExist)
+                {
+                    returnResult.ErrorMessage = "نام کاربری و یا ایمیل موجود میباشد لطفا با ایمیل و نام کاربری دیگری استفاده کنید !!";
+                    returnResult.Status = false;
+                    return returnResult;
+                }
 
                 var userDetail = new UserDetail();
 
@@ -73,7 +85,8 @@ namespace Application.Services.User
                 {
                     UserName = register.UserName.ToLower(),
                     Email = register.Email.ToLower(),
-                    UserDetail = userDetail
+                    UserDetail = userDetail,
+                    RegisterTime = ConverToShamsi.GetDateYeadAndMonthAndDay(DateTime.Now)
                 };
 
                 var resultCreate = await _userManager.CreateAsync(userCreate, register.PassWord);
@@ -83,16 +96,32 @@ namespace Application.Services.User
                     await _userManager.AddToRoleAsync(userCreate, "Customer");
                     var resultSendEmail = await SendConfirmEmailAsync(userCreate);
                     if (!resultSendEmail)
-                        return false;
+                    {
+                        returnResult.ErrorMessage = "نام کاربری و ایمیل شما ثبت شد و میتوانید از سایت استفاده کنید ، اما در ارسال لینک تاییدیه ایمیل به ایمیل شما با مشکل مواجه شده ایم لطفا با رفتن به حساب کاربری خود ایمیل خود را تایید کنید !!! با تشکر..";
+                        returnResult.Status = false;
+                        return returnResult;
+                    }
                 }
-                else return false;
+                else
+                {
+                    returnResult.ErrorMessage = "ثبت نام با موفقیت انجام نشد !";
+                    returnResult.Status = false;
+                    return returnResult;
+                }
 
-                return true;
+                returnResult.SuccesMessage = "ثبت نام با موفقیت انجام شد لطفا به ایمل خود رفته و آن را تایید کنید .";
+                returnResult.Status = true;
+                return returnResult;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
+                var returnResult = new ResultDto()
+                {
+                    ErrorMessage = "ثبت نام با شکست مواجه شد لطفا با پشتیبانی تماس بگیرید !",
+                    Status = false
+                };
+                return returnResult;
             }
         }
         public async Task<bool> ConfirmEmailAsync(string userEmail, string token)
@@ -197,7 +226,8 @@ namespace Application.Services.User
                 Name = findUser.UserName,
                 RoleName = _userManager.GetRolesAsync(findUser).GetAwaiter().GetResult().FirstOrDefault(),
                 PhoneNumber = findUser.PhoneNumber,
-                IsInNews=userInNews
+                IsInNews = userInNews,
+                IsEmailConfirm=findUser.EmailConfirmed
             };
 
             return returnUserDescription;
@@ -1213,11 +1243,11 @@ namespace Application.Services.User
 
         public async Task<ResultDto> JoinToSendEmailAsync(string email)
         {
-            if(email.Contains("@gmail.com"))
+            if (email.Contains("@gmail.com"))
             {
                 var getAllNewsEmail = await _contactUsRepository.GetAllEmailInNewsAsync();
                 var isEmailInNewsEmail = getAllNewsEmail.Any(p => p.Email == email.ToLower());
-                if(isEmailInNewsEmail)
+                if (isEmailInNewsEmail)
                 {
                     var returnResult1 = new ResultDto()
                     {
@@ -1243,10 +1273,44 @@ namespace Application.Services.User
             {
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage="ایمیل معتبر نیست !!!",
+                    ErrorMessage = "ایمیل معتبر نیست !!!",
                     Status = false
                 };
                 return returnResult;
+            }
+        }
+
+        public async Task<ResultDto> ConfirmEmailProfileAsync(string userId)
+        {
+            try
+            {
+                var returnResul = new ResultDto();
+
+                var user = await _userManager.FindByIdAsync(userId);
+
+                var result = await SendConfirmEmailAsync(user);
+                if(result)
+                {
+                    returnResul.SuccesMessage = "تاییدیه ایمیل برایتان ارسال شد لطفا به ایمیل خود سر بزنید .";
+                    returnResul.Status = true;
+                    return returnResul;
+                }
+                else
+                {
+                    returnResul.ErrorMessage = "ارسال ایمیل با مشکل مواجه شد لطفا دوباره تلاش کنید !";
+                    returnResul.Status = false;
+                    return returnResul;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                var returnResul = new ResultDto()
+                {
+                    ErrorMessage = "ارسال ایمیل با شکست مواجه شد لطفا به پشتیبانی خبر دهید",
+                    Status = false
+                };
+                return returnResul;
             }
         }
 
@@ -1412,8 +1476,7 @@ namespace Application.Services.User
             await _messageSender.SendMessageAsync(user.Email, user.UserName, builder, message);
 
             return true;
-        }
-
+        }    
 
         #endregion
 

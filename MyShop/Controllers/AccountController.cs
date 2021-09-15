@@ -48,6 +48,7 @@ namespace MyShop.Controllers
             return View();
         }
         [HttpPost]
+        [Route("Register")]
         public async Task<IActionResult> Register(RegisetUserForLoginViewModel model)
         {
             var recaptchaResponse = Request.Form["g-recaptcha-response"];
@@ -78,10 +79,10 @@ namespace MyShop.Controllers
 
 
             var result = await _accountUserServices.RegisterUserWithGmail(model);
-            if (!result)
-                ViewData["Error"] = "مشکلی در ثبت نام به وجود آمده !! لطفا با نام کاربری و ایمیل دیگری امتحان کنید و تکرار رمز عبور با رمز عبور یکی باشد !!";
+            if (!result.Status)
+                ViewData["Error"] = result.ErrorMessage;
             else
-                ViewData["Success"] = "با تشکر از ثبت نام شما ... لطفا به ایمیل خود بروید و آن را تایید کنید !";
+                ViewData["Success"] = result.SuccesMessage;
 
             return View(model);
         }
@@ -112,7 +113,9 @@ namespace MyShop.Controllers
             }
             return View();
         }
+        
         [HttpPost]
+        [Route("Login")]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             var recaptchaResponse = Request.Form["g-recaptcha-response"];
@@ -132,7 +135,7 @@ namespace MyShop.Controllers
             var responseString = await response.Content.ReadAsStringAsync();
             dynamic apiJson = JObject.Parse(responseString);
 
-            var returnUrl = TempData["returnUrl"].ToString();
+            var returnUrl = "";
             if (!ModelState.IsValid || apiJson.success != true)
             {
                 if (apiJson.success != true)
@@ -168,6 +171,9 @@ namespace MyShop.Controllers
             if (user == null) return NotFound();
 
             ViewBag.Class = 0;
+
+            ViewData["Error"] = TempData["Error"];
+            ViewData["Success"] = TempData["Success"];
 
             return View(user);
         }
@@ -237,6 +243,21 @@ namespace MyShop.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> ConfirmProfileEmail()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _accountUserServices.ConfirmEmailProfileAsync(userId);
+
+            if (result.Status)
+                TempData["Success"] = result.SuccesMessage;
+            else
+                TempData["Error"] = result.ErrorMessage;
+
+            return RedirectToAction("Profile");
         }
 
         [HttpGet]
@@ -571,8 +592,8 @@ namespace MyShop.Controllers
             return View(result);
         }
 
-        [Authorize]
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddComment(GetProductDescriptionViewModel model, string returnUrl = "")
         {
             var recaptchaResponse = Request.Form["g-recaptcha-response"];
@@ -619,8 +640,8 @@ namespace MyShop.Controllers
 
         }
 
-        [Authorize]
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetUserComments(int? pageNumber)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -648,8 +669,8 @@ namespace MyShop.Controllers
             return View(result);
         }
 
-        [Authorize]
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetUserQuestion(int? pageNumber)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -677,8 +698,8 @@ namespace MyShop.Controllers
             return View(result);
         }
 
-        [Authorize]
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Discount(CartViewModel model, string returnUrl)
         {
             if (string.IsNullOrWhiteSpace(model.CodeName))
@@ -697,13 +718,13 @@ namespace MyShop.Controllers
 
         }
 
-        [Authorize]
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> PayCart()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var result = await _payUserServices.AddRequestPayAsync(userId);
+            var result = await _payUserServices.AddRequestPayZarinPallAsync(userId);
 
             if (result.Status)
             {
@@ -724,14 +745,15 @@ namespace MyShop.Controllers
             }
 
         }
-        [Authorize]
+       
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Validate(string id, string authority, string status)
         {
             if (status == "" || authority == "")
                 return NotFound();
 
-            var result = await _payUserServices.Verification(id, authority, status);
+            var result = await _payUserServices.VerificationZarinPall(id, authority, status);
 
             if (result.RetrunResult.ShowNotFound)
             {
@@ -750,8 +772,33 @@ namespace MyShop.Controllers
 
         }
 
-        [Authorize]
+        //Id Pay Validate
+        //[HttpPost]
+        //public async Task<IActionResult> Validate([FromForm] GetResponseIdPayValueViewModel model)
+        //{
+
+        //    var result = await _payUserServices.VerificationIdPay(model);
+
+        //    if (result.RetrunResult.ShowNotFound)
+        //    {
+        //        return NotFound();
+        //    }
+        //    else if (result.RetrunResult.Status)
+        //    {
+        //        ViewData["Success"] = result.RetrunResult.SuccesMessage;
+        //        return View(result);
+        //    }
+        //    else
+        //    {
+        //        ViewData["Error"] = result.RetrunResult.ErrorMessage;
+        //        return View();
+        //    }
+        //    return View();
+
+        //}
+
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetFactors(int? pageNumber)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -777,8 +824,8 @@ namespace MyShop.Controllers
             return View(result);
         }
 
-        [Authorize]
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> FactorDetail(int factorId = 0)
         {
             if (factorId == 0)

@@ -161,7 +161,7 @@ namespace MyShop.Areas.Admin.Controllers
                 RolesItem = roles
             };
 
-            return View(modelForReturnToView);
+            return RedirectToAction("Index");
         }
 
         [HttpPost]

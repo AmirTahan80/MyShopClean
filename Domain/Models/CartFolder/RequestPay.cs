@@ -16,6 +16,12 @@ namespace Domain.Models
         public bool IsPay { get; set; }
         public int RefId { get; set; }
 
+        [Required]
+        public string IdReturnIdPay { get; set; }
+        [Required]
+        public string ReturnLinkIdPay { get; set; }
+
+
         //Navigation Bar
         public ApplicationUser ApplicationUser { get; set; }
         public Cart Cart { get; set; }

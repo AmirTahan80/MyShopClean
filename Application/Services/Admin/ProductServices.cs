@@ -45,7 +45,7 @@ namespace Application.Services.Admin
                 .Select(c => c.ImgFile + "/" + c.ImgSrc)
                 .Take(2),
                 CategoryId = p.Categories
-                .Select(c=>c.CategoryId)
+                .Select(c => c.CategoryId)
                 .LastOrDefault(),
                 CategoryName = _categoryServices.GetCategoryAsync(p.Categories.LastOrDefault().CategoryId)
                 .GetAwaiter().GetResult().Name,
@@ -62,10 +62,10 @@ namespace Application.Services.Admin
                 Id = product.Id,
                 Count = product.Count,
                 Name = product.Name,
-                CategoriesId = product.Categories.Select(p=> p.CategoryId).ToList(),
+                CategoriesId = product.Categories.Select(p => p.CategoryId).ToList(),
                 Detail = product.Detail,
                 Price = product.Price,
-                CategoryName = product.Categories.Select(p=>p.Category.Name).ToList(),
+                CategoryName = product.Categories.Select(p => p.Category.Name).ToList(),
                 Images = product.ProductImages.Select(p => new GetImagesViewModel()
                 {
                     ImgSrc = p.ImgFile + "/" + p.ImgSrc,
@@ -119,7 +119,7 @@ namespace Application.Services.Admin
                     var findCategory = await FindCategory(item);
                     categories.Add(findCategory);
                 }
-                if (categories.Count()==0)
+                if (categories.Count() == 0)
                 {
                     return false;
                 }
@@ -166,9 +166,9 @@ namespace Application.Services.Admin
                     Detail = addProduct.Detail,
                     InsertTime = ConverToShamsi.GetDateYeadAndMonthAndDay(DateTime.Now),
                     IsProductHaveAttributes = addProduct.IsProductHaveAttributes == true ? true : false,
-                    Categories=categories.Select(p=>new CategoryToProduct()
+                    Categories = categories.Select(p => new CategoryToProduct()
                     {
-                        CategoryId=p.Id
+                        CategoryId = p.Id
                     }).ToList()
                 };
 
@@ -333,7 +333,7 @@ namespace Application.Services.Admin
 
                 var findProductById = await _productRepository.GetProductAsync(editProduct.Id);
 
-                if(editProduct.CategoriesId.Count()>0)
+                if (editProduct.CategoriesId.Count() > 0)
                 {
                     var categories = new List<Category>();
                     foreach (var item in editProduct.CategoriesId)
@@ -341,9 +341,9 @@ namespace Application.Services.Admin
                         var findCategory = await FindCategory(item);
                         categories.Add(findCategory);
                     }
-                    findProductById.Categories = categories.Select(p=>new CategoryToProduct()
+                    findProductById.Categories = categories.Select(p => new CategoryToProduct()
                     {
-                        CategoryId=p.Id
+                        CategoryId = p.Id
                     }).ToList();
                 }
 
@@ -570,12 +570,21 @@ namespace Application.Services.Admin
                 foreach (var productId in getProductIdsFordelete)
                 {
                     var product = await _productRepository.GetProductAsync(productId);
-                    var cartDetails = carts.Select(p => p.CartDetails.Where(p => p.ProductId == productId)).SingleOrDefault();
-                    if(cartDetails!=null)
+                    if (carts != null)
                     {
-                        foreach (var cartDetail in cartDetails)
+                        foreach (var cart in carts)
                         {
-                            _cartRepository.RemoveCartDetail(cartDetail);
+                            if (cart.CartDetails.Any())
+                            {
+                                var cartDetails = cart.CartDetails.Where(p => p.ProductId == product.Id).ToList();
+                                if (cartDetails != null)
+                                {
+                                    foreach (var cartDetail in cartDetails)
+                                    {
+                                        _cartRepository.RemoveCartDetail(cartDetail);
+                                    }
+                                }
+                            }
                         }
                     }
                     productsList.Add(product);

@@ -6,8 +6,10 @@ namespace Application.InterFaces.User
 {
     public interface IPayUserServices
     {
-        Task<ResultDto> AddRequestPayAsync(string userId);
+        Task<ResultDto> AddRequestPayZarinPallAsync(string userId);
+        Task<ResultDto> AddRquestPayIdPayAsync(string userId);
 
-        Task<VerificationPayViewModel> Verification(string requestPayId, string authority, string status);
+        Task<VerificationPayViewModel> VerificationZarinPall(string requestPayId, string authority, string status);
+        Task<VerificationPayViewModel> VerificationIdPay(GetResponseIdPayValueViewModel response);
     }
 }

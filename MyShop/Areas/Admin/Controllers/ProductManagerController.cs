@@ -143,12 +143,15 @@ namespace Areas.Admin.Controllers
             }
             var resut = await _porudctServices.EditProductAsync(model);
             if (!resut)
+            {
                 ViewData["Error"] = "خطایی در ویرایش محصول به وجود آمده است !!";
+                return View(model);
+            }
             else
                 ViewData["Success"] = "ویرایش محصول با موفقیت انجام شد !!";
 
-            var product = await _porudctServices.GetProductAsync(model.Id);
-            return View(product);
+
+            return RedirectToAction("Index");
         }
         [HttpPost]
         [IgnoreAntiforgeryToken]
