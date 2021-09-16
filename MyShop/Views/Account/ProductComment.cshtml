@@ -5,12 +5,10 @@
 }
 
 @section Header{
-    <!-- plugin-------------------------------------->
-    <link rel="stylesheet" href="/assets/css/vendor/bootstrap.css">
-    <link rel="stylesheet" href="/assets/css/vendor/owl.carousel.min.css">
-    <link rel="stylesheet" href="/assets/css/vendor/noUISlider.min.css">
-    <link rel="stylesheet" href="/assets/css/vendor/bootstrap-slider.min.css">
-    <link rel="stylesheet" href="/assets/css/vendor/nice-select.css">
+    <!-- plugin------------------------------------>
+    <link href="~/assets/css/vendor/noUISlider.min.css" rel="stylesheet" />
+    <link href="~/assets/css/vendor/bootstrap-slider.min.css" rel="stylesheet" />
+    <link href="~/assets/css/vendor/nice-selectMin.css" rel="stylesheet" />
 }
 
 <!-- product-comment----------------------->
@@ -222,20 +220,17 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <!-- plugin----------------------------------------------------->
-    <script src="/assets/js/vendor/owl.carousel.min.js"></script>
-    <script src="/assets/js/vendor/jquery.countdown.js"></script>
-    <script src="/assets/js/vendor/ResizeSensor.min.js"></script>
-    <script src="/assets/js/vendor/theia-sticky-sidebar.min.js"></script>
-    <script src="/assets/js/vendor/wNumb.js"></script>
-    <script src="/assets/js/vendor/nouislider.min.js"></script>
-    <script src="/assets/js/vendor/bootstrap-slider.min.js"></script>
-    <script src="/assets/js/vendor/jquery.nice-select.min.js"></script>
+    <script src="~/assets/js/vendor/ResizeSensor.min.js"></script>
+    <script src="~/assets/js/vendor/theia-sticky-sidebar.min.js"></script>
+    <script src="~/assets/js/vendor/wNumbMin.js"></script>
+    <script src="~/assets/js/vendor/nouislider.min.js"></script>
+    <script src="~/assets/js/vendor/bootstrap-slider.min.js"></script>
+    <script src="~/assets/js/vendor/jquery.nice-select.min.js"></script>
 
 
     <script src="https://www.google.com/recaptcha/api.js?hl=fa" async defer></script>
 
     <script>
-
         //Add Informations Button Scripts
 
         var GoodnesInput = "<div class='row mb-2 m-2 p-2'><div class='col' ><input type='text' required name='Comment.Goodness' class='form-control' placeholder='نقطه قوت'></div><div class='col'><button type='button' class='btn btn-danger remove-Goodness-btn'><i class='fa fa-trash' aria-hidden='true'></i></button></div></div>";

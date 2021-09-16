@@ -5,9 +5,7 @@
 }
 @section Header{
     <!-- plugin-------------------------------------->
-    <link rel="stylesheet" href="/assets/css/vendor/bootstrap.css">
-    <link rel="stylesheet" href="/assets/css/vendor/owl.carousel.min.css">
-    <link rel="stylesheet" href="/assets/css/vendor/noUISlider.min.css">
+    <link href="~/assets/css/vendor/noUISlider.min.css" rel="stylesheet" />
 }
 
 <!-- login----------------------------------->
@@ -17,7 +15,7 @@
             <section class="page-account-box">
                 <div class="col-lg-6 col-md-6 col-xs-12 mx-auto">
                     <div class="ds-userlogin">
-                        <a asp-action="Index" asp-controller="Home" class="account-box-logo">CloseStore</a>
+                        <a asp-action="Index" asp-controller="Home" class="account-box-logo" style="margin:auto">CloseStore</a>
                         <div class="account-box">
                             <div class="account-box-headline">
                                 <a asp-action="Login" asp-controller="Account" class="login-ds">
@@ -66,7 +64,7 @@
                                             <label for="remember" class="remember-me mr-0"><a href="#">حریم خصوصی</a> و <a href="#">شرایط قوانین </a>استفاده از سرویس های سایت دیجی‌اسمارت را مطالعه نموده و با کلیه موارد آن موافقم.</label>
                                         </div>*@
                                         <div class="form-row-account">
-                                            <button class="btn btn-primary btn-register " id="submit" type="submit">ثبت نام کلوزاستور</button>
+                                            <button class="btn btn-primary btn-register " id="submit" type="submit">ثبت نام در کلوزاستور</button>
                                             @if (ViewData["Error"] != null)
                                             {
                                                 <div class="alert alert-danger">
@@ -97,12 +95,10 @@
 
 
     <!-- plugin----------------------------------------------------->
-    <script src="/assets/js/vendor/owl.carousel.min.js"></script>
-    <script src="/assets/js/vendor/jquery.countdown.js"></script>
-    <script src="/assets/js/vendor/ResizeSensor.min.js"></script>
-    <script src="/assets/js/vendor/theia-sticky-sidebar.min.js"></script>
-    <script src="/assets/js/vendor/wNumb.js"></script>
-    <script src="/assets/js/vendor/nouislider.min.js"></script>
+    <script src="~/assets/js/vendor/ResizeSensor.min.js"></script>
+    <script src="~/assets/js/vendor/theia-sticky-sidebar.min.js"></script>
+    <script src="~/assets/js/vendor/wNumbMin.js"></script>
+    <script src="~/assets/js/vendor/nouislider.min.js"></script>
 
     <script src="https://www.google.com/recaptcha/api.js?hl=fa" async defer></script>
 

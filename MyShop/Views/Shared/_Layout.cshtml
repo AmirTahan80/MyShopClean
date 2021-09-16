@@ -7,19 +7,19 @@
 
     <!-- font---------------------------------------->
     <link rel="stylesheet" href="~/assets/css/vendor/font-awesome.min.css">
-    <link rel="stylesheet" href="~/assets/css/vendor/materialdesignicons.css">
+    <link href="~/assets/css/vendor/materialdesigniconsMin.css" rel="stylesheet" />
     <!-- plugin-------------------------------------->
-    <link rel="stylesheet" href="~/assets/css/vendor/bootstrap.css">
+    <link href="~/assets/css/vendor/bootstrapMin.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/assets/css/vendor/owl.carousel.min.css">
-    <link rel="stylesheet" href="~/assets/css/vendor/nice-select.css">
+    <link href="~/assets/css/vendor/nice-selectMin.css" rel="stylesheet" />
 
     @await RenderSectionAsync("Header", required: false)
 
     <!-- main-style---------------------------------->
-    <link rel="stylesheet" href="~/assets/css/main.css">
-    <link rel="stylesheet" href="~/assets/css/responsive.css">
+    <link href="~/assets/css/mainMin.css" rel="stylesheet" />
+    <link href="~/assets/css/responsiveMin.css" rel="stylesheet" />
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fortawesome/fontawesome-free@5.15.4/css/fontawesome.min.css" integrity="sha384-jLKHWM3JRmfMU0A5x5AkjWkw/EYfGUAGagvnfryNV3F9VqM98XiIH7VBGVoxVSc7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 </head>
 <body>
@@ -43,16 +43,16 @@
     <!-- scroll_Progress------------------------->
     <!-- file js---------------------------------------------------->
     <script src="~/assets/js/vendor/jquery-3.2.1.min.js"></script>
-    <script src="~/assets/js/vendor/bootstrap.js"></script>
+    <script src="~/assets/js/vendor/bootstrapMin.js"></script>
     <!-- plugin----------------------------------------------------->
     <script src="~/assets/js/vendor/owl.carousel.min.js"></script>
-    <script src="~/assets/js/vendor/jquery.countdown.js"></script>
+    <script src="~/assets/js/vendor/jquery.countdownMin.js"></script>
     <script src="~/assets/js/vendor/jquery.nice-select.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 
     <!-- main js---------------------------------------------------->
-    <script src="~/assets/js/main.js"></script>
+    <script src="~/assets/js/mainMin.js"></script>
 
 </body>
 </html>

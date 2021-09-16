@@ -4,11 +4,9 @@
 
 @section Header{
     <!-- plugin-------------------------------------->
-    <link rel="stylesheet" href="~/assets/css/vendor/bootstrap.css">
-    <link rel="stylesheet" href="~/assets/css/vendor/owl.carousel.min.css">
     <link rel="stylesheet" href="~/assets/css/vendor/noUISlider.min.css">
-    <link rel="stylesheet" href="~/assets/css/vendor/lightgallery.css">
-    <link rel="stylesheet" href="~/assets/css/vendor/nice-select.css">
+    <link href="~/assets/css/vendor/lightgalleryMin.css" rel="stylesheet" />
+    <link href="~/assets/css/vendor/nice-selectMin.css" rel="stylesheet" />
 }
 
 <!-- arshive-product----------------------->
@@ -153,7 +151,7 @@
                                             <input id="templateCountInput" value="@Model.Templates.Count()" type="hidden" />
                                         </div>
                                     }
-                                    @if (Model.Properties!=null)
+                                    @if (Model.Properties != null)
                                     {
                                         <div class="product-params pt-3">
                                             <ul data-title="ویژگی‌های محصول">
@@ -568,11 +566,9 @@
     <script src="~/Vendors/ckeditor5/build/ckeditor.js"></script>
 
     <!-- plugin----------------------------------------------------->
-    <script src="/assets/js/vendor/owl.carousel.min.js"></script>
-    <script src="/assets/js/vendor/jquery.countdown.js"></script>
-    <script src="/assets/js/vendor/lightgallery-all.js"></script>
-    <script src="/assets/js/vendor/jquery.ez-plus.js"></script>
-    <script src="/assets/js/vendor/jquery.nice-select.min.js"></script>
+    <script src="~/assets/js/vendor/lightgallery-allMin.js"></script>
+    <script src="~/assets/js/vendor/jquery.ez-plusMin.js"></script>
+    <script src="~/assets/js/vendor/jquery.nice-select.min.js"></script>
 
     <script src="https://www.google.com/recaptcha/api.js?hl=fa" async defer></script>
 
