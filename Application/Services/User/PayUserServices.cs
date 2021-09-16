@@ -65,7 +65,7 @@ namespace Application.Services.User
                 if (string.IsNullOrWhiteSpace(user.UserDetail.Address) || string.IsNullOrWhiteSpace(user.PhoneNumber))
                 {
                     returnResult.ErrorMessage = "لطفا کد ملی و شماره تلفن را کامل کنید ...";
-                    returnResult.ReturnRedirect = $"https://localhost:44373/Account/PersonalInfo";
+                    returnResult.ReturnRedirect = _configuration["ReturnsUrl:PassUserToUrl"];
                     returnResult.Status = false;
                     return returnResult;
                 }
@@ -832,7 +832,7 @@ namespace Application.Services.User
             {
                 Mobile = user.PhoneNumber,
                 CallbackUrl =
-                $"https://localhost:44373/Account/Validate?id={requestPay.Id}",
+                $"https://" + _configuration["ReturnsUrl:CallBackUrl"] + $"/Account/Validate?id={requestPay.Id}",
                 Description = $"پرداخت فاکتور {cart.CartId}",
                 Email = user.Email,
                 Amount = Convert.ToInt32(amount),
@@ -847,7 +847,9 @@ namespace Application.Services.User
         {
             var apiUrlIdPay = @"https://api.idpay.ir/v1.1/payment";
 
-            var callBackString = _configuration["ReturnsUrl:PassIdPayToUrl"];
+            var callBackString =
+            _configuration["ReturnsUrl:CallBackUrl"];
+
 
             var IdPayContent = new IdPaySendApiViewModel()
             {

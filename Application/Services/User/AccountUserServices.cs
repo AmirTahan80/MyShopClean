@@ -568,7 +568,7 @@ namespace Application.Services.User
                     else
                     {
 
-                        if (product.AttributeTemplates == null)
+                        if (product.AttributeTemplates.Count()==0)
                         {
                             if (product.Count < count)
                             {

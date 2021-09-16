@@ -200,11 +200,8 @@ namespace Application.Services.Admin
             {
                 var user = await _userManager.FindByIdAsync(editUser.UserId);
                 if (user == null) return false;
-                var updateUser = new ApplicationUser()
-                {
-                    UserName = editUser.UserName,
-                    Email = editUser.UserEmail,
-                };
+                user.UserName = editUser.UserName;
+                user.Email = editUser.UserEmail;
                 var userRoles = await _userManager.GetRolesAsync(user);
                 var userRole = userRoles.SingleOrDefault();
                 if (userRole != editUser.RoleName)
@@ -219,7 +216,7 @@ namespace Application.Services.Admin
                             return false;
                     }
                 }
-                var result = await _userManager.UpdateAsync(updateUser);
+                var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded)
                 {
                     await _userManager.UpdateSecurityStampAsync(user);
