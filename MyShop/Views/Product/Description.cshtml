@@ -49,14 +49,14 @@
                                                     <a asp-action="AddToFavorite" asp-controller="Account"
                                                        asp-route-productId="@Model.Id"
                                                        asp-route-returnUrl="@this.Url.Action("Description", "Product", new {productId=Model.Id})"
-                                                       class="btn-option add-product-wishes" style="@(Model.IsInUserFavorite==true?"background: antiquewhite;":"")">
-                                                        <i class="mdi mdi-heart-outline"></i>
+                                                       class="btn-option add-product-wishes p-1" style="@(Model.IsInUserFavorite==true?"background: antiquewhite;":"")">
+                                                        <i class="fa fa-heart"></i>
                                                         <span>محبوب</span>
                                                     </a>
                                                 </li>
                                                 <li class="Three-dimensional">
-                                                    <a href="#" class="btn-option btn-Three-dimensional" data-toggle="modal" data-target="#more-product">
-                                                        <i class="mdi mdi-more"></i>
+                                                    <a href="#" class="btn-option btn-Three-dimensional p-1" data-toggle="modal" data-target="#more-product">
+                                                        <i class="fa fa-list" ></i>
                                                         <span>نمایش بیشتر</span>
                                                     </a>
                                                     <div class="modal fade" id="more-product" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -83,7 +83,7 @@
                                         <div class="gallery-img">
                                             <a href="/Images/ProductImages/@Model.Images.FirstOrDefault().ImgSrc">
                                                 <img class="zoom-img" id="img-product-zoom" src="/Images/ProductImages/@Model.Images.FirstOrDefault().ImgSrc"
-                                                     data-zoom-image="/Images/ProductImages/@Model.Images.FirstOrDefault().ImgSrc" width="411" />
+                                                     data-zoom-image="/Images/ProductImages/@Model.Images.FirstOrDefault().ImgSrc" width="411" style="height:500px;" />
                                                 <div id="gallery_01f" style="width:420px;float:right;">
                                             </a>
                                             <ul class="gallery-items owl-carousel owl-theme" id="gallery-slider">
@@ -94,7 +94,7 @@
                                                            class="elevatezoom-gallery @(b<5?"active":"")" data-update=""
                                                            data-image="/Images/ProductImages/@image.ImgSrc"
                                                            data-zoom-image="/Images/ProductImages/@image.ImgSrc">
-                                                            <img src="/Images/ProductImages/@image.ImgSrc" width="100" />
+                                                            <img src="/Images/ProductImages/@image.ImgSrc" width="100" style="max-height:100px" />
                                                         </a>
                                                     </li>
                                                 }

@@ -105,6 +105,7 @@ namespace Areas.Admin.Controllers
             return View(categoriesTreeView);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddProduct(AddProductViewModel model)
         {
             var categoriesTreeView = await _porudctServices.GetCategoriesTreeViewForAdd();
@@ -135,6 +136,7 @@ namespace Areas.Admin.Controllers
             return View(product);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditProduct(GetProductViewModel model)
         {
             if (!ModelState.IsValid)
@@ -161,6 +163,7 @@ namespace Areas.Admin.Controllers
             return result;
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteProduct(IEnumerable<GetProductsAndImageSrcViewModel> models)
         {
             if (models == null)
@@ -236,6 +239,7 @@ namespace Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateDiscount(DiscountViewMode model)
         {
             if (!ModelState.IsValid)
@@ -262,6 +266,7 @@ namespace Areas.Admin.Controllers
 
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditDiscount(DiscountViewMode model)
         {
             if (!ModelState.IsValid)

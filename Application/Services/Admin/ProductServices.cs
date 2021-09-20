@@ -224,6 +224,7 @@ namespace Application.Services.Admin
                         }
                     }
                     await _productRepository.AddProductAttributes(productAttributes);
+                    await _productRepository.SaveAsync();
 
                     //Values
                     var productAttributesValue = new List<AttributeValue>();
@@ -250,6 +251,7 @@ namespace Application.Services.Admin
                         }
                     }
                     await _productRepository.AddAttributeValues(productAttributesValue);
+                    await _productRepository.SaveAsync();
 
                     //Template
                     var productAttributesTemplates = new List<AttributeTemplate>();

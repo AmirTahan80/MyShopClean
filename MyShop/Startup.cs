@@ -52,7 +52,6 @@ namespace MyShop
             app.UseStaticFiles();
 
             app.UseStatusCodePagesWithReExecute("/Home/Errors/{0}");
-
             app.UseRouting();
 
             app.UseAuthentication();

@@ -94,13 +94,6 @@ namespace Application.Services.User
                 if (resultCreate.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(userCreate, "Customer");
-                    var resultSendEmail = await SendConfirmEmailAsync(userCreate);
-                    if (!resultSendEmail)
-                    {
-                        returnResult.ErrorMessage = "نام کاربری و ایمیل شما ثبت شد و میتوانید از سایت استفاده کنید ، اما در ارسال لینک تاییدیه ایمیل به ایمیل شما با مشکل مواجه شده ایم لطفا با رفتن به حساب کاربری خود ایمیل خود را تایید کنید !!! با تشکر..";
-                        returnResult.Status = false;
-                        return returnResult;
-                    }
                 }
                 else
                 {
@@ -109,7 +102,7 @@ namespace Application.Services.User
                     return returnResult;
                 }
 
-                returnResult.SuccesMessage = "ثبت نام با موفقیت انجام شد لطفا به ایمل خود رفته و آن را تایید کنید .";
+                returnResult.SuccesMessage = "ثبت نام شما با موفقیت انجام شد .";
                 returnResult.Status = true;
                 return returnResult;
             }
@@ -993,11 +986,11 @@ namespace Application.Services.User
 
                 await _questionReposiotry.AddQuestionAsync(quesTionCreate);
 
-                if (parent != null)
-                {
-                    var userReplayOn = parent.User;
-                    await Sendemail(userReplayOn, product.Id);
-                }
+                //if (parent != null)
+                //{
+                //    var userReplayOn = parent.User;
+                //    await Sendemail(userReplayOn, product.Id);
+                //}
 
                 await _questionReposiotry.SaveAsync();
 

@@ -49,6 +49,7 @@ namespace MyShop.Controllers
         }
         [HttpPost]
         [Route("Register")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisetUserForLoginViewModel model)
         {
             var recaptchaResponse = Request.Form["g-recaptcha-response"];
@@ -116,6 +117,7 @@ namespace MyShop.Controllers
         
         [HttpPost]
         [Route("Login")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             var recaptchaResponse = Request.Form["g-recaptcha-response"];
@@ -193,6 +195,7 @@ namespace MyShop.Controllers
         }
         [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> PersonalInfo(ProfileViewModel model)
         {
             var recaptchaResponse = Request.Form["g-recaptcha-response"];
@@ -247,6 +250,7 @@ namespace MyShop.Controllers
 
         [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmProfileEmail()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -268,6 +272,7 @@ namespace MyShop.Controllers
         }
         [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(NewPassWordViewModel model)
         {
             var recaptchaResponse = Request.Form["g-recaptcha-response"];
@@ -321,6 +326,7 @@ namespace MyShop.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassWord(ForgotPassWordViewModel model)
         {
             var recaptchaResponse = Request.Form["g-recaptcha-response"];
@@ -374,6 +380,7 @@ namespace MyShop.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
             var recaptchaResponse = Request.Form["g-recaptcha-response"];
@@ -594,6 +601,7 @@ namespace MyShop.Controllers
 
         [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddComment(GetProductDescriptionViewModel model, string returnUrl = "")
         {
             var recaptchaResponse = Request.Form["g-recaptcha-response"];
@@ -700,6 +708,7 @@ namespace MyShop.Controllers
 
         [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Discount(CartViewModel model, string returnUrl)
         {
             if (string.IsNullOrWhiteSpace(model.CodeName))
@@ -720,6 +729,7 @@ namespace MyShop.Controllers
 
         [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> PayCart()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -748,6 +758,7 @@ namespace MyShop.Controllers
        
         [HttpGet]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Validate(string id, string authority, string status)
         {
             if (status == "" || authority == "")
@@ -845,6 +856,7 @@ namespace MyShop.Controllers
 
         [HttpPost]
         [Route("ContactUs")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ContactUs(ContactUsViewModel model)
         {
             var recaptchaResponse = Request.Form["g-recaptcha-response"];

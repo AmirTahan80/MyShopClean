@@ -86,6 +86,7 @@ namespace MyShop.Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddBaner(BanerViewModel model)
         {
             if (!ModelState.IsValid)
@@ -113,6 +114,7 @@ namespace MyShop.Areas.Admin.Controllers
             return View(baner);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditBaner(BanerViewModel model)
         {
             if (!ModelState.IsValid)
@@ -135,6 +137,7 @@ namespace MyShop.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteBaner(IList<BanerViewModel> models)
         {
             var result = await _banerServices.DeleteBanersAsync(models);

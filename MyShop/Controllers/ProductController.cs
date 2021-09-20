@@ -110,6 +110,7 @@ namespace MyShop.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AskQuestion(GetProductDescriptionViewModel model, string returnUrl = "")
         {
             string recaptchaResponse = this.Request.Form["g-recaptcha-response"];

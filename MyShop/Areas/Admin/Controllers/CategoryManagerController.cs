@@ -92,6 +92,7 @@ namespace Areas.Admin.Controllers
             return View(categories);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddCategory(AddCategoryViewModel model)
         {
             if (!ModelState.IsValid)
@@ -116,6 +117,7 @@ namespace Areas.Admin.Controllers
             return View(category);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditCategory(GetCategoryViewModel model)
         {
             if(!ModelState.IsValid)
@@ -135,6 +137,7 @@ namespace Areas.Admin.Controllers
             return View(category);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteCategory(IEnumerable<GetCategoryViewModel> models)
         {
             if (models.Count() <= 0) return NotFound();

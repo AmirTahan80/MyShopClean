@@ -52,7 +52,7 @@
                                                         <label for="remember" class="remember-me">همه</label>
                                                     </div>
                                                 </div>
-                                                @foreach (var item in Model.CategoriesTreeView)
+                                                @foreach (var item in Model.CategoriesTreeView.Where(p=>p.Count==0 || p.Count==2))
                                                 {
                                                     @if (item.Count == 0)
                                                     {
@@ -71,7 +71,7 @@
                                                     }
                                                     else
                                                     {
-                                                        <div class="card-main mb-0" style="margin-right:@(item.Count*2)px">
+                                                        <div class="card-main mb-0" style="margin-right:@(item.Count*4)px">
                                                             <div class="form-auth-row">
                                                                 <label for="#" class="ui-checkbox">
                                                                     <input type="checkbox" value="@item.Id" @(Model.CategoriesId.Any(p => item.Id == p) ? "checked" : "") name="categoriesId" class="categorySelect">
@@ -171,34 +171,23 @@
                                         @foreach (var product in Model.Products)
                                         {
                                             <div class="col-lg-3 col-md-3 col-xs-12 order-1 d-block mb-3">
-                                                <section class="product-box product product-type-simple">
-                                                    <div class="thumb">
-                                                        <a asp-action="Description" asp-controller="Product" asp-route-productId="@product.Id" class="d-block">
-                                                            @*<div class="promotion-badge">فروش ویژه</div>
-                                                                <div class="product-rate">
-                                                                    <i class="fa fa-star active"></i>
-                                                                    <i class="fa fa-star active"></i>
-                                                                    <i class="fa fa-star active"></i>
-                                                                    <i class="fa fa-star active"></i>
-                                                                    <i class="fa fa-star"></i>
-                                                                </div>
-                                                                <div class="discount-d">
-                                                                    <span>20%</span>
-                                                                </div>*@
-                                                            <img src="/Images/ProductImages/@product.ImageSrc" style="height: 195px; width: 191px; ">
-                                                        </a>
-                                                    </div>
-                                                    <div class="title">
-                                                        <a asp-action="Description" asp-controller="Product" asp-route-productId="@product.Id">@product.Name</a>
-                                                    </div>
-                                                    <div class="price">
-                                                        <span class="amount">
-                                                            @product.Price.ToString("#,0")
-                                                            <span>تومان</span>
-                                                        </span>
-                                                    </div>
-                                                </section>
-                                            </div>
+                <section class="product-box product product-type-simple">
+                    <div class="thumb col-md-12" style="height: 210px;">
+                        <a asp-action="Description" asp-controller="Product" asp-route-productId="@product.Id" class="d-block col-md-12">
+                            <img class="col-md-12 img-fluid" src="/Images/ProductImages/@product.ImageSrc" style=" max-height: 206px; object-fit:cover">
+                        </a>
+                    </div>
+                    <div class="title">
+                        <a asp-action="Description" asp-controller="Product" asp-route-productId="@product.Id">@product.Name</a>
+                    </div>
+                    <div class="price">
+                        <span class="amount">
+                            @product.Price.ToString("#,0")
+                            <span>تومان</span>
+                        </span>
+                    </div>
+                </section>
+            </div>
                                         }
                                     </div>
                                 </div>

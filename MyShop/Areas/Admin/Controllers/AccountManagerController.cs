@@ -107,6 +107,7 @@ namespace MyShop.Areas.Admin.Controllers
             return View(modelForReturnToView);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateUser(CreateAccountViewModel model)
         {
             if (!ModelState.IsValid)
@@ -141,6 +142,7 @@ namespace MyShop.Areas.Admin.Controllers
             return View(user);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditUser(UserDetailViewModel model)
         {
             if (!ModelState.IsValid)
@@ -166,6 +168,7 @@ namespace MyShop.Areas.Admin.Controllers
 
         [HttpPost]
         [Authorize("Founder")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteUsers(IEnumerable<UsersListViewModel> model)
         {
             if (model.Count() <= 0) return NotFound();
@@ -357,6 +360,7 @@ namespace MyShop.Areas.Admin.Controllers
             return View(result);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditQuestion(QuestionViewModel model)
         {
             if (string.IsNullOrWhiteSpace(model.Text))
@@ -380,6 +384,7 @@ namespace MyShop.Areas.Admin.Controllers
             return View(question);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteQuestion(IList<QuestionViewModel> models)
         {
             var resulr = await _accountServices.DeleteQuestionAsync(models);
@@ -470,6 +475,7 @@ namespace MyShop.Areas.Admin.Controllers
             return View(result);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditFactor(FactorViewModel model)
         {
             var result = await _accountServices.EditFactorAsync(model);
@@ -556,6 +562,7 @@ namespace MyShop.Areas.Admin.Controllers
             return View(result);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AwnserContact(ContactViewModel model, string returnUrl)
         {
             if (!ModelState.IsValid)
