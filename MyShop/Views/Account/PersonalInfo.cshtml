@@ -49,8 +49,9 @@
                                                 <label for="email">آدرس</label>
                                                 <input asp-for="Address" type="text" id="address" class="input-email-checkout form-control">
 
-                                                <label for="password">ربات نیستم</label>
-                                                <div class="g-recaptcha" data-sitekey="@configuration["reCAPTCHA:SiteKey"]"></div>
+                                                <div class="m-2">
+                                                    <div class="g-recaptcha" data-sitekey="@configuration["reCAPTCHA:SiteKey"]"></div>
+                                                </div>
 
                                                 <br />
                                                 <br />

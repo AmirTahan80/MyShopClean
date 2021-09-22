@@ -638,6 +638,7 @@ namespace Application.Services.User
                     ProductCount = p.ProductCount,
                     ProductPrice = p.ProductPrice,
                     ProductName = p.Product.Name,
+                    ProductId=p.ProductId,
                     ImgSrc = p.Product.ProductImages.Select(p => p.ImgFile + "/" + p.ImgSrc).FirstOrDefault(),
                     AttributeNames = p.Product.ProductAttributes != null ? p.Product.ProductAttributes.Select(c => new AttributeNamesViewModel()
                     {

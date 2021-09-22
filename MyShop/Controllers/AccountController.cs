@@ -742,6 +742,7 @@ namespace MyShop.Controllers
             }
             else
             {
+                TempData["Error"] = result.ErrorMessage;
                 if (!string.IsNullOrWhiteSpace(result.ReturnRedirect))
                 {
                     return Redirect(result.ReturnRedirect);

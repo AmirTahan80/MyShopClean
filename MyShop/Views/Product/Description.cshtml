@@ -15,7 +15,7 @@
         <div class="page-content page-row">
             <div class="main-row">
                 <div id="breadcrumb">
-                    <i class="mdi mdi-home"></i>
+                    <i class="fa fa-home"></i>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">خانه</a></li>
@@ -227,25 +227,25 @@
                     <ul class="tab nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" id="Review-tab" data-toggle="tab" href="#Review" role="tab" aria-controls="Review" aria-selected="true">
-                                <i class="mdi mdi-glasses"></i>
+                                <i class="fas fa-glasses"></i>
                                 نقد و بررسی
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="Specifications-tab" data-toggle="tab" href="#Specifications" role="tab" aria-controls="Specifications" aria-selected="false">
-                                <i class="mdi mdi-format-list-checks"></i>
+                                <i class="fa fa-list"></i>
                                 مشخصات
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="User-comments-tab" data-toggle="tab" href="#User-comments" role="tab" aria-controls="User-comments" aria-selected="false">
-                                <i class="mdi mdi-comment-text-multiple-outline"></i>
+                                <i class="fas fa-comment"></i>
                                 نظرات کاربران
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="question-and-answer-tab" data-toggle="tab" href="#question-and-answer" role="tab" aria-controls="question-and-answer" aria-selected="false">
-                                <i class="mdi mdi-comment-question-outline"></i>
+                                <i class="fa fa-question"></i>
                                 پرسش و پاسخ
                             </a>
                         </li>
@@ -459,39 +459,53 @@
                                         پرسش و پاسخ
                                         <span>پرسش خود را در مورد محصول مطرح نمایید</span>
                                     </h2>
-                                    <form asp-action="AskQuestion" asp-controller="Product"
-                                          method="post"
-                                          asp-route-returnUrl="@this.Url.Action("Description", "Product", new {productId=Model.Id})" class="form-faq">
-                                        <div class="form-faq-row mt-4">
-                                            <div class="form-faq-col">
-                                                <div class="ui-textarea">
-                                                    <input id="userEmailQuestion" style="transition:all 2s;" required asp-for="Question.Email" placeholder="ایمیل" class="form-control" />
-                                                    <input hidden type="hidden" asp-for="Question.ProductId" value="@Model.Id" class="form-control" />
-                                                    <span style="color:red" asp-validation-for="Question.Email"></span>
+                                    @if (User.Identity.IsAuthenticated)
+                                    {
+                                        <form asp-action="AskQuestion" asp-controller="Product"
+                                              method="post"
+                                              asp-route-returnUrl="@this.Url.Action("Description", "Product", new {productId=Model.Id})" class="form-faq">
+                                            <div class="form-faq-row mt-4">
+                                                <div class="form-faq-col">
+                                                    <div class="ui-textarea">
+                                                        <input id="userEmailQuestion" style="transition:all 2s;" required asp-for="Question.Email" placeholder="ایمیل" class="form-control" />
+                                                        <input hidden type="hidden" asp-for="Question.ProductId" value="@Model.Id" class="form-control" />
+                                                        <span style="color:red" asp-validation-for="Question.Email"></span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="form-faq-row mt-4">
-                                            <div class="form-faq-col">
-                                                <div class="ui-textarea">
-                                                    <textarea required asp-for="Question.Text" title="متن سوال" class="ui-textarea-field"></textarea>
-                                                    <input value="0" asp-for="Question.ReplayId" type="hidden" id="ReplayId" />
-                                                    <span style="color:red" asp-validation-for="Question.Text"></span>
+                                            <div class="form-faq-row mt-4">
+                                                <div class="form-faq-col">
+                                                    <div class="ui-textarea">
+                                                        <textarea required asp-for="Question.Text" title="متن سوال" class="ui-textarea-field"></textarea>
+                                                        <input value="0" asp-for="Question.ReplayId" type="hidden" id="ReplayId" />
+                                                        <span style="color:red" asp-validation-for="Question.Text"></span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="form-faq-row mt-4">
-                                            <div class="form-faq-col">
-                                                <label for="password">ربات نیستم</label>
-                                                <div class="g-recaptcha" data-sitekey="@configuration["reCAPTCHA:SiteKey"]"></div>
+                                            <div class="form-faq-row mt-4">
+                                                <div class="form-faq-col m-2">
+                                                    <div class="g-recaptcha" data-sitekey="@configuration["reCAPTCHA:SiteKey"]"></div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="form-faq-row mt-4">
-                                            <div class="form-faq-col form-faq-col-submit">
-                                                <button class="btn-tertiary btn btn-secondary" type="submit">ثبت پرسش</button>
+                                            <div class="form-faq-row mt-4">
+                                                <div class="form-faq-col form-faq-col-submit">
+                                                    <button class="btn-tertiary btn btn-secondary" type="submit">ثبت پرسش</button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </form>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form >
+                                            <div class="form-faq-row mt-4">
+                                                <div class="form-faq-col">
+                                                    <div class="alert alert-info">
+                                                    برای پرسش ابتدا باید وارد حساب کاربری خود شوید !    
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    }
                                     <div id="product-questions-list">
                                         @foreach (var question in Model.Questions)
                                         {

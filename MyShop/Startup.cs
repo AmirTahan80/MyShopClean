@@ -26,7 +26,8 @@ namespace MyShop
             #region DbContext
             services.AddDbContext<AppWebContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("ConnectToDataBase"));
+                options.UseSqlServer(Configuration.GetConnectionString("ConnectToDataBase"),
+                    o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
             });
             #endregion
 

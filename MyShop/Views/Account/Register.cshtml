@@ -52,8 +52,7 @@
                                             <input type="password" class="password-input" required asp-for="RePassWord">
                                             <span asp-validation-for="RePassWord" style="color:red;"></span>
                                         </div>
-                                        <div class="form-account-title">
-                                            <label for="password">ربات نیستم</label>
+                                        <div class="form-account-title m-2">
                                             <div class="g-recaptcha" data-sitekey="@configuration["reCAPTCHA:SiteKey"]"></div>
                                         </div>
                                         @*<div class="form-auth-row">

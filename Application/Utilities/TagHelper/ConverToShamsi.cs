@@ -39,8 +39,9 @@ namespace Application.Utilities.TagHelper
         public static DateTime GetDateYeadAndMonthAndDay(DateTime time)
         {
             PersianCalendar persianCalendar = new PersianCalendar();
-            var curentDate =Convert.ToDateTime(persianCalendar.GetYear(time) + "/" + persianCalendar.GetMonth(time) + "/" + persianCalendar.GetDayOfMonth(time));
-            return curentDate;
+            var curentDate = persianCalendar.GetYear(time) + "/" + persianCalendar.GetMonth(time) + "/" + persianCalendar.GetDayOfMonth(time);
+            var convert = ConverStringDateToDateTime.ParsePersianDate(curentDate);
+            return convert;
         }
     }
 }

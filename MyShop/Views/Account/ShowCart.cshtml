@@ -16,7 +16,7 @@
         <div class="d-block">
             <div class="main-row">
                 <div id="breadcrumb">
-                    <i class="mdi mdi-home"></i>
+                    <i class="fa fa-home"></i>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">خانه</a></li>
@@ -58,19 +58,19 @@
                                                     <th scope="row" class="product-cart-name">
                                                         <div class="product-thumbnail-img">
                                                             <a asp-action="Description" asp-controller="Product"
-                                                               asp-route-productId="@item.Id">
+                                                               asp-route-productId="@item.ProductId">
                                                                 <img src="/Images/ProductImages/@item.ImgSrc">
                                                             </a>
                                                             <div class="product-remove">
                                                                 <a asp-action="RemoveCartDetail" asp-controller="Account"
                                                                    asp-route-cartDetailId="@item.Id" class="remove">
-                                                                    <i class="mdi mdi-close"></i>
+                                                                    <i class="fa fa-close"></i>
                                                                 </a>
                                                             </div>
                                                         </div>
                                                         <div class="product-title">
                                                             <a asp-action="Description" asp-controller="Product"
-                                                               asp-route-productId="@item.Id">
+                                                               asp-route-productId="@item.ProductId">
                                                                 @item.ProductName
                                                             </a>
                                                             <div class="variation">
