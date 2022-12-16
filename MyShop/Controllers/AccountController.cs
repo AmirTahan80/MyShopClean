@@ -120,32 +120,32 @@ namespace MyShop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            var recaptchaResponse = Request.Form["g-recaptcha-response"];
-            var url = "https://www.google.com/recaptcha/api/siteverify";
+            //var recaptchaResponse = Request.Form["g-recaptcha-response"];
+            //var url = "https://www.google.com/recaptcha/api/siteverify";
 
-            var parameters = new Dictionary<string, string>
-            {
-                {"secret", _configuration["reCAPTCHA:SecretKey"]},
-                {"response", recaptchaResponse},
-                {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
-            };
+            //var parameters = new Dictionary<string, string>
+            //{
+            //    {"secret", _configuration["reCAPTCHA:SecretKey"]},
+            //    {"response", recaptchaResponse},
+            //    {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
+            //};
 
-            var response = await _httpClient.PostAsync($"{url}"
-                , new FormUrlEncodedContent(parameters));
+            //var response = await _httpClient.PostAsync($"{url}"
+            //    , new FormUrlEncodedContent(parameters));
 
 
-            var responseString = await response.Content.ReadAsStringAsync();
-            dynamic apiJson = JObject.Parse(responseString);
+            //var responseString = await response.Content.ReadAsStringAsync();
+            //dynamic apiJson = JObject.Parse(responseString);
 
             var returnUrl = "";
-            if (!ModelState.IsValid || apiJson.success != true)
-            {
-                if (apiJson.success != true)
-                {
-                    ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
-                }
-                return View(model);
-            }
+            //if (!ModelState.IsValid || apiJson.success != true)
+            //{
+            //    if (apiJson.success != true)
+            //    {
+            //        ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
+            //    }
+            //    return View(model);
+            //}
 
             var result = await _accountUserServices.LoginAsync(model);
             if (result.Status)
