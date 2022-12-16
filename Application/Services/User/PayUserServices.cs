@@ -832,7 +832,7 @@ namespace Application.Services.User
             {
                 Mobile = user.PhoneNumber,
                 CallbackUrl =
-                $"https://" + _configuration["ReturnsUrl:CallBackUrl"] + $"/Account/Validate?id={requestPay.Id}",
+                @$"https://localhost:44373/Account/Validate?id={requestPay.Id}",
                 Description = $"پرداخت فاکتور {cart.CartId}",
                 Email = user.Email,
                 Amount = Convert.ToInt32(amount),

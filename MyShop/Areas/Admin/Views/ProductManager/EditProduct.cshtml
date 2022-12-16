@@ -57,7 +57,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        @if (Model.Images.Count() < 5)
+                                        @if (Model.Images != null && Model.Images.Count() < 5)
                                         {
                                             <p>آپلود عکس</p>
                                             <label for="attachment" class="w-100 text-center">

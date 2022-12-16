@@ -758,8 +758,6 @@ namespace MyShop.Controllers
         }
        
         [HttpGet]
-        [Authorize]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Validate(string id, string authority, string status)
         {
             if (status == "" || authority == "")
