@@ -1,0 +1,70 @@
+﻿@model LoginToInsta
+@{
+    ViewData["Title"] = "ورود به اینستاگرام";
+}
+@section Header{
+    <link href="~/Vendors/Tags-master/dist/tags.min.css" rel="stylesheet" />
+}
+<!-- Inputs Icons start -->
+<section class="inputs-icons">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title-wrap bar-primary">
+                        <h4 class="card-title mb-0">افزودن محصول</h4>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="px-3">
+                        <form class="" method="POST" asp-action="LoginToInstagram" asp-controller="ProductManager"
+                              enctype="multipart/form-data">
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <p>نام کاربری</p>
+                                            <div class="position-relative has-icon-left">
+                                                <input id="userName" asp-for="UserName" placeholder="نام کاربری" class="form-control" autofocus>
+                                                <span asp-validation-for="UserName" class="red"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <p>رمز عبور</p>
+                                            <div class="position-relative has-icon-left">
+                                                <input id="passWord" asp-for="PassWord" placeholder="رمز عبور" class="form-control" type="password">
+                                                <span asp-validation-for="PassWord" class="red"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <div class="position-relative has-icon-left">
+                                                <button type="submit" class="btn btn-success">
+                                                    <i class="icon-note"></i> ذخیره
+                                                </button>
+                                            </div>
+                                            @if (ViewData["Error"] != null)
+                                            {
+                                                <div class="alert alert-danger">
+                                                    <strong>خطا! </strong>  @ViewData["Error"]
+                                                </div>}
+                                            @if (ViewData["Success"] != null)
+                                            {
+                                                <div class="alert alert-success">
+                                                    <strong>موفقیت! </strong>  @ViewData["Success"]
+                                                </div>}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Inputs Icons end -->

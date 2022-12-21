@@ -25,10 +25,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyShop", "MyShop\MyShop.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "InstagramBot", "InstagramBot", "{521FCD9E-A52A-4953-B0D1-1C761DBCDEBD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstagramBot", "InstagramBot\InstagramBot.csproj", "{0D22A9EB-05B6-4174-9D92-8489390FFA04}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InstaSharper", "..\..\..\Downloads\Compressed\InstaSharper-develop\InstaSharper-develop\InstaSharper\InstaSharper.csproj", "{100359E8-A240-4CAA-AA02-1B9807E07BC5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,14 +51,6 @@ Global
 		{F944013D-6C64-4F0D-B670-0D263B3929E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F944013D-6C64-4F0D-B670-0D263B3929E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F944013D-6C64-4F0D-B670-0D263B3929E0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0D22A9EB-05B6-4174-9D92-8489390FFA04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0D22A9EB-05B6-4174-9D92-8489390FFA04}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0D22A9EB-05B6-4174-9D92-8489390FFA04}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0D22A9EB-05B6-4174-9D92-8489390FFA04}.Release|Any CPU.Build.0 = Release|Any CPU
-		{100359E8-A240-4CAA-AA02-1B9807E07BC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{100359E8-A240-4CAA-AA02-1B9807E07BC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{100359E8-A240-4CAA-AA02-1B9807E07BC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{100359E8-A240-4CAA-AA02-1B9807E07BC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,8 +61,6 @@ Global
 		{A37B99B3-5AEC-472F-8C0F-66EA25CD828F} = {838F3579-920A-427C-ADFD-075D40F234C5}
 		{F421AEAF-FBD6-4BEE-8603-0C238B7CDF1F} = {BD7B4A13-1FDE-4578-B8F1-ED636CBDA73C}
 		{F944013D-6C64-4F0D-B670-0D263B3929E0} = {50793BCA-3BFE-46E1-8B43-7FA1BA5A91B8}
-		{0D22A9EB-05B6-4174-9D92-8489390FFA04} = {521FCD9E-A52A-4953-B0D1-1C761DBCDEBD}
-		{100359E8-A240-4CAA-AA02-1B9807E07BC5} = {521FCD9E-A52A-4953-B0D1-1C761DBCDEBD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DD10C4DF-BA5D-4EFA-8E04-76F9FCA53191}

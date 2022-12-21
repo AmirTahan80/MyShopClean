@@ -16,9 +16,11 @@ namespace Areas.Admin.Controllers
     {
         #region Injections
         private readonly IProudctServices _porudctServices;
-        public ProductManagerController(IProudctServices porudctServices)
+        private readonly IInstagramBotServices _instagramBotServices;
+        public ProductManagerController(IProudctServices porudctServices, IInstagramBotServices instagramBotServices)
         {
             _porudctServices = porudctServices;
+            _instagramBotServices = instagramBotServices;
         }
 
         #endregion
@@ -98,12 +100,14 @@ namespace Areas.Admin.Controllers
 
             return View(productsPaging);
         }
+      
         [HttpGet]
         public async Task<IActionResult> AddProduct()
         {
             var categoriesTreeView = await _porudctServices.GetCategoriesTreeViewForAdd();
             return View(categoriesTreeView);
         }
+      
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddProduct(AddProductViewModel model)
@@ -126,6 +130,7 @@ namespace Areas.Admin.Controllers
 
             return View(categoriesTreeView);
         }
+       
         [HttpGet]
         public async Task<IActionResult> EditProduct(int productId)
         {
@@ -135,6 +140,7 @@ namespace Areas.Admin.Controllers
             var product = await _porudctServices.GetProductAsync(productId);
             return View(product);
         }
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditProduct(GetProductViewModel model)
@@ -155,6 +161,7 @@ namespace Areas.Admin.Controllers
 
             return RedirectToAction("Index");
         }
+        
         [HttpPost]
         [IgnoreAntiforgeryToken]
         public JsonResult UploadEditorFile(IFormFile upload)
@@ -162,6 +169,7 @@ namespace Areas.Admin.Controllers
             var result = _porudctServices.UploadFileEditor(upload);
             return result;
         }
+      
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteProduct(IEnumerable<GetProductsAndImageSrcViewModel> models)
@@ -179,7 +187,6 @@ namespace Areas.Admin.Controllers
 
             return RedirectToAction("Index");
         }
-
 
         [HttpGet]
         public async Task<IActionResult> GetDiscount(int? pageNumber,string search="",string filter="")
@@ -233,11 +240,13 @@ namespace Areas.Admin.Controllers
 
             return View(discountsPaging);
         }
+       
         [HttpGet]
         public IActionResult CreateDiscount()
         {
             return View();
         }
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateDiscount(DiscountViewMode model)
@@ -257,6 +266,7 @@ namespace Areas.Admin.Controllers
             }
             return View();
         }
+        
         [HttpGet]
         public async Task<IActionResult> EditDiscount(int discountId)
         {
@@ -265,6 +275,7 @@ namespace Areas.Admin.Controllers
             return View(discount);
 
         }
+      
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditDiscount(DiscountViewMode model)
@@ -286,5 +297,36 @@ namespace Areas.Admin.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public async Task PostProductToInstagram(int productId)
+        {
+            var product = await _porudctServices.GetProductAsync(productId);
+            var result = await _instagramBotServices.UploadPhotoAsync(product);
+            await this.Index(1);
+        }
+
+        [HttpGet]
+        public IActionResult LoginToInstagram()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LoginToInstagram(LoginToInsta loginToInsta)
+        {
+            var result = await _instagramBotServices.LoginToInsta(loginToInsta.UserName, loginToInsta.PassWord);
+            if (result.Data)
+                return View();
+            else
+                return BadRequest();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPosts()
+        {
+            var result = await _instagramBotServices.GetPostesAsync();
+            return View(result);
+        }
+    
     }
 }

@@ -62,6 +62,8 @@ namespace Infra.Ioc.Dependencies
 
             services.AddScoped<IAdminIndexManagerServices, AdminIndexManagerServices>();
 
+            services.AddScoped<IInstagramBotServices, InstagramBotServices>();
+
 
 
             services.AddScoped<IAuthorizationHandler, PolicyHandler>();
