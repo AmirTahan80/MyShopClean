@@ -4,6 +4,7 @@ using Application.ViewModels;
 using Application.ViewModels.Admin;
 using Domain.InterFaces.AdminInterFaces;
 using Domain.Models;
+using InstagramApiSharp.Classes.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -42,7 +43,7 @@ namespace Application.Services.Admin
                 Price = p.Price,
                 ImageSrc = p.ProductImages
                 .OrderBy(c => c.Id)
-                .Select(c => c.ImgFile + "/" + c.ImgSrc)
+                .Select(c => (c.ImgFile == ""?"": c.ImgFile + "/") + c.ImgSrc)
                 .Take(2),
                 CategoryId = p.Categories
                 .Select(c => c.CategoryId)
@@ -68,7 +69,7 @@ namespace Application.Services.Admin
                 CategoryName = product.Categories.Select(p => p.Category.Name).ToList(),
                 Images = product.ProductImages.Select(p => new GetImagesViewModel()
                 {
-                    ImgSrc = p.ImgFile + "/" + p.ImgSrc,
+                    ImgSrc = (p.ImgFile == "" ? "" : p.ImgFile + "/") + p.ImgSrc,
                     ImgId = p.Id
 
                 }).ToList(),
@@ -160,7 +161,7 @@ namespace Application.Services.Admin
 
                 var productForAdd = new Product()
                 {
-                    Name = addProduct.Name,
+                    Name = addProduct.Name == null? "نام ندارد": addProduct.Name,
                     Count = addProduct.Count,
                     Price = addProduct.Price,
                     Detail = addProduct.Detail,
@@ -190,22 +191,37 @@ namespace Application.Services.Admin
                     await _productRepository.AddProductPropertiesAsync(productproperties);
                 }
 
-                var images = new List<(string src, string fileName)>();
-                var placeFile = "ProductImages";
+                if(addProduct.Images != null && addProduct.Images.Count() > 0)
+                {
+                    var images = new List<(string src, string fileName)>();
+                    var placeFile = "ProductImages";
 
-                foreach (var img in addProduct.Images)
-                {
-                    var resultUploadImage = uploadImage(img, placeFile);
-                    images.Add(new(resultUploadImage.src, resultUploadImage.fileName));
+                    foreach (var img in addProduct.Images)
+                    {
+                        var resultUploadImage = uploadImage(img, placeFile);
+                        images.Add(new(resultUploadImage.src, resultUploadImage.fileName));
+                    }
+                    var uploadProductImages = images.Select(p => new ProductImages()
+                    {
+                        ImgSrc = p.src,
+                        ImgFile = p.fileName,
+                        Product = productForAdd,
+                        ProductId = productForAdd.Id
+                    });
+                    await _productRepository.AddProductImagesAsync(uploadProductImages);
                 }
-                var uploadProductImages = images.Select(p => new ProductImages()
+                else if(addProduct.ImagesUri !=  null && addProduct.ImagesUri.Count > 0)
                 {
-                    ImgSrc = p.src,
-                    ImgFile = p.fileName,
-                    Product = productForAdd,
-                    ProductId = productForAdd.Id
-                });
-                await _productRepository.AddProductImagesAsync(uploadProductImages);
+                    var uploadProductImages = addProduct.ImagesUri.Select(p => new ProductImages()
+                    {
+                        ImgSrc = p,
+                        ImgFile = "",
+                        Product = productForAdd,
+                        ProductId = productForAdd.Id
+                    });
+                    await _productRepository.AddProductImagesAsync(uploadProductImages);
+
+                }
 
                 if (addProduct.IsProductHaveAttributes)
                 {
@@ -785,7 +801,9 @@ namespace Application.Services.Admin
         }
         private bool DeletePhoto(string imageName, string fileName)
         {
-            if (imageName == "" || fileName == "")
+            if (fileName == "")
+                return true;
+            if (imageName == "")
                 return false;
 
             string folder = $@"wwwroot\Images\ProductImages\{fileName}\{imageName}";

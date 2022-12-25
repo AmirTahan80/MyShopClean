@@ -1,4 +1,5 @@
 using Application.Utilities.Attributes;
+using InstagramApiSharp.Classes.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
@@ -42,11 +43,12 @@ namespace Application.ViewModels.Admin
 
 
         // NavigationBar
-        [Required(ErrorMessage = "فیلد {0} اجباری است")]
         [Display(Name = "عکس محصول")]
         [ImageSize(5 * 1024 * 1024)]
         [ImageCount()]
         public IEnumerable<IFormFile> Images { get; set; }
+
+        public IList<string> ImagesUri { get; set; }
 
         public IEnumerable<SelectListItem> CategoriesTreeView { get; set; }
     }

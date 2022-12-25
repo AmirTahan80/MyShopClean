@@ -1,10 +1,12 @@
 using Application.InterFaces.Admin;
 using Application.Utilities;
 using Application.ViewModels.Admin;
+using InstagramApiSharp.Classes.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -327,6 +329,41 @@ namespace Areas.Admin.Controllers
             var result = await _instagramBotServices.GetPostesAsync();
             return View(result);
         }
-    
+
+        [HttpGet]
+        public async Task<IActionResult> PostToProduct(int mediaId)
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostToProduct(string imageUri)
+        {
+            var media = await _instagramBotServices.UploadPostToProduct(imageUri);
+            ICollection<int> categoryIdList = new Collection<int>
+            {
+                20
+            };
+            var product = new AddProductViewModel()
+            {
+                Detail = media.Data.Caption.Text,
+                ImagesUri = media.Data.Images.Where(p => p.Height > 460 || p.Width > 460).Select(p => p.Uri).ToList(),
+                Price = 0,
+                Count = 0,
+                CategoriesId = categoryIdList,
+                Name = media.Data.Title,
+                IsProductHaveAttributes = false
+            };
+            var result = await _porudctServices.AddProductAsync(product);
+
+            if (result)
+                ViewData["Success"] = "ذخیره با موفقیت انجام شد!";
+            else
+                ViewData["Error"] = "عملیات ذخیره سازی با شکست مواجه شد!";
+
+            return RedirectToAction("GetPosts");
+        }
+
+
     }
 }

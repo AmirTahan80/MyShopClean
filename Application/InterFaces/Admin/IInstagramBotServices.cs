@@ -20,5 +20,6 @@ namespace Application.InterFaces.Admin
         Task<ResultDto<InstaCommentList>> GetCommentsOnMediaAsync(string mediaLink);
         Task<ResultDto<InstaFriendshipStatus>> UsersWhoInsertCommentOnTheMediaAndFollowThemAsync(string mediaLink);
         Task<ResultDto<ResultInfo>> UploadPhotoAsync(GetProductViewModel product);
+        Task<ResultDto<InstaMedia>> UploadPostToProduct(string imageUri);
     }
 }

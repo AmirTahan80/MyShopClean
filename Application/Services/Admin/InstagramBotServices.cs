@@ -7,6 +7,7 @@ using InstagramApiSharp.API.Builder;
 using InstagramApiSharp.Classes;
 using InstagramApiSharp.Classes.Models;
 using InstagramApiSharp.Logger;
+using Microsoft.AspNetCore.Mvc.DataAnnotations.Internal;
 using Org.BouncyCastle.Security.Certificates;
 using System;
 using System.Collections.Generic;
@@ -75,9 +76,9 @@ namespace Application.Services.Admin
 
         public async Task<ICollection<InstaMedia>> GetPostesAsync()
         {
-            var userName = await _instaApi.GetCurrentUserAsync();
+            var userName = await _instaApi.UserProcessor.GetCurrentUserAsync();
 
-            var medias = await _instaApi.BusinessProcessor.GetPromotableMediaFeedsAsync();
+            var medias = await _instaApi.UserProcessor.GetUserMediaAsync(userName.Value.UserName,null);
             var mediasList = medias.Value.ToList();
             return mediasList;
         }
@@ -242,60 +243,50 @@ namespace Application.Services.Admin
 
         public async Task<ResultDto<ResultInfo>> UploadPhotoAsync(GetProductViewModel product)
         {
-            //try
-            //{
-                //var images = product.Images;
-                //IList<InstaImage> instaImage = new List<InstaImage>();
-                //foreach (var item in images)
-                //{
-                //    instaImage.Add(new()
-                //                   {
-                //                       //URI = new Uri(Path.GetFullPath(item.ImgSrc), UriKind.Absolute).LocalPath,
-                //                       URI= new Uri(Path.GetFullPath(@$"C:\Users\amirh\OneDrive\Desktop\237-536x354.jpg"), UriKind.Absolute).LocalPath,
-                //                       Height = 1800,
-                //                       Width = 1800
-                //                   });
-                //}
-
-                //    var video = new InstaVideoUpload()
-                //    {
-                //        // leave zero, if you don't know how height and width is it.
-                //        Video = new InstaVideo(@"c:\video1.mp4", 0, 0),
-                //        VideoThumbnail = new InstaImage(@"c:\video thumbnail 1.jpg", 0, 0)
-                //    };
-                //    // Add user tag (tag people)
-                //    video.UserTags.Add(new InstaUserTagVideoUpload
-                //    {
-                //        Username = "rmt4006"
-                //    });
-                //    var result = await _instaApi.SendPostRequestAsync();
+            try
+            {
+                var images = product.Images;
+                IList<InstaAlbumUpload> instaImage = new List<InstaAlbumUpload>();
+                foreach (var item in images)
+                {
+                    instaImage.Add(new()
+                    {
+                        //URI = new Uri(Path.GetFullPath(item.ImgSrc), UriKind.Absolute).LocalPath,
+                        ImageToUpload = new InstaImageUpload()
+                        {
+                            Uri= new Uri(Path.GetFullPath(item.ImgSrc), UriKind.Absolute).LocalPath,
+                            Width = 1080,
+                            Height= 1080
+                        }
+                    });
+                }
+                var result = await _instaApi.MediaProcessor.UploadAlbumAsync(instaImage.ToArray(),product.Detail);
 
 
-                //    if (result.Succeeded)
-                //        return new()
-                //        {
-                //            SuccesMessage = "عکس با موفقیت آپلود شد.",
-                //            Status = true,
-                //            Data = result.Info
-                //        };
-                //    else
-                //        return new()
-                //        {
-                //            ErrorMessage = "آپلود عکس با شکست موجه شد.",
-                //            Status = false,
-                //            Data = result.Info
-                //        };
-                //}
-                //catch (Exception e)
-                //{
-                //    _logger.LogException(e);
-                //    return new()
-                //    {
-                //        ErrorMessage = "در آپلود عکس مشکلی پیش آمده است. پیام خطا : " + e.Message,
-                //        Status = false
-                //    };
-                //}
-                return null;
+                if (result.Succeeded)
+                    return new()
+                    {
+                        SuccesMessage = "عکس با موفقیت آپلود شد.",
+                        Status = true,
+                        Data = result.Info
+                    };
+                else
+                    return new()
+                    {
+                        ErrorMessage = "آپلود عکس با شکست موجه شد.",
+                        Status = false,
+                        Data = result.Info
+                    };
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new()
+                {
+                    ErrorMessage = "در آپلود عکس مشکلی پیش آمده است. پیام خطا : " + e.Message,
+                    Status = false
+                };
+            }
         }
 
         public async Task<ResultDto<bool>> LikeMediaAsync(string mediaLink)
@@ -460,6 +451,46 @@ namespace Application.Services.Admin
             //    };
             //}
             return null;
+        }
+
+        public async Task<ResultDto<InstaMedia>> UploadPostToProduct(string imageUri)
+        {
+            try
+            {
+                var userName = await _instaApi.UserProcessor.GetCurrentUserAsync();
+
+                var medias = await _instaApi.UserProcessor.GetUserMediaAsync(userName.Value.UserName, null);
+
+                var media = medias.Value.FirstOrDefault(p => p.Images[0].Uri == imageUri);
+                if (media != null)
+                {
+                    return new()
+                    {
+                        Data = media,
+                        Status = true,
+                        SuccesMessage = "با موفقیت محصول یافت شد."
+                    };
+                }
+                else
+                {
+                    return new()
+                    {
+                        Data = null,
+                        ErrorMessage = "پست مورد نظر یافت نشد.",
+                        Status = false
+                    };
+                }
+
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                return new()
+                {
+                    ErrorMessage = "در آپلود عکس مشکلی پیش آمده است. پیام خطا : " + e.Message,
+                    Status = false
+                };
+            }
         }
     }
 }

@@ -1,0 +1,80 @@
+﻿@using InstagramApiSharp.Classes.Models;
+@model List<InstaMedia>
+@{
+    ViewData["Title"] = "لیست پست ها";
+}
+
+
+<!--Shopping cart starts-->
+<section id="shopping-cart">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title-wrap bar-warning row">
+                        <h4 class="card-title col-md-12">پست ها</h4>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="aler alert-danger m-2 p-2">
+                            <p>
+                                <strong>خطا ! </strong>@TempData["Error"]
+                            </p>
+                        </div>
+                    }
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="aler alert-success m-2 p-2">
+                            <p>
+                                <strong>موفقیت ! </strong>@TempData["Success"]
+                            </p>
+                        </div>
+                    }
+                    <div class="card-block">
+                        <div class="table-responsive">
+                                <table id="recent-orders" class="table table-hover table-xl mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="border-top-0">تعداد</th>
+                                            <th class="border-top-0">عکس</th>
+                                            <th class="border-top-0">کپشن</th>
+                                            <th class="border-top-0">عملیات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int b = 0; b < Model.Count(); b++)
+                                        {
+                                        <form method="post" asp-action="PostToProduct" asp-controller="ProductManager" asp-route-imageUri="@Model[b].Images[0].Uri">
+                                                <tr>
+                                                    <td class="text-truncate p-1">
+                                                        <ul class="list-unstyled users-list m-0">
+                                                            @foreach (var image in Model[b].Images)
+                                                            {
+                                                                @if(image.Height > 480)
+                                                                {
+                                                                    <li data-toggle="tooltip" data-popup="tooltip-custom" data-original-title="Kimberly Simmons" class="avatar avatar-sm pull-up">
+                                                                        <img class="media-object rounded-circle no-border-top-radius no-border-bottom-radius" src="@image.Uri" alt="Avatar">
+                                                                    </li>                                                                
+                                                                }
+                                                            }
+                                                        </ul>
+                                                    </td>
+                                                    <td class="text-truncate">
+                                                            <input type="submit" class="button btn-info" />
+                                                    </td>
+                                                </tr>
+                                           </form>
+                                        }
+                                    </tbody>
+                                </table>
+                        </div>
+                    </div>
+                </div>
+                <partial name="_PagingParitial"></partial>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Shopping cart ends-->

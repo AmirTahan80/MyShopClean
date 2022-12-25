@@ -63,7 +63,7 @@ namespace Application.Services.User
                 Id = p.Id,
                 Name = p.Name,
                 Count = p.Count,
-                ImageSrc = p.ProductImages.FirstOrDefault().ImgFile + "/" + p.ProductImages.FirstOrDefault().ImgSrc,
+                ImageSrc = (p.ProductImages.FirstOrDefault().ImgFile == ""?"": p.ProductImages.FirstOrDefault().ImgFile + "/") + p.ProductImages.FirstOrDefault().ImgSrc,
                 Price = p.Price
             });
             var retrunCategoriesTreeView = GetCategoriesTreeView(categories, allProducts);
@@ -146,7 +146,7 @@ namespace Application.Services.User
                 Price = product.Price.ToString("#,0"),
                 Images = product.ProductImages.Select(p => new ProductImageViewModel()
                 {
-                    ImgSrc = p.ImgFile + "/" + p.ImgSrc,
+                    ImgSrc = (p.ImgFile ==""? "" : p.ImgFile + "/")+ p.ImgSrc,
                 }),
                 CategoryId = product.Categories.Select(p => p.CategoryId).LastOrDefault(),
                 CategoryName = product.Categories.Select(p => p.Category.Name).LastOrDefault(),
