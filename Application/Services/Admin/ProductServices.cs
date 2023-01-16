@@ -41,6 +41,7 @@ namespace Application.Services.Admin
                 Count = p.Count,
                 Name = p.Name,
                 Price = p.Price,
+                InstagramPost=p.ProductImages.FirstOrDefault().ImgFile==""?true:false,
                 ImageSrc = p.ProductImages
                 .OrderBy(c => c.Id)
                 .Select(c => (c.ImgFile == ""?"": c.ImgFile + "/") + c.ImgSrc)
@@ -67,6 +68,7 @@ namespace Application.Services.Admin
                 Detail = product.Detail,
                 Price = product.Price,
                 CategoryName = product.Categories.Select(p => p.Category.Name).ToList(),
+                InstagramPost = product.ProductImages.FirstOrDefault().ImgFile == "" ? true : false,
                 Images = product.ProductImages.Select(p => new GetImagesViewModel()
                 {
                     ImgSrc = (p.ImgFile == "" ? "" : p.ImgFile + "/") + p.ImgSrc,

@@ -64,6 +64,7 @@ namespace Application.Services.User
                 Name = p.Name,
                 Count = p.Count,
                 ImageSrc = (p.ProductImages.FirstOrDefault().ImgFile == ""?"": p.ProductImages.FirstOrDefault().ImgFile + "/") + p.ProductImages.FirstOrDefault().ImgSrc,
+                InstagramPost= p.ProductImages.FirstOrDefault().ImgFile == "" ? true:false,
                 Price = p.Price
             });
             var retrunCategoriesTreeView = GetCategoriesTreeView(categories, allProducts);
@@ -150,6 +151,7 @@ namespace Application.Services.User
                 }),
                 CategoryId = product.Categories.Select(p => p.CategoryId).LastOrDefault(),
                 CategoryName = product.Categories.Select(p => p.Category.Name).LastOrDefault(),
+                InstagramPost = product.ProductImages.FirstOrDefault().ImgFile == "" ? true : false,
                 Description = product.Detail,
                 IsProductHaveAttributes = product.IsProductHaveAttributes,
                 Properties = product.Properties != null ? product.Properties.Select(p => new PropertiesViewModel()

@@ -2,6 +2,7 @@
 using Application.ViewModels.Admin;
 using InstagramApiSharp.Classes;
 using InstagramApiSharp.Classes.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -20,6 +21,6 @@ namespace Application.InterFaces.Admin
         Task<ResultDto<InstaCommentList>> GetCommentsOnMediaAsync(string mediaLink);
         Task<ResultDto<InstaFriendshipStatus>> UsersWhoInsertCommentOnTheMediaAndFollowThemAsync(string mediaLink);
         Task<ResultDto<ResultInfo>> UploadPhotoAsync(GetProductViewModel product);
-        Task<ResultDto<InstaMedia>> UploadPostToProduct(string imageUri);
+        Task<ResultDto<Object>> UploadPostToProduct(string imageUri);
     }
 }

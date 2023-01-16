@@ -23,6 +23,7 @@ namespace Application.ViewModels.Admin
         public string CategoryName { get; set; }
 
         public bool IsSelected { get; set; }
+        public bool InstagramPost { get; set; } = false;
 
         //NaviGations
         [Display(Name = "عکس")]

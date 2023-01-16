@@ -346,12 +346,12 @@ namespace Areas.Admin.Controllers
             };
             var product = new AddProductViewModel()
             {
-                Detail = media.Data.Caption.Text,
-                ImagesUri = media.Data.Images.Where(p => p.Height > 460 || p.Width > 460).Select(p => p.Uri).ToList(),
+                Detail = (string)media.Data.GetType().GetProperty("ProductDetail").GetValue(typeof(string)),
+                ImagesUri = (IList<string>)media.Data.GetType().GetProperty("Images").GetValue(typeof(List<string>)),
                 Price = 0,
                 Count = 0,
                 CategoriesId = categoryIdList,
-                Name = media.Data.Title,
+                Name = (string)media.Data.GetType().GetProperty("ProductName").GetValue(typeof(string)),
                 IsProductHaveAttributes = false
             };
             var result = await _porudctServices.AddProductAsync(product);

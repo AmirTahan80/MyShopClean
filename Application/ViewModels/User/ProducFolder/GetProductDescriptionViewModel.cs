@@ -25,6 +25,7 @@ namespace Application.ViewModels.User
         public int TemplateId { get; set; }
 
         public bool IsInUserFavorite { get; set; } = false;
+        public bool InstagramPost { get; set; }
 
         //Navigation
         public IEnumerable<ProductAttributeViewModel> Attributes { get; set; }

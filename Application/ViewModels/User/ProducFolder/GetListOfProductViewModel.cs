@@ -15,5 +15,7 @@ namespace Application.ViewModels.User
         [Required]
         public int Count { get; set; }
 
+        public bool InstagramPost { get; set; }
+
     }
 }

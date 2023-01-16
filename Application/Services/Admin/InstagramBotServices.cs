@@ -1,19 +1,18 @@
 ﻿using Application.InterFaces.Admin;
+using Application.Utilities.TagHelper;
 using Application.ViewModels;
 using Application.ViewModels.Admin;
-using InstagramApiSharp;
 using InstagramApiSharp.API;
 using InstagramApiSharp.API.Builder;
 using InstagramApiSharp.Classes;
 using InstagramApiSharp.Classes.Models;
 using InstagramApiSharp.Logger;
-using Microsoft.AspNetCore.Mvc.DataAnnotations.Internal;
-using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Asn1.X509;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Application.Services.Admin
@@ -78,7 +77,7 @@ namespace Application.Services.Admin
         {
             var userName = await _instaApi.UserProcessor.GetCurrentUserAsync();
 
-            var medias = await _instaApi.UserProcessor.GetUserMediaAsync(userName.Value.UserName,null);
+            var medias = await _instaApi.UserProcessor.GetUserMediaAsync(userName.Value.UserName, null);
             var mediasList = medias.Value.ToList();
             return mediasList;
         }
@@ -254,13 +253,13 @@ namespace Application.Services.Admin
                         //URI = new Uri(Path.GetFullPath(item.ImgSrc), UriKind.Absolute).LocalPath,
                         ImageToUpload = new InstaImageUpload()
                         {
-                            Uri= new Uri(Path.GetFullPath(item.ImgSrc), UriKind.Absolute).LocalPath,
+                            Uri = new Uri(Path.GetFullPath(item.ImgSrc), UriKind.Absolute).LocalPath,
                             Width = 1080,
-                            Height= 1080
+                            Height = 1080
                         }
                     });
                 }
-                var result = await _instaApi.MediaProcessor.UploadAlbumAsync(instaImage.ToArray(),product.Detail);
+                var result = await _instaApi.MediaProcessor.UploadAlbumAsync(instaImage.ToArray(), product.Detail);
 
 
                 if (result.Succeeded)
@@ -453,7 +452,7 @@ namespace Application.Services.Admin
             return null;
         }
 
-        public async Task<ResultDto<InstaMedia>> UploadPostToProduct(string imageUri)
+        public async Task<ResultDto<Object>> UploadPostToProduct(string imageUri)
         {
             try
             {
@@ -462,11 +461,35 @@ namespace Application.Services.Admin
                 var medias = await _instaApi.UserProcessor.GetUserMediaAsync(userName.Value.UserName, null);
 
                 var media = medias.Value.FirstOrDefault(p => p.Images[0].Uri == imageUri);
-                if (media != null)
+
+                var date = ConverToShamsi.GetMonthAndYear(DateTime.Now);
+                string folder = $@"wwwroot\Images\ProductImages\{date}\";
+                var imagesName=new List<string>();
+                foreach(var image in media.Images)
                 {
+                    var name = DownloadRemoteImageFile(image.Uri, folder);
+                    imagesName.Add(name);
+                }
+
+                int indexOfName = media.Caption.Text.IndexOf("نام");
+                int indexOfDetail = media.Caption.Text.IndexOf("توضیحات");
+                string productName = media.Caption.Text.Substring(indexOfName, indexOfDetail - 1);
+                string productDetail = media.Caption.Text.Substring(indexOfDetail);
+
+                var mediaToAdd = new
+                {
+                    ProductName = productName,
+                    ProductDetail = productDetail,
+                    Images = imagesName,
+                };
+
+                //Bitmap.FromStream(new MemoryStream(new WebClient().DownloadData(media.Images.FirstOrDefault(p => p.Height > 460 || p.Width > 460).Uri)));
+
+                if (media != null)
+                { 
                     return new()
                     {
-                        Data = media,
+                        Data = mediaToAdd,
                         Status = true,
                         SuccesMessage = "با موفقیت محصول یافت شد."
                     };
@@ -491,6 +514,35 @@ namespace Application.Services.Admin
                     Status = false
                 };
             }
+
+        }
+        private static string DownloadRemoteImageFile(string uri, string fileName)
+        {
+            var uploadsRootFolder = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+            if (!Directory.Exists(uploadsRootFolder))
+            {
+                Directory.CreateDirectory(uploadsRootFolder);
+            }
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            if ((response.StatusCode == HttpStatusCode.OK ||
+                response.StatusCode == HttpStatusCode.Moved ||
+                response.StatusCode == HttpStatusCode.Redirect) &&
+                response.ContentType.StartsWith("image", StringComparison.OrdinalIgnoreCase))
+            {
+                using Stream inputStream = response.GetResponseStream();
+                using Stream outputStream = File.OpenWrite(uploadsRootFolder);
+                byte[] buffer = new byte[inputStream.Length];
+                int bytesRead;
+                do
+                {
+                    bytesRead = inputStream.Read(buffer, 0, buffer.Length);
+                    outputStream.Write(buffer, 0, bytesRead);
+                } while (bytesRead != 0);
+                FileStream fileStream = inputStream as FileStream;
+                return fileStream.Name;
+            }
+            return "";
         }
     }
 }

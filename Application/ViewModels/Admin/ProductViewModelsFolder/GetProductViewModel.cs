@@ -28,6 +28,8 @@ namespace Application.ViewModels.Admin
         public IList<string> Valuetype { get; set; }
         public IList<string> ValueName { get; set; }
 
+        public bool InstagramPost { get; set; }
+
         //Atributes
         public bool IsProductHaveAttributes { get; set; }
         public List<string> AttributeNames { get; set; }

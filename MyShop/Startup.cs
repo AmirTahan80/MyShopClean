@@ -15,7 +15,7 @@ namespace MyShop
         {
             Configuration = configuration;
         }
-
+        string origin = "_origin";
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -30,6 +30,15 @@ namespace MyShop
                     o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
             });
             #endregion
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: origin,
+                    policy =>
+                    {
+                        policy.AllowAnyOrigin();
+                        policy.AllowAnyHeader();
+                    });
+            });
 
             DependencyContainer.Registerservice(services);
 
@@ -57,6 +66,7 @@ namespace MyShop
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseCors(origin);
 
             app.UseEndpoints(endpoints =>
             {
