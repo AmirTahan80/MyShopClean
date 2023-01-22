@@ -6,6 +6,8 @@ using InstagramApiSharp.API;
 using InstagramApiSharp.API.Builder;
 using InstagramApiSharp.Classes;
 using InstagramApiSharp.Classes.Models;
+using InstagramApiSharp.Classes.SessionHandlers;
+using InstagramApiSharp.Enums;
 using InstagramApiSharp.Logger;
 using Org.BouncyCastle.Asn1.X509;
 using System;
@@ -36,11 +38,22 @@ namespace Application.Services.Admin
 
                 _instaApi = InstaApiBuilder.CreateBuilder()
                     .SetUser(user)
+                    .UseLogger(new DebugLogger(LogLevel.All))
+                    .SetRequestDelay(RequestDelay.FromSeconds(2,4))
+                    .SetSessionHandler(new FileSessionHandler { FilePath=userName+".state"})
                     .Build();
 
-                var loginStatus = await _instaApi.LoginAsync();
+                _instaApi.SetApiVersion(InstaApiVersionType.Version180);
 
-                if (loginStatus.Succeeded)
+                var sendRequest = await _instaApi.SendRequestsBeforeLoginAsync();
+                IResult<InstaLoginResult> loginMember = new Result<InstaLoginResult>(false,null);
+                if (sendRequest.Value)
+                {
+                    Task.Delay(3000);
+                    loginMember = await _instaApi.LoginAsync();
+                }
+
+                if (loginMember.Succeeded)
                 {
                     Console.WriteLine("LoggedIn");
                     return new()
