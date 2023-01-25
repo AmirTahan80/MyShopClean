@@ -20,7 +20,7 @@ namespace Application.InterFaces.Admin
         Task<ResultDto<bool>> UnLikeMediaAsync(string mediaLink);
         Task<ResultDto<InstaCommentList>> GetCommentsOnMediaAsync(string mediaLink);
         Task<ResultDto<InstaFriendshipStatus>> UsersWhoInsertCommentOnTheMediaAndFollowThemAsync(string mediaLink);
-        Task<ResultDto<ResultInfo>> UploadPhotoAsync(GetProductViewModel product);
+        Task<ResultDto<ResultInfo>> UploadAlbumAsync(GetProductViewModel product);
         Task<ResultDto<Object>> UploadPostToProduct(string imageUri);
     }
 }

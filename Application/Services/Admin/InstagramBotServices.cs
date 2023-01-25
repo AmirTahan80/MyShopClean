@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Policy;
 using System.Threading.Tasks;
 
 namespace Application.Services.Admin
@@ -244,7 +245,7 @@ namespace Application.Services.Admin
         //{
         //    try
         //    {
-        //        var result=await _keepValue.Object.UploadPhotoAsync
+        //        var result=await _keepValue.Object.UploadAlbumAsync
         //    }
         //    catch (Exception e)
         //    {
@@ -253,27 +254,40 @@ namespace Application.Services.Admin
         //    }
         //}
 
-        public async Task<ResultDto<ResultInfo>> UploadPhotoAsync(GetProductViewModel product)
+        public async Task<ResultDto<ResultInfo>> UploadAlbumAsync(GetProductViewModel product)
         {
             try
             {
                 var images = product.Images;
-                IList<InstaAlbumUpload> instaImage = new List<InstaAlbumUpload>();
-                foreach (var item in images)
+                IResult<InstaMedia> result;
+                if(images != null && images.Count() > 1)
                 {
-                    instaImage.Add(new()
+                    IList<InstaAlbumUpload> instaImage = new List<InstaAlbumUpload>();
+                    foreach (var item in images)
                     {
-                        //URI = new Uri(Path.GetFullPath(item.ImgSrc), UriKind.Absolute).LocalPath,
-                        ImageToUpload = new InstaImageUpload()
+                        instaImage.Add(new()
                         {
-                            Uri = new Uri(Path.GetFullPath(item.ImgSrc), UriKind.Absolute).LocalPath,
-                            Width = 1080,
-                            Height = 1080
-                        }
-                    });
+                            //URI = new Uri(Path.GetFullPath(item.ImgSrc), UriKind.Absolute).LocalPath,
+                            ImageToUpload = new InstaImageUpload()
+                            {
+                                Uri = new Uri(Path.GetFullPath("wwwroot\\Images\\ProductImages\\" + item.ImgSrc), UriKind.Absolute).LocalPath,
+                                Width = 1080,
+                                Height = 1080
+                            }
+                        });
+                    }
+                    result = await _instaApi.MediaProcessor.UploadAlbumAsync(instaImage.ToArray(), product.Name + " \n " + product.Detail);
                 }
-                var result = await _instaApi.MediaProcessor.UploadAlbumAsync(instaImage.ToArray(), product.Detail);
-
+                else
+                {
+                    var mediaUpload = new InstaImageUpload()
+                    {
+                        Width = 1080,
+                        Height = 1080,
+                        Uri = new Uri(Path.GetFullPath("wwwroot\\Images\\ProductImages\\" + images.FirstOrDefault().ImgSrc), UriKind.Absolute).LocalPath,
+                    };
+                    result = await _instaApi.MediaProcessor.UploadPhotoAsync(mediaUpload, product.Name + "\n" + product.Detail);
+                }
 
                 if (result.Succeeded)
                     return new()
@@ -478,16 +492,20 @@ namespace Application.Services.Admin
                 var date = ConverToShamsi.GetMonthAndYear(DateTime.Now);
                 string folder = $@"wwwroot\Images\ProductImages\{date}\";
                 var imagesName=new List<string>();
-                foreach(var image in media.Images)
+                foreach(var image in media.Images.Where(p=>p.Width>480))
                 {
                     var name = DownloadRemoteImageFile(image.Uri, folder);
                     imagesName.Add(name);
                 }
-
-                int indexOfName = media.Caption.Text.IndexOf("نام");
-                int indexOfDetail = media.Caption.Text.IndexOf("توضیحات");
-                string productName = media.Caption.Text.Substring(indexOfName, indexOfDetail - 1);
-                string productDetail = media.Caption.Text.Substring(indexOfDetail);
+                string productName = "";
+                string productDetail = "";
+                if (media.Caption != null)
+                {
+                    int indexOfName = media.Caption.Text.IndexOf("نام");
+                    int indexOfDetail = media.Caption.Text.IndexOf("توضیحات");
+                    media.Caption.Text.Substring(indexOfName, indexOfDetail - 1);
+                    media.Caption!.Text.Substring(indexOfDetail);
+                }
 
                 var mediaToAdd = new
                 {
@@ -495,8 +513,6 @@ namespace Application.Services.Admin
                     ProductDetail = productDetail,
                     Images = imagesName,
                 };
-
-                //Bitmap.FromStream(new MemoryStream(new WebClient().DownloadData(media.Images.FirstOrDefault(p => p.Height > 460 || p.Width > 460).Uri)));
 
                 if (media != null)
                 { 
@@ -531,31 +547,40 @@ namespace Application.Services.Admin
         }
         private static string DownloadRemoteImageFile(string uri, string fileName)
         {
-            var uploadsRootFolder = Path.Combine(Directory.GetCurrentDirectory(), fileName);
-            if (!Directory.Exists(uploadsRootFolder))
+            //var uploadsRootFolder = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+
+            //if (!Directory.Exists(uploadsRootFolder))
+            //{
+            //    File.Create(uploadsRootFolder);
+            //}
+            //HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+            //HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            //if ((response.StatusCode == HttpStatusCode.OK ||
+            //    response.StatusCode == HttpStatusCode.Moved ||
+            //    response.StatusCode == HttpStatusCode.Redirect) &&
+            //    response.ContentType.StartsWith("image", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    using Stream inputStream = response.GetResponseStream();
+            //    using Stream outputStream = File.OpenWrite(uploadsRootFolder);
+            //    byte[] buffer = new byte[inputStream.Length];
+            //    int bytesRead;
+            //    do
+            //    {
+            //        bytesRead = inputStream.Read(buffer, 0, buffer.Length);
+            //        outputStream.Write(buffer, 0, bytesRead);
+            //    } while (bytesRead != 0);
+            //    FileStream fileStream = inputStream as FileStream;
+            //    return fileStream.Name;
+            //}
+            var todayDate = ConverToShamsi.GetMonthAndYear(DateTime.Now);
+            var imageName = Guid.NewGuid() +"instagram";
+            string folder = $@"wwwroot\Images\ProductImages\{todayDate}\{imageName}.png";
+            var uploadsRootFolder = Path.Combine(Directory.GetCurrentDirectory(), folder);
+            using (WebClient client = new())
             {
-                Directory.CreateDirectory(uploadsRootFolder);
+                client.DownloadFile(new Uri(uri), uploadsRootFolder);
             }
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            if ((response.StatusCode == HttpStatusCode.OK ||
-                response.StatusCode == HttpStatusCode.Moved ||
-                response.StatusCode == HttpStatusCode.Redirect) &&
-                response.ContentType.StartsWith("image", StringComparison.OrdinalIgnoreCase))
-            {
-                using Stream inputStream = response.GetResponseStream();
-                using Stream outputStream = File.OpenWrite(uploadsRootFolder);
-                byte[] buffer = new byte[inputStream.Length];
-                int bytesRead;
-                do
-                {
-                    bytesRead = inputStream.Read(buffer, 0, buffer.Length);
-                    outputStream.Write(buffer, 0, bytesRead);
-                } while (bytesRead != 0);
-                FileStream fileStream = inputStream as FileStream;
-                return fileStream.Name;
-            }
-            return "";
+            return $@"{todayDate}/{imageName}.png";
         }
     }
 }

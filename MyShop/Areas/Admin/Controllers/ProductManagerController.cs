@@ -303,7 +303,7 @@ namespace Areas.Admin.Controllers
         public async Task PostProductToInstagram(int productId)
         {
             var product = await _porudctServices.GetProductAsync(productId);
-            var result = await _instagramBotServices.UploadPhotoAsync(product);
+            var result = await _instagramBotServices.UploadAlbumAsync(product);
             await this.Index(1);
         }
 
@@ -344,14 +344,17 @@ namespace Areas.Admin.Controllers
             {
                 20
             };
+            var detail = media.Data.GetType().GetProperties().FirstOrDefault(p=> p.Name.ToLower()== "productdetail").GetValue(media.Data);
+            var name = (string)media.Data.GetType().GetProperty("ProductName").GetValue(media.Data);
+            var images = (IList<string>)media.Data.GetType().GetProperty("Images").GetValue(media.Data);
             var product = new AddProductViewModel()
             {
-                Detail = (string)media.Data.GetType().GetProperty("ProductDetail").GetValue(typeof(string)),
-                ImagesUri = (IList<string>)media.Data.GetType().GetProperty("Images").GetValue(typeof(List<string>)),
+                Detail = (string)media.Data.GetType().GetProperty("ProductDetail").GetValue(media.Data),
+                ImagesUri = (IList<string>)media.Data.GetType().GetProperty("Images").GetValue(media.Data),
                 Price = 0,
                 Count = 0,
                 CategoriesId = categoryIdList,
-                Name = (string)media.Data.GetType().GetProperty("ProductName").GetValue(typeof(string)),
+                Name = (string)media.Data.GetType().GetProperty("ProductName").GetValue(media.Data),
                 IsProductHaveAttributes = false
             };
             var result = await _porudctServices.AddProductAsync(product);
