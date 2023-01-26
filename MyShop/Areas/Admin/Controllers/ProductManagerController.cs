@@ -318,9 +318,15 @@ namespace Areas.Admin.Controllers
         {
             var result = await _instagramBotServices.LoginToInsta(loginToInsta.UserName, loginToInsta.PassWord);
             if (result.Data)
+            {
+                ViewData["Success"] = "ورود به اکانت اینستاگرام با موفقیت انجام شد.";
                 return View();
+            }
             else
+            {
+                ViewData["Error"] = "ورود به اکانت اینستاگرام با شکست مواجه شد.";
                 return BadRequest();
+            }
         }
 
         [HttpGet]
