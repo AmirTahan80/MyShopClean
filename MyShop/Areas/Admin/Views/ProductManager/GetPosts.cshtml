@@ -50,7 +50,7 @@
                                                     <ul class="list-unstyled users-list m-0">
                                                         @foreach (var image in Model[b].Images)
                                                         {
-                                                            @if(image.Height > 480)
+                                                            @if(image.Height > 320)
                                                             {
                                                                 <li data-toggle="tooltip" data-popup="tooltip-custom" data-original-title="Kimberly Simmons" class="avatar avatar-sm pull-up">
                                                                     <img class="media-object rounded-circle no-border-top-radius no-border-bottom-radius" src="@image.Uri" alt="Avatar">

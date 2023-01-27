@@ -1,7 +1,6 @@
 using Application.InterFaces.Admin;
 using Application.Utilities;
 using Application.ViewModels.Admin;
-using AspNetCore;
 using InstagramApiSharp.Classes.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -340,6 +339,7 @@ namespace Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> PostToProduct(string imageUri)
         {
+            var categoriesTreeView = await _porudctServices.GetCategoriesTreeViewForAdd();
             var media = await _instagramBotServices.UploadPostToProduct(imageUri);
             ICollection<int> categoryIdList = new Collection<int>
             {
@@ -357,7 +357,8 @@ namespace Areas.Admin.Controllers
                 Count = 0,
                 CategoriesId = categoryIdList,
                 Name = (string)media.Data.GetType().GetProperty("ProductName").GetValue(media.Data),
-                IsProductHaveAttributes = false
+                IsProductHaveAttributes = false,
+                Categories=categoriesTreeView.CategoriesTreeView
             };
 
             return View(product);

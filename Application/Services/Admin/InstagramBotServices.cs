@@ -492,20 +492,13 @@ namespace Application.Services.Admin
                 var date = ConverToShamsi.GetMonthAndYear(DateTime.Now);
                 string folder = $@"wwwroot\Images\ProductImages\{date}\";
                 var imagesName=new List<string>();
-                foreach(var image in media.Images.Where(p=>p.Width>480))
+                foreach(var image in media.Images.Where(p=>p.Width>320))
                 {
                     var name = DownloadRemoteImageFile(image.Uri, folder);
                     imagesName.Add(name);
                 }
-                string productName = "";
-                string productDetail = "";
-                if (media.Caption != null)
-                {
-                    int indexOfName = media.Caption.Text.IndexOf("نام");
-                    int indexOfDetail = media.Caption.Text.IndexOf("توضیحات");
-                    media.Caption.Text.Substring(indexOfName, indexOfDetail - 1);
-                    media.Caption!.Text.Substring(indexOfDetail);
-                }
+                string productName = "نام را مشخص کنید";
+                string productDetail = media.Caption.Text;
 
                 var mediaToAdd = new
                 {
