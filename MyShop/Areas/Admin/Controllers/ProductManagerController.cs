@@ -1,6 +1,7 @@
 using Application.InterFaces.Admin;
 using Application.Utilities;
 using Application.ViewModels.Admin;
+using AspNetCore;
 using InstagramApiSharp.Classes.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -337,12 +338,6 @@ namespace Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> PostToProduct(int mediaId)
-        {
-            return View();
-        }
-
-        [HttpPost]
         public async Task<IActionResult> PostToProduct(string imageUri)
         {
             var media = await _instagramBotServices.UploadPostToProduct(imageUri);
@@ -350,20 +345,45 @@ namespace Areas.Admin.Controllers
             {
                 20
             };
-            var detail = media.Data.GetType().GetProperties().FirstOrDefault(p=> p.Name.ToLower()== "productdetail").GetValue(media.Data);
-            var name = (string)media.Data.GetType().GetProperty("ProductName").GetValue(media.Data);
-            var images = (IList<string>)media.Data.GetType().GetProperty("Images").GetValue(media.Data);
-            var product = new AddProductViewModel()
+            var images = (IEnumerable<string>)media.Data.GetType().GetProperty("Images").GetValue(media.Data);
+            var product = new GetProductViewModel()
             {
                 Detail = (string)media.Data.GetType().GetProperty("ProductDetail").GetValue(media.Data),
-                ImagesUri = (IList<string>)media.Data.GetType().GetProperty("Images").GetValue(media.Data),
+                Images = images.Select(p => new GetImagesViewModel()
+                {
+                    ImgSrc = p
+                }),
                 Price = 0,
                 Count = 0,
                 CategoriesId = categoryIdList,
                 Name = (string)media.Data.GetType().GetProperty("ProductName").GetValue(media.Data),
                 IsProductHaveAttributes = false
             };
-            var result = await _porudctServices.AddProductAsync(product);
+
+            return View(product);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostToProduct(GetProductViewModel uploadProduct)
+        {
+            var addProduct = new AddProductViewModel()
+            {
+                Name = uploadProduct.Name,
+                Detail = uploadProduct.Detail,
+                Count = uploadProduct.Count,
+                AttributeCount = uploadProduct.AttributeCount,
+                AttributeNames = uploadProduct.AttributeNames,
+                AttributeValues = uploadProduct.AttributeValues,
+                AttributePrice = uploadProduct.AttributePrice,
+                AttributeTemplates = uploadProduct.AttributeTemplates,
+                CategoriesId = uploadProduct.CategoriesId,
+                ImagesUri = uploadProduct.Images.Select(p => p.ImgSrc).ToList(),
+                IsProductHaveAttributes = uploadProduct.IsProductHaveAttributes,
+                Price = uploadProduct.Price,
+                ValueName = uploadProduct.ValueName.ToList(),
+                ValueType = uploadProduct.Valuetype.ToList()
+            };
+            var result = await _porudctServices.AddProductAsync(addProduct);
 
             if (result)
                 ViewData["Success"] = "ذخیره با موفقیت انجام شد!";

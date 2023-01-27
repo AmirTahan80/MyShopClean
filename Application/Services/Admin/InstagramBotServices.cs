@@ -276,7 +276,7 @@ namespace Application.Services.Admin
                             }
                         });
                     }
-                    result = await _instaApi.MediaProcessor.UploadAlbumAsync(instaImage.ToArray(), product.Name + " \n " + product.Detail);
+                    result = await _instaApi.MediaProcessor.UploadAlbumAsync(instaImage.ToArray(), product.Name + " \n " + product.Detail + " \n "+ "ویژگی های محصول: \n"+ product.Properties +"\n #فروش_محصول #فروش_آنلاین");
                 }
                 else
                 {
@@ -286,7 +286,7 @@ namespace Application.Services.Admin
                         Height = 1080,
                         Uri = new Uri(Path.GetFullPath("wwwroot\\Images\\ProductImages\\" + images.FirstOrDefault().ImgSrc), UriKind.Absolute).LocalPath,
                     };
-                    result = await _instaApi.MediaProcessor.UploadPhotoAsync(mediaUpload, product.Name + "\n" + product.Detail);
+                    result = await _instaApi.MediaProcessor.UploadPhotoAsync(mediaUpload, product.Name + "\n" + product.Detail + " \n " + "ویژگی های محصول: \n" + product.Properties + "\n #فروش_محصول #فروش_آنلاین");
                 }
 
                 if (result.Succeeded)
