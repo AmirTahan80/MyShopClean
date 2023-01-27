@@ -301,11 +301,11 @@ namespace Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task PostProductToInstagram(int productId)
+        public async Task<IActionResult> PostProductToInstagram(int productId)
         {
             var product = await _porudctServices.GetProductAsync(productId);
             var result = await _instagramBotServices.UploadAlbumAsync(product);
-            await this.Index(1);
+            return RedirectToAction("GetPosts");
         }
 
         [HttpGet]
