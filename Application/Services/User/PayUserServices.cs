@@ -65,7 +65,7 @@ namespace Application.Services.User
                 if (string.IsNullOrWhiteSpace(user.UserDetail.Address) || string.IsNullOrWhiteSpace(user.PhoneNumber))
                 {
                     returnResult.ErrorMessage = "در صورتی که به صورت خود کار به بخش ویرایش پروفایل نرفتید لطفا به آن بخش رفته و کدملی ، شماره تلفن و آدرس خود را کامل کنید !";
-                    returnResult.ReturnRedirect = _configuration["ReturnsUrl:PassUserToUrl"];
+                    returnResult.ReturnRedirect = _configuration["ReturnsUrl:PassIdPayToUrl"];
                     returnResult.Status = false;
                     return returnResult;
                 }
@@ -161,7 +161,7 @@ namespace Application.Services.User
                 if (string.IsNullOrWhiteSpace(user.UserDetail.Address) || string.IsNullOrWhiteSpace(user.PhoneNumber))
                 {
                     returnResult.ErrorMessage = "لطفا کد ملی و شماره تلفن را کامل کنید ...";
-                    returnResult.ReturnRedirect = _configuration["ReturnsUrl:PassUserToUrl"];
+                    returnResult.ReturnRedirect = _configuration["ReturnsUrl:PassIdPayToUrl"];
                     returnResult.Status = false;
                     return returnResult;
                 }

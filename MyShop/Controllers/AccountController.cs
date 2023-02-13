@@ -604,31 +604,31 @@ namespace MyShop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddComment(GetProductDescriptionViewModel model, string returnUrl = "")
         {
-            var recaptchaResponse = Request.Form["g-recaptcha-response"];
-            var url = "https://www.google.com/recaptcha/api/siteverify";
+            //var recaptchaResponse = Request.Form["g-recaptcha-response"];
+            //var url = "https://www.google.com/recaptcha/api/siteverify";
 
-            var parameters = new Dictionary<string, string>
+            //var parameters = new Dictionary<string, string>
+            //{
+            //    {"secret", _configuration["reCAPTCHA:SecretKey"]},
+            //    {"response", recaptchaResponse},
+            //    {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
+            //};
+
+            //var response = await _httpClient.PostAsync($"{url}"
+            //    , new FormUrlEncodedContent(parameters));
+
+
+            //var responseString = await response.Content.ReadAsStringAsync();
+            //dynamic apiJson = JObject.Parse(responseString);
+
+
+            if (model.Comment.ProductId == 0 || string.IsNullOrWhiteSpace(model.Comment.Topic) || string.IsNullOrWhiteSpace(model.Comment.Text) /*|| apiJson.success != true*/)
             {
-                {"secret", _configuration["reCAPTCHA:SecretKey"]},
-                {"response", recaptchaResponse},
-                {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
-            };
-
-            var response = await _httpClient.PostAsync($"{url}"
-                , new FormUrlEncodedContent(parameters));
-
-
-            var responseString = await response.Content.ReadAsStringAsync();
-            dynamic apiJson = JObject.Parse(responseString);
-
-
-            if (model.Comment.ProductId == 0 || string.IsNullOrWhiteSpace(model.Comment.Topic) || string.IsNullOrWhiteSpace(model.Comment.Text) || apiJson.success != true)
-            {
-                if (apiJson.success != true)
-                {
-                    ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
-                    return View(model);
-                }
+                //if (apiJson.success != true)
+                //{
+                //    ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
+                //    return View(model);
+                //}
                 return NotFound();
             }
 
