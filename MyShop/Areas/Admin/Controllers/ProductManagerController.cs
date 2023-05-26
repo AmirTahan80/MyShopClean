@@ -372,17 +372,9 @@ namespace Areas.Admin.Controllers
                 Name = uploadProduct.Name,
                 Detail = uploadProduct.Detail,
                 Count = uploadProduct.Count,
-                AttributeCount = uploadProduct.AttributeCount,
-                AttributeNames = uploadProduct.AttributeNames,
-                AttributeValues = uploadProduct.AttributeValues,
-                AttributePrice = uploadProduct.AttributePrice,
-                AttributeTemplates = uploadProduct.AttributeTemplates,
                 CategoriesId = uploadProduct.CategoriesId,
-                ImagesUri = uploadProduct.Images.Select(p => p.ImgSrc).ToList(),
-                IsProductHaveAttributes = uploadProduct.IsProductHaveAttributes,
-                Price = uploadProduct.Price,
-                ValueName = uploadProduct.ValueName.ToList(),
-                ValueType = uploadProduct.Valuetype.ToList()
+                ImagesUri = uploadProduct.ImagesSrc.ToList(),
+                Price = uploadProduct.Price
             };
             var result = await _porudctServices.AddProductAsync(addProduct);
 

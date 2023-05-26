@@ -113,34 +113,9 @@ namespace MyShop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AskQuestion(GetProductDescriptionViewModel model, string returnUrl = "")
         {
-            string recaptchaResponse = this.Request.Form["g-recaptcha-response"];
-            var client = HttpClientFactory.Create();
-            var parameters = new Dictionary<string, string>
+            if (string.IsNullOrEmpty(model.Question.Email) || string.IsNullOrEmpty(model.Question.Text))
             {
-                {"secret", _configuration["reCAPTCHA:SecretKey"]},
-                {"response", recaptchaResponse},
-                {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
-            };
-
-            HttpResponseMessage response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", new FormUrlEncodedContent(parameters));
-            response.EnsureSuccessStatusCode();
-
-            string apiResponse = await response.Content.ReadAsStringAsync();
-            dynamic apiJson = JObject.Parse(apiResponse);
-
-
-            if (string.IsNullOrEmpty(model.Question.Email) || string.IsNullOrEmpty(model.Question.Text) || apiJson.success != true)
-            {
-                if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-                {
-                    if (apiJson.success != true)
-                    {
-                        ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
-                    }
-                    return Redirect(returnUrl);
-                }
-                else
-                    return NotFound();
+                return BadRequest();
             }
 
             var result = await _accountServices.AskQuestionAsync(model.Question);

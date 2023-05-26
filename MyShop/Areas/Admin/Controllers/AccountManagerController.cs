@@ -409,7 +409,7 @@ namespace MyShop.Areas.Admin.Controllers
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                result = result.Where(p => p.RefId == int.Parse(search) || p.UserEmail.Contains(search));
+                result = result.Where(p=> p.UserEmail.Contains(search) || p.RefId == int.Parse(search));
 
                 ViewBag.Search = search;
             }

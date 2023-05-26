@@ -1,5 +1,6 @@
 using Application.Utilities.Attributes;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -41,6 +42,7 @@ namespace Application.ViewModels.Admin
         // NavigationBar
         [Display(Name = "عکس ها")]
         public IEnumerable<GetImagesViewModel> Images { get; set; }
+        public IEnumerable<string> ImagesSrc { get; set; }
         [ImageCount()]
         public IEnumerable<IFormFile> UploadImages { get; set; }
         public IEnumerable<SelectListItem> Categories { get; set; }

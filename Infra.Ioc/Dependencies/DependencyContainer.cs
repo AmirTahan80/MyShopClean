@@ -103,8 +103,8 @@ namespace Infra.Ioc.Dependencies
             services.ConfigureApplicationCookie(option =>
             {
                 option.AccessDeniedPath = "/Account/AccessDenied";
-                option.LoginPath = "/Account/Login";
-                option.LogoutPath = "/Account/Logout";
+                option.LoginPath = "/Login";
+                option.LogoutPath = "/Account/SignOutWeb";
             });
 
             services.Configure<SecurityStampValidatorOptions>(options =>

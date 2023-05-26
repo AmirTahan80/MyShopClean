@@ -88,23 +88,11 @@
                                                 </td>
                                                 <td class="text-truncate p-1">
                                                     <ul class="list-unstyled users-list m-0">
-                                                        @if (!Model[b].InstagramPost)
+                                                        @foreach (var images in Model[b].ImageSrc)
                                                         {
-                                                            @foreach (var images in Model[b].ImageSrc)
-                                                            {
-                                                                <li data-toggle="tooltip" data-popup="tooltip-custom" data-original-title="Kimberly Simmons" class="avatar avatar-sm pull-up">
-                                                                        <img class="media-object rounded-circle no-border-top-radius no-border-bottom-radius" src="/Images/ProductImages/@images" alt="Avatar">
-                                                                </li>
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            @foreach (var images in Model[b].ImageSrc)
-                                                            {
-                                                                <li data-toggle="tooltip" data-popup="tooltip-custom" data-original-title="Kimberly Simmons" class="avatar avatar-sm pull-up">
-                                                                    <img class="media-object rounded-circle no-border-top-radius no-border-bottom-radius" src="@images" alt="Avatar">
-                                                                </li>
-                                                            }
+                                                            <li data-toggle="tooltip" data-popup="tooltip-custom" data-original-title="Kimberly Simmons" class="avatar avatar-sm pull-up">
+                                                                    <img class="media-object rounded-circle no-border-top-radius no-border-bottom-radius" src="/Images/ProductImages/@images" alt="Avatar">
+                                                            </li>
                                                         }
                                                         <li class="avatar avatar-sm">
                                                             <span class="badge badge-info">+@(Model[b].ImagesCount)بیشتر</span>

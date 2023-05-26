@@ -6,16 +6,14 @@ using InstagramApiSharp.API;
 using InstagramApiSharp.API.Builder;
 using InstagramApiSharp.Classes;
 using InstagramApiSharp.Classes.Models;
-using InstagramApiSharp.Classes.SessionHandlers;
 using InstagramApiSharp.Enums;
 using InstagramApiSharp.Logger;
-using Org.BouncyCastle.Asn1.X509;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Security.Policy;
 using System.Threading.Tasks;
 
 namespace Application.Services.Admin
@@ -40,22 +38,44 @@ namespace Application.Services.Admin
                 _instaApi = InstaApiBuilder.CreateBuilder()
                     .SetUser(user)
                     .UseLogger(new DebugLogger(LogLevel.All))
-                    .SetRequestDelay(RequestDelay.FromSeconds(2,4))
-                    .SetSessionHandler(new FileSessionHandler { FilePath=userName+".state"})
+                    .SetRequestDelay(RequestDelay.FromSeconds(0, 1))
+                    //.SetSessionHandler(new FileSessionHandler { FilePath = userName + ".state" })
                     .Build();
 
                 _instaApi.SetApiVersion(InstaApiVersionType.Version180);
 
-                var sendRequest = await _instaApi.SendRequestsBeforeLoginAsync();
-                IResult<InstaLoginResult> loginMember = new Result<InstaLoginResult>(false,null);
-                if (sendRequest.Value)
-                {
-                    Task.Delay(3000);
-                    loginMember = await _instaApi.LoginAsync();
-                }
+                //var loginMember = await _instaApi.LoginAsync();
 
-                if (loginMember.Succeeded)
+                //if (loginMember.Succeeded)
+                //{
+                //    Console.WriteLine("LoggedIn");
+                //    return new()
+                //    {
+                //        Data = true,
+                //        SuccesMessage = "ورود با موفقیت انجام شد.",
+                //        Status = true
+                //    };
+                //}
+                //else
+                //{
+                //    Console.WriteLine("Error in LoggedIn");
+                //    return new()
+                //    {
+                //        Data = false,
+                //        SuccesMessage = "خطایی در ورود به اکانت ایجاد شده است!",
+                //        Status = false
+                //    };
+                //}
+                // Call this function before calling LoginAsync
+                await _instaApi.SendRequestsBeforeLoginAsync();
+                // wait 5 seconds
+                await Task.Delay(5000);
+                var logInResult = await _instaApi.LoginAsync();
+                Debug.WriteLine(logInResult.Value);
+                if (logInResult.Succeeded)
                 {
+                    // Call this function after a successful login
+                    await _instaApi.SendRequestsAfterLoginAsync();
                     Console.WriteLine("LoggedIn");
                     return new()
                     {
@@ -66,13 +86,42 @@ namespace Application.Services.Admin
                 }
                 else
                 {
-                    Console.WriteLine("Error in LoggedIn");
-                    return new()
+                    if (logInResult.Value == InstaLoginResult.ChallengeRequired)
                     {
-                        Data = false,
-                        SuccesMessage = "خطایی در ورود به اکانت ایجاد شده است!",
-                        Status = false
-                    };
+                        var challenge = await _instaApi.GetChallengeRequireVerifyMethodAsync();
+                        if(challenge.Succeeded)
+                        {
+
+                            Console.WriteLine("Error in LoggedIn");
+                            return new()
+                            {
+                                Data = false,
+                                SuccesMessage = "خطایی در ورود به اکانت ایجاد شده است!",
+                                Status = false
+                            };
+                        }
+                        else
+                        {
+
+                            Console.WriteLine("Error in LoggedIn");
+                            return new()
+                            {
+                                Data = false,
+                                SuccesMessage = "خطایی در ورود به اکانت ایجاد شده است!",
+                                Status = false
+                            };
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error in LoggedIn");
+                        return new()
+                        {
+                            Data = false,
+                            SuccesMessage = "خطایی در ورود به اکانت ایجاد شده است!",
+                            Status = false
+                        };
+                    }
                 }
             }
             catch (Exception e)
@@ -260,7 +309,7 @@ namespace Application.Services.Admin
             {
                 var images = product.Images;
                 IResult<InstaMedia> result;
-                if(images != null && images.Count() > 1)
+                if (images != null && images.Count() > 1)
                 {
                     IList<InstaAlbumUpload> instaImage = new List<InstaAlbumUpload>();
                     foreach (var item in images)
@@ -276,7 +325,7 @@ namespace Application.Services.Admin
                             }
                         });
                     }
-                    result = await _instaApi.MediaProcessor.UploadAlbumAsync(instaImage.ToArray(), product.Name + " \n " + product.Detail + " \n "+ "ویژگی های محصول: \n"+ product.Properties +"\n #فروش_محصول #فروش_آنلاین");
+                    result = await _instaApi.MediaProcessor.UploadAlbumAsync(instaImage.ToArray(), product.Name + " \n " + product.Detail + " \n "  + "\n #فروش_محصول #فروش_آنلاین");
                 }
                 else
                 {
@@ -286,7 +335,7 @@ namespace Application.Services.Admin
                         Height = 1080,
                         Uri = new Uri(Path.GetFullPath("wwwroot\\Images\\ProductImages\\" + images.FirstOrDefault().ImgSrc), UriKind.Absolute).LocalPath,
                     };
-                    result = await _instaApi.MediaProcessor.UploadPhotoAsync(mediaUpload, product.Name + "\n" + product.Detail + " \n " + "ویژگی های محصول: \n" + product.Properties + "\n #فروش_محصول #فروش_آنلاین");
+                    result = await _instaApi.MediaProcessor.UploadPhotoAsync(mediaUpload, product.Name + "\n" + product.Detail + " \n " + "\n #فروش_محصول #فروش_آنلاین");
                 }
 
                 if (result.Succeeded)
@@ -491,8 +540,8 @@ namespace Application.Services.Admin
 
                 var date = ConverToShamsi.GetMonthAndYear(DateTime.Now);
                 string folder = $@"wwwroot\Images\ProductImages\{date}\";
-                var imagesName=new List<string>();
-                foreach(var image in media.Images.Where(p=>p.Width>320))
+                var imagesName = new List<string>();
+                foreach (var image in media.Images.Where(p => p.Width > 320))
                 {
                     var name = DownloadRemoteImageFile(image.Uri, folder);
                     imagesName.Add(name);
@@ -508,7 +557,7 @@ namespace Application.Services.Admin
                 };
 
                 if (media != null)
-                { 
+                {
                     return new()
                     {
                         Data = mediaToAdd,
@@ -566,7 +615,7 @@ namespace Application.Services.Admin
             //    return fileStream.Name;
             //}
             var todayDate = ConverToShamsi.GetMonthAndYear(DateTime.Now);
-            var imageName = Guid.NewGuid() +"instagram";
+            var imageName = Guid.NewGuid() + "instagram";
             string folder = $@"wwwroot\Images\ProductImages\{todayDate}\{imageName}.png";
             var uploadsRootFolder = Path.Combine(Directory.GetCurrentDirectory(), folder);
             using (WebClient client = new())

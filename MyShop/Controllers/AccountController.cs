@@ -52,29 +52,9 @@ namespace MyShop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisetUserForLoginViewModel model)
         {
-            var recaptchaResponse = Request.Form["g-recaptcha-response"];
-            var url = "https://www.google.com/recaptcha/api/siteverify";
 
-            var parameters = new Dictionary<string, string>
+            if (!ModelState.IsValid)
             {
-                {"secret", _configuration["reCAPTCHA:SecretKey"]},
-                {"response", recaptchaResponse},
-                {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
-            };
-
-            var response = await _httpClient.PostAsync($"{url}"
-                , new FormUrlEncodedContent(parameters));
-
-
-            var responseString = await response.Content.ReadAsStringAsync();
-            dynamic apiJson = JObject.Parse(responseString);
-
-            if (!ModelState.IsValid || apiJson.success != true)
-            {
-                if (apiJson.success != true)
-                {
-                    ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
-                }
                 return View(model);
             }
 
@@ -120,32 +100,11 @@ namespace MyShop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            //var recaptchaResponse = Request.Form["g-recaptcha-response"];
-            //var url = "https://www.google.com/recaptcha/api/siteverify";
-
-            //var parameters = new Dictionary<string, string>
-            //{
-            //    {"secret", _configuration["reCAPTCHA:SecretKey"]},
-            //    {"response", recaptchaResponse},
-            //    {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
-            //};
-
-            //var response = await _httpClient.PostAsync($"{url}"
-            //    , new FormUrlEncodedContent(parameters));
-
-
-            //var responseString = await response.Content.ReadAsStringAsync();
-            //dynamic apiJson = JObject.Parse(responseString);
-
             var returnUrl = "";
-            //if (!ModelState.IsValid || apiJson.success != true)
-            //{
-            //    if (apiJson.success != true)
-            //    {
-            //        ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
-            //    }
-            //    return View(model);
-            //}
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
 
             var result = await _accountUserServices.LoginAsync(model);
             if (result.Status)
@@ -198,30 +157,8 @@ namespace MyShop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PersonalInfo(ProfileViewModel model)
         {
-            var recaptchaResponse = Request.Form["g-recaptcha-response"];
-            var url = "https://www.google.com/recaptcha/api/siteverify";
-
-            var parameters = new Dictionary<string, string>
+            if (!ModelState.IsValid)
             {
-                {"secret", _configuration["reCAPTCHA:SecretKey"]},
-                {"response", recaptchaResponse},
-                {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
-            };
-
-            var response = await _httpClient.PostAsync($"{url}"
-                , new FormUrlEncodedContent(parameters));
-
-
-            var responseString = await response.Content.ReadAsStringAsync();
-            dynamic apiJson = JObject.Parse(responseString);
-
-
-            if (!ModelState.IsValid || apiJson.success != true)
-            {
-                if (apiJson.success != true)
-                {
-                    ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
-                }
                 return View(model);
             }
 
@@ -275,30 +212,8 @@ namespace MyShop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(NewPassWordViewModel model)
         {
-            var recaptchaResponse = Request.Form["g-recaptcha-response"];
-            var url = "https://www.google.com/recaptcha/api/siteverify";
-
-            var parameters = new Dictionary<string, string>
+            if (!ModelState.IsValid )
             {
-                {"secret", _configuration["reCAPTCHA:SecretKey"]},
-                {"response", recaptchaResponse},
-                {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
-            };
-
-            var response = await _httpClient.PostAsync($"{url}"
-                , new FormUrlEncodedContent(parameters));
-
-
-            var responseString = await response.Content.ReadAsStringAsync();
-            dynamic apiJson = JObject.Parse(responseString);
-
-
-            if (!ModelState.IsValid || apiJson.success != true)
-            {
-                if (apiJson.success != true)
-                {
-                    ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
-                }
                 return View(model);
             }
 
@@ -329,30 +244,8 @@ namespace MyShop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassWord(ForgotPassWordViewModel model)
         {
-            var recaptchaResponse = Request.Form["g-recaptcha-response"];
-            var url = "https://www.google.com/recaptcha/api/siteverify";
-
-            var parameters = new Dictionary<string, string>
+            if (!ModelState.IsValid)
             {
-                {"secret", _configuration["reCAPTCHA:SecretKey"]},
-                {"response", recaptchaResponse},
-                {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
-            };
-
-            var response = await _httpClient.PostAsync($"{url}"
-                , new FormUrlEncodedContent(parameters));
-
-
-            var responseString = await response.Content.ReadAsStringAsync();
-            dynamic apiJson = JObject.Parse(responseString);
-
-
-            if (!ModelState.IsValid || apiJson.success != true)
-            {
-                if (apiJson.success != true)
-                {
-                    ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
-                }
                 return View(model);
             }
 
@@ -383,30 +276,8 @@ namespace MyShop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
-            var recaptchaResponse = Request.Form["g-recaptcha-response"];
-            var url = "https://www.google.com/recaptcha/api/siteverify";
-
-            var parameters = new Dictionary<string, string>
+            if (!ModelState.IsValid )
             {
-                {"secret", _configuration["reCAPTCHA:SecretKey"]},
-                {"response", recaptchaResponse},
-                {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
-            };
-
-            var response = await _httpClient.PostAsync($"{url}"
-                , new FormUrlEncodedContent(parameters));
-
-
-            var responseString = await response.Content.ReadAsStringAsync();
-            dynamic apiJson = JObject.Parse(responseString);
-
-
-            if (!ModelState.IsValid || apiJson.success != true)
-            {
-                if (apiJson.success != true)
-                {
-                    ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
-                }
                 return View(model);
             }
 
@@ -479,6 +350,12 @@ namespace MyShop.Controllers
 
             return View(cart);
         }
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> RemoveCartDetail(int cartDetailId = 0)
@@ -604,31 +481,9 @@ namespace MyShop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddComment(GetProductDescriptionViewModel model, string returnUrl = "")
         {
-            //var recaptchaResponse = Request.Form["g-recaptcha-response"];
-            //var url = "https://www.google.com/recaptcha/api/siteverify";
 
-            //var parameters = new Dictionary<string, string>
-            //{
-            //    {"secret", _configuration["reCAPTCHA:SecretKey"]},
-            //    {"response", recaptchaResponse},
-            //    {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
-            //};
-
-            //var response = await _httpClient.PostAsync($"{url}"
-            //    , new FormUrlEncodedContent(parameters));
-
-
-            //var responseString = await response.Content.ReadAsStringAsync();
-            //dynamic apiJson = JObject.Parse(responseString);
-
-
-            if (model.Comment.ProductId == 0 || string.IsNullOrWhiteSpace(model.Comment.Topic) || string.IsNullOrWhiteSpace(model.Comment.Text) /*|| apiJson.success != true*/)
+            if (model.Comment.ProductId == 0 || string.IsNullOrWhiteSpace(model.Comment.Topic) || string.IsNullOrWhiteSpace(model.Comment.Text))
             {
-                //if (apiJson.success != true)
-                //{
-                //    ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
-                //    return View(model);
-                //}
                 return NotFound();
             }
 
@@ -858,30 +713,8 @@ namespace MyShop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ContactUs(ContactUsViewModel model)
         {
-            var recaptchaResponse = Request.Form["g-recaptcha-response"];
-            var url = "https://www.google.com/recaptcha/api/siteverify";
-
-            var parameters = new Dictionary<string, string>
+            if (!ModelState.IsValid)
             {
-                {"secret", _configuration["reCAPTCHA:SecretKey"]},
-                {"response", recaptchaResponse},
-                {"remoteip", this.HttpContext.Connection.RemoteIpAddress.ToString()}
-            };
-
-            var response = await _httpClient.PostAsync($"{url}"
-                , new FormUrlEncodedContent(parameters));
-
-
-            var responseString = await response.Content.ReadAsStringAsync();
-            dynamic apiJson = JObject.Parse(responseString);
-
-
-            if (!ModelState.IsValid || apiJson.success != true)
-            {
-                if (apiJson.success != true)
-                {
-                    ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
-                }
                 return View(model);
             }
 

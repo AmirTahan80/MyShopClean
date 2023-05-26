@@ -79,11 +79,13 @@
                                                                 </span>
                                                                 @if(!Model.InstagramPost)
                                                                 {
-                                                                    <img class="productimages height-100 width-100  " src="/Images/ProductImages/@currentProductImage.ImgSrc" alt="@currentProductImage.ImgId">
+                                                                    <img class="productimages height-100 width-100" src="/Images/ProductImages/@currentProductImage.ImgSrc" alt="@currentProductImage.ImgId">
+                                                                    <input style="display:none" asp-for="ImagesSrc" value="@currentProductImage.ImgSrc" accept=".png,.jpg,.jpeg" id="attachment" multiple />
                                                                 }
                                                                 else
                                                                 {
-                                                                    <img class="productimages height-100 width-100  " src="@currentProductImage.ImgSrc" alt="@currentProductImage.ImgId">
+                                                                    <img class="productimages height-100 width-100" src="@currentProductImage.ImgSrc" alt="@currentProductImage.ImgId">
+                                                                    <input style="display:none" asp-for="ImagesSrc" value="@currentProductImage.ImgSrc" accept=".png,.jpg,.jpeg" id="attachment" multiple />
                                                                 }
                                                             </span>
                                                         }
@@ -91,7 +93,7 @@
                                                 </span>
                                             </span>
                                         </p>
-                                        <span asp-validation-for="UploadImages" class="red"></span>
+                                        <span asp-validation-for="Images" class="red"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -111,98 +113,6 @@
                                                 }
                                             }
                                             <button id="add-information-btn" type="button" class="btn btn-success">افزودن مشخصات</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label class="col-md-12">صفت‌ها و تنوع‌ها</label>
-                                        <div class="form-group p-2 border-dark product-informations">
-                                            @if (Model.IsProductHaveAttributes == true)
-                                            {
-                                                <button style="display:none" class="btn btn-primary" type="button" id="btnEnableAttributes">فعال کردن صفت ها</button><button class="btn btn-danger" type="button" id="btnDisableAttributes">غیره فعال کردن صفت ها</button>
-                                                <div class="border border-dark   col-md-12" id="divBorder">
-                                                    <div id="tagsDiv" class="col-md-12 row">
-                                                        @for (int i = 0; i < Model.ProductAttributeNameAndValues.Count; i++)
-                                                        {
-                                                            <div class="col-md-12 row" id="@(i == 0 ? "inputsDiv" : "")">
-                                                                <input id="attributesName" class="form-control col-md-4   m-1" name="AttributeNames" required autofocus placeholder="عنوان" value="@Model.ProductAttributeNameAndValues[i].Name" />
-                                                                @{
-                                                                    string valuesString = "";
-                                                                    for (int b = 0; b < Model.ProductAttributeNameAndValues[i].Values.Count; b++)
-                                                                    {
-                                                                        if (b == 0)
-                                                                        {
-                                                                            valuesString = Model.ProductAttributeNameAndValues[i].Values[b].ValueName;
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            valuesString += "," + Model.ProductAttributeNameAndValues[i].Values[b].ValueName;
-                                                                        }
-                                                                    }
-                                                                    if (i == 0)
-                                                                    {
-                                                                        <input type="text" id="exist-values" value="@valuesString" name="AttributeValues" class="tagged form-control col-md-5   m-1" data-removeBtn="true" placeholder="مقدار یا مقادیر">
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        var taggedId = "tagged" + i;
-                                                                        <input type="text" id="exist-values" value="@valuesString" name="AttributeValues" class="@(taggedId) form-control col-md-5   m-1" data-removeBtn="true" placeholder="مقدار یا مقادیر">
-                                                                        <input type='hidden' value="@(i)"><button type="button" class="btn btn-danger m-1 btnId@(i)" id='deleteAttribute'><i class='icon-trash'></i></button>
-                                                                    }
-                                                                }
-                                                            </div>
-                                                        }
-                                                        @{int counterOfTemplate = Model.ProductAttributeNameAndValues.Count - 1;
-                                                        }
-                                                        <input type="hidden" value="@counterOfTemplate" class="hide" id="inputCounterOfNumber" />
-                                                        <input type="hidden" value="@counterOfTemplate" class="hide" id="inputCounterOfNumber1" />
-                                                    </div>
-                                                    <button class="btn btn-success m-1" type="button" id="btnaddAttribute"><i class="icon-plus"></i> افزودن صفت</button>
-                                                    <div class="border-dark border-dark  " id="generateTagsDiv">
-                                                        <div class="col-md-12 row">
-                                                            <p class="col-md-4">مقادیر</p>
-                                                            <p class="col-md-4">قیمت</p><p class="col-md-4">تعداد</p>
-                                                        </div>
-                                                        @for (var i = 0; i < Model.ProductAttributesTemplates.Count; i++)
-                                                        {
-                                                            <div class="col-md-12 row">
-                                                                <p class="col-md-3 m-1">@Model.ProductAttributesTemplates[i].Template</p>
-                                                                <input type="hidden" value="@Model.ProductAttributesTemplates[i].Template" name="AttributeTemplates">
-                                                                <input class="col-md-4   m-1 form-control" value="@Model.ProductAttributesTemplates[i].PriceOfTemplate" type="text" name="AttributePrice" placeholder="قیمت را وارد کنید">
-                                                                <input class="col-md-4 m-1   form-control" value="@Model.ProductAttributesTemplates[i].CountOfTemplate" type="text" placeholder="تعداد را وارد کنید" name="AttributeCount">
-                                                            </div>
-                                                        }
-                                                    </div>
-                                                    <div style="display:none" id="generateDivBack">
-                                                        @for (var i = 0; i < Model.ProductAttributesTemplates.Count; i++)
-                                                        {
-                                                            <div class="col-md-12 row" style="display:none">
-                                                                <input id="template@(i)" value="@Model.ProductAttributesTemplates[i].Template">
-                                                                <input id="priceTem@(i)" value="@Model.ProductAttributesTemplates[i].PriceOfTemplate" />
-                                                                <input id="countTem@(i)" value="@Model.ProductAttributesTemplates[i].CountOfTemplate" />
-                                                            </div>
-                                                        }
-                                                    </div>
-                                                    <input type="hidden" class="hidden" value="@Model.ProductAttributesTemplates.Count" id="templateCount" />
-                                                    <input type="hidden" class="hidden" value="@Model.ProductAttributesTemplates.Count" id="templateCount1" />
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <button class="btn btn-primary" type="button" id="btnEnableAttributes">فعال کردن صفت ها</button><button style="display:none" class="btn btn-danger" type="button" id="btnDisableAttributes">غیره فعال کردن صفت ها</button>
-                                                <div class="border border-dark   col-md-12" id="divBorder" style="display:none">
-                                                    <div id="tagsDiv" class="col-md-12 row" style="display:none">
-                                                        <div class="col-md-12 row" id="inputsDiv">
-                                                            <input id="attributesName" class="form-control col-md-4   m-1" name="AttributeNames" required autofocus placeholder="عنوان" value="رنگ" />
-                                                            <input type="text" id="exist-values" name="AttributeValues" class="tagged form-control col-md-5   m-1" data-removeBtn="true" placeholder="مقدار یا مقادیر">
-                                                        </div>
-                                                    </div>
-                                                    <button class="btn btn-success m-1" type="button" id="btnaddAttribute" style="display:none"><i class="icon-plus"></i> افزودن صفت</button>
-                                                    <div class="border-dark border-dark  " id="generateTagsDiv">
-                                                    </div>
-                                                </div>
-                                            }
                                         </div>
                                     </div>
                                 </div>
