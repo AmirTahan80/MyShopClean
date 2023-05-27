@@ -31,6 +31,9 @@ namespace MyShop.Controllers
         public async Task<IActionResult> Index(ICollection<int> categoriesId, int? pageNumber = 1, string searchProduct = "", string filter = "")
         {
             var retrunModel = await _productUserServices.GetProductsListAsync(categoriesId);
+            if (retrunModel is null)
+                return null;
+
             retrunModel.Products = retrunModel.Products.OrderByDescending(p => p.Id);
 
             if (!string.IsNullOrWhiteSpace(searchProduct))
@@ -82,8 +85,10 @@ namespace MyShop.Controllers
             {
                 if (categoriesId.Any(p => p == 0))
                 {
-                    categoriesId.Clear();
-                    categoriesId.Add(0);
+                    categoriesId= new List<int>()
+                    {
+                        0
+                    };
                 }
             }
             ViewData["CategoryId"] = categoriesId;
@@ -94,11 +99,11 @@ namespace MyShop.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Description(int productId = 0)
+        public async Task<IActionResult> Description(int productId)
         {
             if (productId == 0) return NotFound();
 
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var result = await _productUserServices.GetProductDescriptionAsync(productId, userId);
             if (result == null) return NotFound();
