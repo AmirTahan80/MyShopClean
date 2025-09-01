@@ -87,7 +87,8 @@ namespace Application.Services.User
                     UserName = register.UserName.ToLower(),
                     Email = register.Email.ToLower(),
                     UserDetail = userDetail,
-                    RegisterTime = ConverToShamsi.GetDateYeadAndMonthAndDay(DateTime.Now)
+                    RegisterTime = ConverToShamsi.GetDateYeadAndMonthAndDay(DateTime.Now),
+                    EmailConfirmed = true
                 };
 
                 var resultCreate = await _userManager.CreateAsync(userCreate, register.PassWord);

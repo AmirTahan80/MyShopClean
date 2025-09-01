@@ -59,10 +59,9 @@ namespace Application.Services.User
                 var returnResult = new ResultDto();
 
                 int amount = 0;
-
                 var user = await _userManager.Users.Include(p => p.UserDetail).SingleOrDefaultAsync(p => p.Id == userId);
 
-                if (string.IsNullOrWhiteSpace(user.UserDetail.Address) || string.IsNullOrWhiteSpace(user.PhoneNumber))
+                if (string.IsNullOrWhiteSpace(user?.UserDetail?.Address) || string.IsNullOrWhiteSpace(user?.PhoneNumber??""))
                 {
                     returnResult.ErrorMessage = "در صورتی که به صورت خود کار به بخش ویرایش پروفایل نرفتید لطفا به آن بخش رفته و کدملی ، شماره تلفن و آدرس خود را کامل کنید !";
                     returnResult.ReturnRedirect = _configuration["ReturnsUrl:PassIdPayToUrl"];

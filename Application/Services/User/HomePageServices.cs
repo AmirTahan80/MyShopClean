@@ -43,26 +43,26 @@ namespace Application.Services.User
                 {
                     Id=p.Id,
                     Count=p.Count,
-                    ImageSrc=(p.ProductImages.FirstOrDefault().ImgFile== ""? "": p.ProductImages.FirstOrDefault().ImgFile + "/")+p.ProductImages.FirstOrDefault().ImgSrc,
+                    ImageSrc=((p.ProductImages.FirstOrDefault()?.ImgFile ?? "") == ""? "": p.ProductImages.FirstOrDefault().ImgFile + "/")+p.ProductImages.FirstOrDefault()?.ImgSrc??"",
                     Name=p.Name,
                     Price=p.Price
-                }),
+                }).ToList(),
                 NewtProducts=newProducts.Select(p=> new GetListOfProductViewModel()
                 {
                     Id = p.Id,
                     Count = p.Count,
-                    ImageSrc = (p.ProductImages.FirstOrDefault().ImgFile == "" ? "" : p.ProductImages.FirstOrDefault().ImgFile + "/") + p.ProductImages.FirstOrDefault().ImgSrc,
+                    ImageSrc = ((p.ProductImages.FirstOrDefault()?.ImgFile ?? "") == "" ? "" : p.ProductImages.FirstOrDefault().ImgFile + "/") + p.ProductImages.FirstOrDefault().ImgSrc,
                     Name = p.Name,
                     Price = p.Price
-                }),
+                }).ToList(),
                 MostSalerProducts= mostSalerProduct.Select(p => new GetListOfProductViewModel()
                 {
                     Id = p.Id,
                     Count = p.Count,
-                    ImageSrc = (p.ProductImages.FirstOrDefault().ImgFile == "" ? "" : p.ProductImages.FirstOrDefault().ImgFile + "/") + p.ProductImages.FirstOrDefault().ImgSrc,
+                    ImageSrc = ((p.ProductImages.FirstOrDefault()?.ImgFile ?? "") == "" ? "" : p.ProductImages.FirstOrDefault().ImgFile + "/") + p.ProductImages.FirstOrDefault().ImgSrc,
                     Name = p.Name,
                     Price = p.Price
-                })
+                }).ToList()
             };
 
             return banersReturn;

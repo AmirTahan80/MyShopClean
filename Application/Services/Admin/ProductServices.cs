@@ -41,7 +41,7 @@ namespace Application.Services.Admin
                 Count = p.Count,
                 Name = p.Name,
                 Price = p.Price,
-                InstagramPost=p.ProductImages.FirstOrDefault().ImgFile==""?true:false,
+                InstagramPost=(p.ProductImages?.FirstOrDefault()?.ImgFile ?? "") ==""?true:false,
                 ImageSrc = p.ProductImages
                 .OrderBy(c => c.Id)
                 .Select(c => (c.ImgFile == ""?"": c.ImgFile + "/") + c.ImgSrc)
