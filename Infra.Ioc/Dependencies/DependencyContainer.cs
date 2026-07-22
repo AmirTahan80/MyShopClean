@@ -94,7 +94,7 @@ namespace Infra.Ioc.Dependencies
                 option.Password.RequiredUniqueChars = 0;
                 option.User.RequireUniqueEmail = true;
                 option.User.AllowedUserNameCharacters =
-                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.@";
                 option.SignIn.RequireConfirmedEmail = false;
             })
             .AddEntityFrameworkStores<AppWebContext>()

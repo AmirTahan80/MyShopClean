@@ -1,5 +1,6 @@
 ﻿using Application.InterFaces.Both;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.Extensions.Configuration;
 using MimeKit;
 using System.Threading.Tasks;
@@ -32,9 +33,14 @@ namespace Application.Services.Both
 
             ms.Body = bodyBuilder.ToMessageBody();
 
+            var host = _configuration["MailSettings:Host"] ?? throw new System.InvalidOperationException("MailSettings:Host is required.");
+            var mailUser = _configuration["MailSettings:UserName"] ?? throw new System.InvalidOperationException("MailSettings:UserName is required.");
+            var password = _configuration["MailSettings:Password"] ?? throw new System.InvalidOperationException("MailSettings:Password is required.");
+            var port = _configuration.GetValue("MailSettings:Port", 587);
+
             SmtpClient client = new SmtpClient();
-            await client.ConnectAsync(_configuration["MailSettings:Host"], 587);
-            await client.AuthenticateAsync(_configuration["MailSettings:UserName"], _configuration["MailSettings:Password"]);
+            await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(mailUser, password);
 
             await client.SendAsync(ms);
             await client.DisconnectAsync(true);

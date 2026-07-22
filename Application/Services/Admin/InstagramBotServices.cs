@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Security.Policy;
 using System.Threading.Tasks;
 
@@ -23,9 +24,8 @@ namespace Application.Services.Admin
     public class InstagramBotServices : IInstagramBotServices
     {
         private static IInstaApi _instaApi;
-        //private readonly KeepValueServices _keepValue;
-        private readonly IInstaLogger _logger;
-        private UserSessionData _user;
+        private static readonly HttpClient HttpClient = new HttpClient();
+        private readonly IInstaLogger _logger = new DebugLogger(LogLevel.Exceptions);
 
         public async Task<ResultDto<bool>> LoginToInsta(string userName, string passWord)
         {
@@ -50,7 +50,7 @@ namespace Application.Services.Admin
                 IResult<InstaLoginResult> loginMember = new Result<InstaLoginResult>(false,null);
                 if (sendRequest.Value)
                 {
-                    Task.Delay(3000);
+                    await Task.Delay(3000);
                     loginMember = await _instaApi.LoginAsync();
                 }
 
@@ -96,7 +96,7 @@ namespace Application.Services.Admin
             return mediasList;
         }
 
-        public async Task<ResultDto<bool>> DeleteCommentOnThePostAsync(string mediaLink, string commentId)
+        public Task<ResultDto<bool>> DeleteCommentOnThePostAsync(string mediaLink, string commentId)
         {
             //try
             //{
@@ -127,7 +127,7 @@ namespace Application.Services.Admin
             //        ErrorMessage = "حذف کامنت با مشکل مواحه شد " + e.Message
             //    };
             //}
-            return null;
+            return NotSupportedAsync<bool>();
         }
 
         //public Task<ResultDto<T>> DeleteMediaAsync()
@@ -170,7 +170,7 @@ namespace Application.Services.Admin
             }
         }
 
-        public async Task<ResultDto<InstaMedia>> GetMediaByLinkAsync(string mediaLink)
+        public Task<ResultDto<InstaMedia>> GetMediaByLinkAsync(string mediaLink)
         {
             //try
             //{
@@ -204,10 +204,10 @@ namespace Application.Services.Admin
             //        ErrorMessage = "در روند اجرای کار مشکلی پیش آمده است. متن خطا: " + e.Message
             //    };
             //}
-            return null;
+            return NotSupportedAsync<InstaMedia>();
         }
 
-        public async Task<ResultDto<InstaComment>> InsertCommentOnThePostAsync(string mediaLink, string text)
+        public Task<ResultDto<InstaComment>> InsertCommentOnThePostAsync(string mediaLink, string text)
         {
             //try
             //{
@@ -238,7 +238,7 @@ namespace Application.Services.Admin
             //        ErrorMessage = "درج کامنت با مشکل مواحه شد " + e.Message
             //    };
             //}
-            return null;
+            return NotSupportedAsync<InstaComment>();
         }
 
         //public async Task<ResultDto<T>> InsertMediaAsync()
@@ -315,7 +315,7 @@ namespace Application.Services.Admin
             }
         }
 
-        public async Task<ResultDto<bool>> LikeMediaAsync(string mediaLink)
+        public Task<ResultDto<bool>> LikeMediaAsync(string mediaLink)
         {
             //try
             //{
@@ -346,10 +346,10 @@ namespace Application.Services.Admin
             //        Status = false
             //    };
             //}
-            return null;
+            return NotSupportedAsync<bool>();
         }
 
-        public async Task<ResultDto<bool>> UnLikeMediaAsync(string mediaLink)
+        public Task<ResultDto<bool>> UnLikeMediaAsync(string mediaLink)
         {
             //try
             //{
@@ -380,10 +380,10 @@ namespace Application.Services.Admin
             //        Status = false
             //    };
             //}
-            return null;
+            return NotSupportedAsync<bool>();
         }
 
-        public async Task<ResultDto<InstaFriendshipStatus>> UsersWhoInsertCommentOnTheMediaAndFollowThemAsync(string mediaLink)
+        public Task<ResultDto<InstaFriendshipStatus>> UsersWhoInsertCommentOnTheMediaAndFollowThemAsync(string mediaLink)
         {
             //try
             //{
@@ -442,10 +442,10 @@ namespace Application.Services.Admin
             //        Status = false
             //    };
             //}
-            return null;
+            return NotSupportedAsync<InstaFriendshipStatus>();
         }
 
-        public async Task<ResultDto<InstaCommentList>> GetCommentsOnMediaAsync(string mediaLink)
+        public Task<ResultDto<InstaCommentList>> GetCommentsOnMediaAsync(string mediaLink)
         {
             //try
             //{
@@ -476,7 +476,7 @@ namespace Application.Services.Admin
             //        ErrorMessage = "در گرفتن کامنت های محصول به مشکل خوردیم. پیام خطا: " + e.Message
             //    };
             //}
-            return null;
+            return NotSupportedAsync<InstaCommentList>();
         }
 
         public async Task<ResultDto<Object>> UploadPostToProduct(string imageUri)
@@ -489,12 +489,22 @@ namespace Application.Services.Admin
 
                 var media = medias.Value.FirstOrDefault(p => p.Images[0].Uri == imageUri);
 
+                if (media == null)
+                {
+                    return new()
+                    {
+                        Data = null,
+                        ErrorMessage = "پست مورد نظر یافت نشد.",
+                        Status = false
+                    };
+                }
+
                 var date = ConverToShamsi.GetMonthAndYear(DateTime.Now);
                 string folder = $@"wwwroot\Images\ProductImages\{date}\";
                 var imagesName=new List<string>();
                 foreach(var image in media.Images.Where(p=>p.Width>320))
                 {
-                    var name = DownloadRemoteImageFile(image.Uri, folder);
+                    var name = await DownloadRemoteImageFileAsync(image.Uri, folder);
                     imagesName.Add(name);
                 }
                 string productName = "نام را مشخص کنید";
@@ -507,24 +517,12 @@ namespace Application.Services.Admin
                     Images = imagesName,
                 };
 
-                if (media != null)
-                { 
-                    return new()
-                    {
-                        Data = mediaToAdd,
-                        Status = true,
-                        SuccesMessage = "با موفقیت محصول یافت شد."
-                    };
-                }
-                else
+                return new()
                 {
-                    return new()
-                    {
-                        Data = null,
-                        ErrorMessage = "پست مورد نظر یافت نشد.",
-                        Status = false
-                    };
-                }
+                    Data = mediaToAdd,
+                    Status = true,
+                    SuccesMessage = "با موفقیت محصول یافت شد."
+                };
 
             }
             catch (Exception e)
@@ -538,7 +536,7 @@ namespace Application.Services.Admin
             }
 
         }
-        private static string DownloadRemoteImageFile(string uri, string fileName)
+        private static async Task<string> DownloadRemoteImageFileAsync(string uri, string folder)
         {
             //var uploadsRootFolder = Path.Combine(Directory.GetCurrentDirectory(), fileName);
 
@@ -565,15 +563,19 @@ namespace Application.Services.Admin
             //    FileStream fileStream = inputStream as FileStream;
             //    return fileStream.Name;
             //}
-            var todayDate = ConverToShamsi.GetMonthAndYear(DateTime.Now);
-            var imageName = Guid.NewGuid() +"instagram";
-            string folder = $@"wwwroot\Images\ProductImages\{todayDate}\{imageName}.png";
-            var uploadsRootFolder = Path.Combine(Directory.GetCurrentDirectory(), folder);
-            using (WebClient client = new())
-            {
-                client.DownloadFile(new Uri(uri), uploadsRootFolder);
-            }
-            return $@"{todayDate}/{imageName}.png";
+            Directory.CreateDirectory(folder);
+            var imageName = $"{Guid.NewGuid()}instagram.png";
+            var imagePath = Path.Combine(folder, imageName);
+            var imageBytes = await HttpClient.GetByteArrayAsync(new Uri(uri));
+            await File.WriteAllBytesAsync(imagePath, imageBytes);
+
+            return $"{new DirectoryInfo(folder).Name}/{imageName}";
         }
+
+        private static Task<ResultDto<T>> NotSupportedAsync<T>() => Task.FromResult(new ResultDto<T>
+        {
+            Status = false,
+            ErrorMessage = "این عملیات توسط نسخه فعلی InstagramApiSharp پشتیبانی نمی‌شود."
+        });
     }
 }

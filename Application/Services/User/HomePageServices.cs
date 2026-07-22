@@ -30,6 +30,19 @@ namespace Application.Services.User
             var cheapProduct = products.OrderBy(p => p.Price).ToList();
             var mostSalerProduct = products.OrderByDescending(p => p.Id).ToList();
 
+            string GetImagePath(Domain.Models.Product product)
+            {
+                var image = product.ProductImages?.FirstOrDefault();
+                if (image == null)
+                {
+                    return "placeholder.svg";
+                }
+
+                return string.IsNullOrWhiteSpace(image.ImgFile)
+                    ? image.ImgSrc
+                    : $"{image.ImgFile}/{image.ImgSrc}";
+            }
+
             var banersReturn = new HomePageViewModel()
             {
                 Baners = baners.Select(p => new BanerViewModel()
@@ -43,7 +56,7 @@ namespace Application.Services.User
                 {
                     Id=p.Id,
                     Count=p.Count,
-                    ImageSrc=((p.ProductImages.FirstOrDefault()?.ImgFile ?? "") == ""? "": p.ProductImages.FirstOrDefault().ImgFile + "/")+p.ProductImages.FirstOrDefault()?.ImgSrc??"",
+                    ImageSrc = GetImagePath(p),
                     Name=p.Name,
                     Price=p.Price
                 }).ToList(),
@@ -51,7 +64,7 @@ namespace Application.Services.User
                 {
                     Id = p.Id,
                     Count = p.Count,
-                    ImageSrc = ((p.ProductImages.FirstOrDefault()?.ImgFile ?? "") == "" ? "" : p.ProductImages.FirstOrDefault().ImgFile + "/") + p.ProductImages.FirstOrDefault().ImgSrc,
+                    ImageSrc = GetImagePath(p),
                     Name = p.Name,
                     Price = p.Price
                 }).ToList(),
@@ -59,7 +72,7 @@ namespace Application.Services.User
                 {
                     Id = p.Id,
                     Count = p.Count,
-                    ImageSrc = ((p.ProductImages.FirstOrDefault()?.ImgFile ?? "") == "" ? "" : p.ProductImages.FirstOrDefault().ImgFile + "/") + p.ProductImages.FirstOrDefault().ImgSrc,
+                    ImageSrc = GetImagePath(p),
                     Name = p.Name,
                     Price = p.Price
                 }).ToList()

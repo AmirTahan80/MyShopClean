@@ -15,7 +15,6 @@ namespace MyShop
         {
             Configuration = configuration;
         }
-        string origin = "_origin";
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -24,21 +23,19 @@ namespace MyShop
             services.AddControllersWithViews();
 
             #region DbContext
+            var connectionString = Configuration.GetConnectionString("ConnectToDataBase");
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new System.InvalidOperationException(
+                    "ConnectionStrings:ConnectToDataBase is required. See README.md for local setup instructions.");
+            }
+
             services.AddDbContext<AppWebContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("ConnectToDataBase"),
+                options.UseSqlServer(connectionString,
                     o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
             });
             #endregion
-            services.AddCors(options =>
-            {
-                options.AddPolicy(name: origin,
-                    policy =>
-                    {
-                        policy.AllowAnyOrigin();
-                        policy.AllowAnyHeader();
-                    });
-            });
 
             DependencyContainer.Registerservice(services);
 
@@ -66,7 +63,6 @@ namespace MyShop
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors(origin);
 
             app.UseEndpoints(endpoints =>
             {

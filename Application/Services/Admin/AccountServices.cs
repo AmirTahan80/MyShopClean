@@ -23,7 +23,7 @@ namespace Application.Services.Admin
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMessageSenderServices _messageSender;
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         private readonly RoleManager<RoleModel> _roleManager;
         private readonly ICommentRepository _commentRepository;
         private readonly IQuestionRepository _questionRepository;
@@ -32,7 +32,7 @@ namespace Application.Services.Admin
 
         public AccountServices(SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
-            IMessageSenderServices messageSender, IHostingEnvironment env, RoleManager<RoleModel> roleManager,
+            IMessageSenderServices messageSender, IWebHostEnvironment env, RoleManager<RoleModel> roleManager,
             ICommentRepository commentRepository,
             IQuestionRepository questionRepository, IPayRepository payRepository, IContactUsRepository contactUsrepository)
         {

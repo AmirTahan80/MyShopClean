@@ -26,7 +26,7 @@ namespace Application.Services.User
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMessageSendMailKit _messageSender;
         private static IHttpContextAccessor _httpContextAccessor;
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         private readonly LinkGenerator _linkGenerator;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IProductRepository _productRepository;
@@ -37,7 +37,7 @@ namespace Application.Services.User
         private readonly IContactUsRepository _contactUsRepository;
 
         public AccountUserServices(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor,
-            IHostingEnvironment env, LinkGenerator linkGenerator, IMessageSendMailKit messageSender,
+            IWebHostEnvironment env, LinkGenerator linkGenerator, IMessageSendMailKit messageSender,
             SignInManager<ApplicationUser> signInManager, IProductRepository productRepository,
             ICartRepository cartRepository, IQuestionRepository questionReposiotry,
             RoleManager<RoleModel> roleManager, IPayRepository payRepository, IContactUsRepository contactUsRepository)

@@ -1,41 +1,49 @@
-﻿using Application.InterFaces.Both;
-using System.Net;
-using System.Net.Mail;
+using Application.InterFaces.Both;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using Microsoft.Extensions.Configuration;
+using MimeKit;
+using System;
 using System.Threading.Tasks;
 
 namespace Application.Services.Both
 {
     public class MessageSenderServices : IMessageSenderServices
     {
-        public Task SendEmailAsync(string toEmail, string subject, string message, bool isMessageHtml = false)
+        private readonly IConfiguration _configuration;
+
+        public MessageSenderServices(IConfiguration configuration)
         {
-            using (var client = new SmtpClient())
-            {
+            _configuration = configuration;
+        }
 
-                var credentials = new NetworkCredential()
-                {
-                    UserName = "amirhosin6402",
-                    Password = "33682964"
-                };
+        public async Task SendEmailAsync(string toEmail, string subject, string message, bool isMessageHtml = false)
+        {
+            var senderEmail = GetRequiredSetting("MailSettings:Mail");
+            var host = GetRequiredSetting("MailSettings:Host");
+            var userName = GetRequiredSetting("MailSettings:UserName");
+            var password = GetRequiredSetting("MailSettings:Password");
+            var port = _configuration.GetValue("MailSettings:Port", 587);
 
-                client.Credentials = credentials;
-                client.Host = "smtp.gmail.com";
-                client.Port = 587;
-                client.EnableSsl = true;
-                client.UseDefaultCredentials = false;
+            var email = new MimeMessage();
+            email.From.Add(new MailboxAddress(_configuration["MailSettings:DisplayName"] ?? "My Shop", senderEmail));
+            email.To.Add(MailboxAddress.Parse(toEmail));
+            email.Subject = subject;
+            email.Body = new TextPart(isMessageHtml ? "html" : "plain") { Text = message };
 
-                using var emailMessage = new MailMessage()
-                {
-                    To = { new MailAddress(toEmail) },
-                    From = new MailAddress("amirhosin6402@gmail.com"),
-                    Subject = subject,
-                    Body = message,
-                    IsBodyHtml = isMessageHtml
-                };
-                client.Send(emailMessage);
-            }
+            using var client = new SmtpClient();
+            await client.ConnectAsync(host, port, SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(userName, password);
+            await client.SendAsync(email);
+            await client.DisconnectAsync(true);
+        }
 
-            return Task.CompletedTask;
+        private string GetRequiredSetting(string key)
+        {
+            var value = _configuration[key];
+            return !string.IsNullOrWhiteSpace(value)
+                ? value
+                : throw new InvalidOperationException($"Configuration value '{key}' is required to send email.");
         }
     }
 }
