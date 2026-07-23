@@ -75,6 +75,27 @@ namespace MyShop.Infrastructure
 
         private static async Task SeedCatalogAsync(AppWebContext context)
         {
+            if (!await context.SiteSettings.AnyAsync())
+            {
+                context.SiteSettings.Add(new SiteSetting
+                {
+                    SiteName = "MyShop",
+                    SiteTagline = "فروشگاه اینترنتی",
+                    PrimaryColor = "#EF394E",
+                    SecondaryColor = "#0EA5E9",
+                    AccentColor = "#F59E0B",
+                    FooterTitle = "فروشگاه اینترنتی MyShop",
+                    FooterDescription = "خرید آنلاین ساده، امن و سریع با امکان مدیریت کامل محصولات و سفارش‌ها.",
+                    FooterCopyright = "تمامی حقوق برای فروشگاه MyShop محفوظ است.",
+                    Address = "آدرس فروشگاه را از پنل مدیریت وارد کنید.",
+                    Phone = "",
+                    SupportEmail = "",
+                    PublicBaseUrl = "http://localhost:8080",
+                    TorobEnabled = false,
+                    EmallsEnabled = false
+                });
+            }
+
             if (!await context.Products.AnyAsync())
             {
                 context.Products.AddRange(

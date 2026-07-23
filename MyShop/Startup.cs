@@ -21,6 +21,7 @@ namespace MyShop
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddMemoryCache();
 
             #region DbContext
             var connectionString = Configuration.GetConnectionString("ConnectToDataBase");

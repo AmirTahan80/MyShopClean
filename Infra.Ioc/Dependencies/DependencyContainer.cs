@@ -62,6 +62,9 @@ namespace Infra.Ioc.Dependencies
 
             services.AddScoped<IAdminIndexManagerServices, AdminIndexManagerServices>();
 
+            services.AddScoped<ISiteSettingRepository, SiteSettingRepository>();
+            services.AddScoped<ISiteSettingService, SiteSettingService>();
+
             services.AddScoped<IInstagramBotServices, InstagramBotServices>();
 
 

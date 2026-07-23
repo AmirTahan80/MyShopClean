@@ -1,5 +1,9 @@
 ﻿<!DOCTYPE html>
-<html lang="en" class="loading">
+<html lang="fa" dir="rtl" class="loading">
+@inject ISiteSettingService SiteSettingService
+@{
+    var siteSettings = await SiteSettingService.GetAsync();
+}
 
 <!-- Mirrored from pixinvent.com/demo/convex-bootstrap-admin-dashboard-template/demo-1/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 20 Sep 2018 14:54:24 GMT -->
 <head>
@@ -9,7 +13,7 @@
     <meta name="description" content="Convex admin is super flexible, powerful, clean &amp; modern responsive bootstrap 4 admin template with unlimited possibilities.">
     <meta name="keywords" content="admin template, Convex admin template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="PIXINVENT">
-    <title>ادمین - کلوزاستور</title>
+    <title>@ViewData["Title"] - مدیریت @siteSettings.SiteName</title>
     <link rel="apple-touch-icon" sizes="60x60" href="~/Admin/img/ico/apple-icon-60.html">
     <link rel="apple-touch-icon" sizes="76x76" href="~/Admin/img/ico/apple-icon-76.html">
     <link rel="apple-touch-icon" sizes="120x120" href="~/Admin/img/ico/apple-icon-120.html">
@@ -26,9 +30,17 @@
     <link rel="stylesheet" type="text/css" href="~/Admin/vendors/css/perfect-scrollbar.min.css">
     <link rel="stylesheet" type="text/css" href="~/Admin/vendors/css/prism.min.css">
     <link rel="stylesheet" type="text/css" href="~/Admin/css/app.css">
+    <link rel="stylesheet" type="text/css" href="~/Admin/css/site-admin-overrides.css" asp-append-version="true">
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
 
 
+    <style>
+        :root {
+            --site-primary: @siteSettings.PrimaryColor;
+            --site-secondary: @siteSettings.SecondaryColor;
+            --site-accent: @siteSettings.AccentColor;
+        }
+    </style>
     @await RenderSectionAsync("Header", required: false)
 </head>
 <body data-col="2-columns" class=" 2-columns ">
@@ -38,7 +50,7 @@
             <div class="sidebar-header">
                 <div class="logo clearfix">
                     <a href="index-2.html" class="logo-text float-right">
-                        <div class="logo-img"><img src="/Admin/img/logo.png" alt="Convex Logo" /></div><span class="text align-middle">کلوزاستور</span>
+                        <div class="logo-img"><img src="/Admin/img/logo.png" alt="@siteSettings.SiteName" /></div><span class="text align-middle">@siteSettings.SiteName</span>
                     </a><a id="sidebarToggle" href="javascript:;" class="nav-toggle d-none d-sm-none d-md-none d-lg-block"><i data-toggle="expanded" class="ft-disc toggle-icon"></i></a><a id="sidebarClose" href="javascript:;" class="nav-close d-block d-md-block d-lg-none d-xl-none"><i class="ft-circle"></i></a>
                 </div>
             </div>
@@ -132,6 +144,9 @@
                                     <a asp-action="CreateDiscount" asp-controller="ProductManager" class="menu-item">افزودن</a>
                                 </li>
                             </ul>
+                        </li>
+                        <li class="sub-menu-category">
+                            <a asp-action="Index" asp-controller="SiteSettings"><i class="ft-settings"></i><span data-i18n="" class="menu-title">تنظیمات سایت</span></a>
                         </li>
                     </ul>
                 </div>

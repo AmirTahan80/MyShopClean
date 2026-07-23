@@ -1,118 +1,71 @@
-﻿<!-- header-------------------------------->
-<header class="header-main">
-    <div class="text-right">
-        <nav class="top-bar-menu">
-            <div class="container-main">
-                <div class="col-12">
-                    <div class="top-bar-right">
-                        <ul class="top-menu-ul d-block">
-                            <li class="top-menu-item menu-item-type">
-                                <a asp-action="Index" asp-controller="Product" class="top-menu-link">محصولات</a>
-                            </li>
-                            <li class="top-menu-item menu-item-type">
-                                <a asp-action="ContactUs" asp-controller="Account" class="top-menu-link">تماس با ما</a>
-                            </li>
-                            @if (User.Identity.IsAuthenticated)
-                            {
-                                <li class="top-menu-item menu-item-type">
-                                    <a asp-action="Profile" asp-controller="Account" class="top-menu-link">حساب من</a>
-                                </li>
-                            }
-                            <li class="top-menu-item menu-item-type">
-                                <a asp-action="AboutUs" asp-controller="Home" class="top-menu-link">درباره ما</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </div>
+@inject ISiteSettingService SiteSettingService
+@{
+    var siteSettings = await SiteSettingService.GetAsync();
+}
+
+<header class="header-main site-header">
+    <nav class="top-bar-menu" aria-label="منوی اصلی">
+        <div class="container-main">
+            <ul class="top-menu-ul site-top-links">
+                <li class="top-menu-item"><a asp-action="Index" asp-controller="Product" class="top-menu-link">محصولات</a></li>
+                <li class="top-menu-item"><a asp-action="ContactUs" asp-controller="Account" class="top-menu-link">تماس با ما</a></li>
+                <li class="top-menu-item"><a asp-action="AboutUs" asp-controller="Home" class="top-menu-link">درباره ما</a></li>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <li class="top-menu-item"><a asp-action="Profile" asp-controller="Account" class="top-menu-link">حساب من</a></li>
+                }
+            </ul>
+        </div>
+    </nav>
+
     <div class="container-main">
-        <section class="h-main-row">
-            <div class="col-lg-9 col-md-9 col-xs-12 pr">
-                <div class="header-right">
-                    <div class="col-lg-3 pr">
-                        <div class="header-logo row text-right" style="justify-content:center">
-                            <a asp-action="Index" asp-controller="Home">
-                                <img src="/assets/images/logo.png" alt="CloseStore" style=" max-width: 9rem;">
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-lg-9 pl">
-                        <div class="header-search row text-right">
-                            <div class="header-search-box">
-                                <form asp-action="Index" asp-controller="Product" method="get" enctype="text/plain" class="form-search">
-                                    <input type="search" class="header-search-input" name="searchProduct" placeholder="نام کالا را جستجو کنید…" value="@ViewBag.SearchProduct">
-                                    @if (ViewData["Filter"] != null)
-                                    {
-                                        <input value="@ViewBag.FilterName" type="hidden" name="filter" />
-                                        <input value="@ViewBag.SearchProduct" type="hidden" name="searchProduct" />
-                                        @if(ViewBag.CategoriesId != null)
-                                        {
-                                            foreach (var item in ViewBag.CategoriesId)
-                                            {
-                                                <input value="@item" type="hidden" name="categoriesId"/>
-                                            }
-                                        }
-                                    }
-                                    <div class="action-btns">
-                                        <button class="btn btn-search" type="submit">
-                                            <i class="fa fa-search"></i>
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <section class="site-header-row">
+            <a asp-action="Index" asp-controller="Home" class="site-brand" aria-label="@siteSettings.SiteName">
+                <img src="/assets/images/logo.png" alt="لوگوی @siteSettings.SiteName" />
+                <span>
+                    <strong>@siteSettings.SiteName</strong>
+                    @if (!string.IsNullOrWhiteSpace(siteSettings.SiteTagline))
+                    {
+                        <small>@siteSettings.SiteTagline</small>
+                    }
+                </span>
+            </a>
+
+            <div class="site-search">
+                <form asp-action="Index" asp-controller="Product" method="get" class="form-search">
+                    <label class="sr-only" for="site-product-search">جستجوی محصول</label>
+                    <input id="site-product-search" type="search" class="header-search-input" name="searchProduct" placeholder="نام کالا را جستجو کنید…" value="@ViewBag.SearchProduct" />
+                    @if (ViewData["Filter"] != null)
+                    {
+                        <input value="@ViewBag.FilterName" type="hidden" name="filter" />
+                        @if (ViewBag.CategoriesId != null)
+                        {
+                            foreach (var item in ViewBag.CategoriesId)
+                            {
+                                <input value="@item" type="hidden" name="categoriesId" />
+                            }
+                        }
+                    }
+                    <button class="btn btn-search" type="submit" aria-label="جستجو"><i class="fa fa-search"></i></button>
+                </form>
             </div>
-            <div class="col-lg-3 col-md-3 col-xs-12 pl">
-                <div class="header-left">
-                    <div class="header-account text-left">
-                        <div class="d-block">
-                            <div class="account-box account-box-home-2">
-                                <div class="nav-account d-block pl">
-                                    <span class="icon-account">
-                                        <img src="/assets/images/man.png" class="avator">
-                                    </span>
-                                    <partial name="_AccountPartial"></partial>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
+            <div class="site-account">
+                <span class="icon-account"><img src="/assets/images/man.png" class="avator" alt="حساب کاربری" /></span>
+                <partial name="_AccountPartial" />
             </div>
         </section>
-        <div>
-            <nav class="header-main-nav">
-                <div class="d-block">
-                    <div class="align-items-center">
-                        <ul class="menu-ul mega-menu-level-one">
-                            @await Component.InvokeAsync("CategoryComponent")
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </div>
-        <!--    responsive-megamenu-mobile----------------->
-        <nav class="sidebar">
-            <div class="nav-header">
-                <!--              <img class="pic-header" src="images/header-pic.jpg" alt="">-->
-                <div class="header-cover"></div>
-                <div class="logo-wrap">
-                    <a class="logo-icon" href="#"><img alt="logo-icon" src="/assets/images/logo.png" width="40"></a>
-                </div>
-            </div>
-            @await Component.InvokeAsync("ResponsiveCategoryComponent");
+
+        <nav class="header-main-nav desktop-category-nav" aria-label="دسته‌بندی محصولات">
+            <ul class="menu-ul mega-menu-level-one">@await Component.InvokeAsync("CategoryComponent")</ul>
         </nav>
-        <div class="nav-btn nav-slider nav-btn-home-3">
-            <span class="linee1"></span>
-            <span class="linee2"></span>
-            <span class="linee3"></span>
-        </div>
+
+        <nav class="sidebar" aria-label="دسته‌بندی موبایل">
+            <div class="nav-header"><div class="header-cover"></div><div class="logo-wrap"><span class="logo-icon">@siteSettings.SiteName</span></div></div>
+            @await Component.InvokeAsync("ResponsiveCategoryComponent")
+        </nav>
+        <button type="button" class="nav-btn nav-slider nav-btn-home-3" aria-label="باز کردن دسته‌بندی‌ها"><span class="linee1"></span><span class="linee2"></span><span class="linee3"></span></button>
         <div class="overlay"></div>
-        <!--    responsive-megamenu-mobile----------------->
     </div>
 </header>
 <div class="nav-categories-overlay"></div>
-<!-- header-------------------------------->

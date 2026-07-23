@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -58,13 +59,21 @@ namespace Application.Services.User
                 products = allProducts.ToList();
             }
 
+            string GetImagePath(Product product)
+            {
+                var image = product.ProductImages?.FirstOrDefault();
+                if (image == null) return "placeholder.svg";
+                if (IsRemoteImage(image.ImgSrc)) return image.ImgSrc;
+                return (string.IsNullOrWhiteSpace(image.ImgFile) ? string.Empty : image.ImgFile + "/") + image.ImgSrc;
+            }
+
             var returnCorrentProduct = products.Select(p => new GetListOfProductViewModel()
             {
                 Id = p.Id,
                 Name = p.Name,
                 Count = p.Count,
-                ImageSrc = (p.ProductImages.FirstOrDefault().ImgFile == ""?"": p.ProductImages.FirstOrDefault().ImgFile + "/") + p.ProductImages.FirstOrDefault().ImgSrc,
-                InstagramPost= p.ProductImages.FirstOrDefault().ImgFile == "" ? true:false,
+                ImageSrc = GetImagePath(p),
+                InstagramPost = IsRemoteImage(p.ProductImages?.FirstOrDefault()?.ImgSrc),
                 Price = p.Price
             });
             var retrunCategoriesTreeView = GetCategoriesTreeView(categories, allProducts);
@@ -145,13 +154,13 @@ namespace Application.Services.User
                 Name = product.Name,
                 Count = product.Count,
                 Price = product.Price.ToString("#,0"),
-                Images = product.ProductImages.Select(p => new ProductImageViewModel()
+                Images = product.ProductImages?.Any() == true ? product.ProductImages.Select(p => new ProductImageViewModel()
                 {
                     ImgSrc = (p.ImgFile ==""? "" : p.ImgFile + "/")+ p.ImgSrc,
-                }),
+                }) : new[] { new ProductImageViewModel { ImgSrc = "placeholder.svg" } },
                 CategoryId = product.Categories.Select(p => p.CategoryId).LastOrDefault(),
                 CategoryName = product.Categories.Select(p => p.Category.Name).LastOrDefault(),
-                InstagramPost = product.ProductImages.FirstOrDefault().ImgFile == "" ? true : false,
+                InstagramPost = IsRemoteImage(product.ProductImages?.FirstOrDefault()?.ImgSrc),
                 Description = product.Detail,
                 IsProductHaveAttributes = product.IsProductHaveAttributes,
                 Properties = product.Properties != null ? product.Properties.Select(p => new PropertiesViewModel()
@@ -214,6 +223,12 @@ namespace Application.Services.User
             }
 
             return productReturn;
+        }
+
+        private static bool IsRemoteImage(string imageSource)
+        {
+            return Uri.TryCreate(imageSource, UriKind.Absolute, out var imageUri)
+                && (imageUri.Scheme == Uri.UriSchemeHttp || imageUri.Scheme == Uri.UriSchemeHttps);
         }
 
 

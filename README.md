@@ -41,6 +41,20 @@ dotnet run --project .\MyShop\MyShop.csproj
 
 محیط Development از کلیدهای تست عمومی reCAPTCHA استفاده می‌کند که همیشه اجازه عبور می‌دهند؛ برای Production حتماً کلیدهای دامنه خودتان را تنظیم کنید.
 
+## تنظیمات پویا و اتصال فروشگاه‌ها
+
+بعد از ورود مدیر، از منوی مدیریت وارد **تنظیمات سایت** شوید. نام و شعار سایت، سه رنگ اصلی، متن‌های فوتر، آدرس، تلفن، ایمیل پشتیبانی و آدرس عمومی سایت از این بخش تغییر می‌کنند و در دیتابیس ذخیره می‌شوند.
+
+برای آماده‌سازی خروجی محصولات ترب و ایمالز، آدرس عمومی سایت را با دامنه نهایی مقداردهی و سرویس موردنظر را فعال کنید. در صورت نیاز یک توکن غیرقابل‌حدس هم تعیین کنید:
+
+```text
+GET /integrations/torob/products?token=YOUR_TOKEN
+GET /integrations/emalls/products?token=YOUR_TOKEN
+GET /integrations/emalls/products.xml?token=YOUR_TOKEN
+```
+
+قیمت خروجی‌ها بر حسب تومان است. فعال‌کردن endpoint به‌تنهایی فروشگاه را در ترب یا ایمالز ثبت نمی‌کند؛ آدرس خروجی را پس از ثبت و تأیید فروشگاه، مطابق فرمت نهایی مورد قبول پنل آن سرویس در اختیار پشتیبانی آن قرار دهید.
+
 ## بررسی پروژه
 
 ```powershell
@@ -48,6 +62,9 @@ dotnet restore MyShopClean.sln
 dotnet build MyShopClean.sln -c Release --no-restore
 dotnet test MyShopClean.sln -c Release --no-build
 & .\scripts\smoke-test.ps1
+& .\scripts\site-audit.ps1
 ```
+
+تست آخر، تنظیمات پویا و feedهای فروشگاه را با یک دیتابیس موقت بررسی می‌کند و از هفت صفحه عمومی در اندازه موبایل، تبلت و دسکتاپ داخل `artifacts/responsive-audit` تصویر می‌گیرد. اجرای آن به SQL Server LocalDB و Google Chrome نیاز دارد.
 
 > migrationهای قدیمی این شاخه schema ناسازگار تولید می‌کردند و با یک migration اولیه تمیز جایگزین شده‌اند. برای این نسخه از یک دیتابیس تازه استفاده کنید؛ اگر دیتابیس قبلی دارید، ابتدا از آن پشتیبان بگیرید.

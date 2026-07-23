@@ -35,6 +35,7 @@ namespace Infra.Data
         public DbSet<ContactUs> ContactUs { get; set; }
         public DbSet<CategoryToProduct> CategoryToProducts { get; set; }
         public DbSet<News> News { get; set; }
+        public DbSet<SiteSetting> SiteSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
