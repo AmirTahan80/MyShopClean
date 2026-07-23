@@ -12,7 +12,7 @@ namespace Domain.InterFaces.AdminInterFaces
         Task<IEnumerable<Cart>> GetCartsAsync();
         Task<Cart> GetCartAsync(string userId);
 
-        Task<CartDetail> GetCartDetailAsync(int cartDetailId);
+        Task<CartDetail> GetCartDetailAsync(int cartDetailId, string userId);
 
         Task<IEnumerable<Discount>> GetDiscountsAsync();
 
@@ -30,7 +30,7 @@ namespace Domain.InterFaces.AdminInterFaces
         void UpdateCartDetail(CartDetail t);
 
         Task<UserFavorite> GetFavoriteAsync(string userId);
-        Task<UserFavoritesDetail> GetFavoriteDetailAsync(int favoriteDetailId);
+        Task<UserFavoritesDetail> GetFavoriteDetailAsync(int favoriteDetailId, string userId);
 
         void RemoveFavoriteDetail(UserFavoritesDetail t);
 

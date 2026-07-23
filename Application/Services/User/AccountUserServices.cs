@@ -1,5 +1,6 @@
 ﻿using Application.InterFaces.Both;
 using Application.InterFaces.User;
+using Application.Utilities;
 using Application.Utilities.TagHelper;
 using Application.ViewModels;
 using Application.ViewModels.User;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -65,7 +67,7 @@ namespace Application.Services.User
 
                 if (register.PassWord != register.RePassWord)
                 {
-                    returnResult.ErrorMessage = "رمز عبورتان با تکرار آن یکی نیست !!";
+                    returnResult.ErrorMessage = "رمز عبور و تکرار آن یکسان نیستند.";
                     returnResult.Status = false;
                     return returnResult;
                 }
@@ -75,7 +77,7 @@ namespace Application.Services.User
 
                 if (userEmailExist || userNameExist)
                 {
-                    returnResult.ErrorMessage = "نام کاربری و یا ایمیل موجود میباشد لطفا با ایمیل و نام کاربری دیگری استفاده کنید !!";
+                    returnResult.ErrorMessage = "امکان ایجاد حساب با اطلاعات واردشده وجود ندارد. لطفاً اطلاعات دیگری وارد کنید.";
                     returnResult.Status = false;
                     return returnResult;
                 }
@@ -88,7 +90,7 @@ namespace Application.Services.User
                     Email = register.Email.ToLower(),
                     UserDetail = userDetail,
                     RegisterTime = ConverToShamsi.GetDateYeadAndMonthAndDay(DateTime.Now),
-                    EmailConfirmed = true
+                    EmailConfirmed = false
                 };
 
                 var resultCreate = await _userManager.CreateAsync(userCreate, register.PassWord);
@@ -96,15 +98,26 @@ namespace Application.Services.User
                 if (resultCreate.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(userCreate, "Customer");
+                    try
+                    {
+                        await SendConfirmEmailAsync(userCreate);
+                    }
+                    catch
+                    {
+                        await _userManager.DeleteAsync(userCreate);
+                        returnResult.ErrorMessage = "ارسال ایمیل تأیید انجام نشد. لطفاً چند دقیقه دیگر دوباره ثبت‌نام کنید.";
+                        returnResult.Status = false;
+                        return returnResult;
+                    }
                 }
                 else
                 {
-                    returnResult.ErrorMessage = "ثبت نام با موفقیت انجام نشد !";
+                    returnResult.ErrorMessage = "ثبت‌نام انجام نشد. لطفاً شرایط رمز عبور و اطلاعات واردشده را بررسی کنید.";
                     returnResult.Status = false;
                     return returnResult;
                 }
 
-                returnResult.SuccesMessage = "ثبت نام شما با موفقیت انجام شد .";
+                returnResult.SuccesMessage = "حساب شما ایجاد شد. برای فعال‌سازی، لطفاً ایمیل تأیید را بررسی کنید.";
                 returnResult.Status = true;
                 return returnResult;
             }
@@ -113,7 +126,7 @@ namespace Application.Services.User
                 Console.WriteLine(e);
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "ثبت نام با شکست مواجه شد لطفا با پشتیبانی تماس بگیرید !",
+                    ErrorMessage = "در حال حاضر امکان ثبت‌نام وجود ندارد. لطفاً کمی بعد دوباره تلاش کنید.",
                     Status = false
                 };
                 return returnResult;
@@ -158,7 +171,7 @@ namespace Application.Services.User
                 {
                     var returnResult = new ResultDto()
                     {
-                        ErrorMessage = "کاربری با این مشخصات یافت نشد !!!",
+                        ErrorMessage = "نام کاربری، ایمیل یا رمز عبور صحیح نیست.",
                         Status = false
                     };
                     return returnResult;
@@ -170,10 +183,19 @@ namespace Application.Services.User
                 {
                     var returnResult = new ResultDto()
                     {
-                        ErrorMessage = "اکانت شما به دلیل اشتباه وارد کردن گذرواژه تا دقایقی از دسترس خارج شده است !!!",
+                        ErrorMessage = "به‌دلیل چند تلاش ناموفق، ورود به حساب شما موقتاً محدود شده است. لطفاً ۱۵ دقیقه دیگر دوباره تلاش کنید.",
                         Status = false
                     };
                     return returnResult;
+                }
+
+                if (result.IsNotAllowed)
+                {
+                    return new ResultDto
+                    {
+                        ErrorMessage = "برای ورود، ابتدا ایمیل حساب خود را تأیید کنید.",
+                        Status = false
+                    };
                 }
 
                 if (result.Succeeded)
@@ -182,7 +204,7 @@ namespace Application.Services.User
 
                     var returnResult = new ResultDto()
                     {
-                        SuccesMessage = "به فروشگاه من خوش آمدید...",
+                        SuccesMessage = "خوش آمدید؛ ورود شما با موفقیت انجام شد.",
                         Status = true
                     };
                     return returnResult;
@@ -191,7 +213,7 @@ namespace Application.Services.User
                 {
                     var returnResult = new ResultDto()
                     {
-                        ErrorMessage = "رمز عبور یا ایمیل و یا نام کاربری اشتباه است !!!!",
+                        ErrorMessage = "نام کاربری، ایمیل یا رمز عبور صحیح نیست.",
                         Status = false
                     };
                     return returnResult;
@@ -202,7 +224,7 @@ namespace Application.Services.User
                 Console.WriteLine(e);
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "در صورتی که از درست بودن اطلاعات مطمئن هستید برای رفع مشکل با پشتیبانی تماس بگیرید !!!!",
+                    ErrorMessage = "ورود انجام نشد. لطفاً کمی بعد دوباره تلاش کنید.",
                     Status = false
                 };
                 return returnResult;
@@ -253,7 +275,7 @@ namespace Application.Services.User
                 {
                     var returnResult = new ResultDto()
                     {
-                        ErrorMessage = "فیلدهایی که دارای ستاره قرمز هستند نمیتوانند خالی باشند !!!!",
+                        ErrorMessage = "لطفاً همه فیلدهای الزامی را تکمیل کنید.",
                         Status = false
                     };
                     return returnResult;
@@ -264,7 +286,7 @@ namespace Application.Services.User
                 {
                     var returnResult = new ResultDto()
                     {
-                        ErrorMessage = "کاربری یافت نشد !!!",
+                        ErrorMessage = "حساب کاربری موردنظر یافت نشد.",
                         Status = false,
                         ShowNotFound = true
                     };
@@ -280,7 +302,7 @@ namespace Application.Services.User
                     {
                         var returnResult = new ResultDto()
                         {
-                            ErrorMessage = "مشکلی در ارسال پیام به ایمیل  به وجود آمد !! لطفا دوباره امتحان کنید.",
+                            ErrorMessage = "ارسال ایمیل تأیید انجام نشد. لطفاً کمی بعد دوباره تلاش کنید.",
                             Status = false,
                         };
                         return returnResult;
@@ -297,7 +319,7 @@ namespace Application.Services.User
                 {
                     var returnResult = new ResultDto()
                     {
-                        SuccesMessage = "ویرایش حسابتان با موفقیت انجام شد ...",
+                        SuccesMessage = "اطلاعات حساب شما با موفقیت به‌روزرسانی شد.",
                         Status = true,
                     };
                     return returnResult;
@@ -306,7 +328,7 @@ namespace Application.Services.User
                 {
                     var returnResult = new ResultDto()
                     {
-                        ErrorMessage = "ویرایش حسابتان با شکست مواجه شد !!! در صورتی که اقدام به ویرایش ایمیل یا نام کاربری کرده اید ممکن است نام کاربری یا ایمیل توسط شخص دیگری مورد استفاده قرار گرفته باشد ... لطفا با ایمیل یا نام کاربی دیگری امتحان کنید ...",
+                        ErrorMessage = "به‌روزرسانی حساب انجام نشد. لطفاً از آزاد بودن نام کاربری و ایمیل واردشده مطمئن شوید.",
                         Status = false,
                     };
                     return returnResult;
@@ -317,7 +339,7 @@ namespace Application.Services.User
                 Console.WriteLine(e);
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "ویرایش حسابتان با شکست مواجه شد !!! بعد از مدتی کوتاه امتحان کنید و اگر باز هم با خطا مواجه شدید با پشتیبانی سایت تماس بگیرید ... با تشکر.",
+                    ErrorMessage = "به‌روزرسانی حساب انجام نشد. لطفاً کمی بعد دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
                     Status = false,
                 };
                 return returnResult;
@@ -345,7 +367,7 @@ namespace Application.Services.User
                     await _userManager.UpdateSecurityStampAsync(findUser);
                     var returnResult = new ResultDto()
                     {
-                        SuccesMessage = "تغییر رمز عبور با موفقیت انجام شد ... لطفا دوباره وارد شوید .",
+                        SuccesMessage = "رمز عبور شما با موفقیت تغییر کرد. لطفاً دوباره وارد شوید.",
                         Status = true
                     };
                     return returnResult;
@@ -354,7 +376,7 @@ namespace Application.Services.User
                 {
                     var returnResult = new ResultDto()
                     {
-                        ErrorMessage = "تغییر رمز عبور با شکست مواجه شد !!!",
+                        ErrorMessage = "تغییر رمز عبور انجام نشد. لطفاً رمز عبور فعلی و شرایط رمز جدید را بررسی کنید.",
                         Status = false
                     };
                     return returnResult;
@@ -365,7 +387,7 @@ namespace Application.Services.User
                 Console.WriteLine(e);
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "در تغییر رمز عبور مشکلی پیش آمده است !!! دقایقی دیگر امتحان کنید و اگر باز هم با این مشکل مواجه شدید با پشتیبانی تماس بگیرید ...",
+                    ErrorMessage = "تغییر رمز عبور انجام نشد. لطفاً کمی بعد دوباره تلاش کنید.",
                     Status = false
                 };
                 return returnResult;
@@ -382,7 +404,7 @@ namespace Application.Services.User
                     await Task.Delay(2000);
                     var returnResult = new ResultDto()
                     {
-                        SuccesMessage = "در صورت درست بودن ایمیل لینک نغییر رمز عبور برای شما ارسال شد.",
+                        SuccesMessage = "اگر این ایمیل در سامانه ثبت شده باشد، لینک بازیابی رمز عبور برای آن ارسال می‌شود.",
                         Status = true
                     };
                     return returnResult;
@@ -392,7 +414,7 @@ namespace Application.Services.User
                     var result = await SendForgotPasswordAsync(findUser);
                     var returnResult = new ResultDto()
                     {
-                        SuccesMessage = "در صورت درست بودن ایمیل لینک نغییر رمز عبور برای شما ارسال شد.",
+                        SuccesMessage = "اگر این ایمیل در سامانه ثبت شده باشد، لینک بازیابی رمز عبور برای آن ارسال می‌شود.",
                         Status = true
                     };
                     return returnResult;
@@ -403,7 +425,7 @@ namespace Application.Services.User
                 Console.WriteLine(e);
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "مشکلی در ارسال لینک به ایمیل شما به وجو آمده است لطفا لحظاتی دیگر دوباره امتحان کنید . در صورت مواجه شدن با مشکل با پشتیبانی تماس بگیرید !",
+                    ErrorMessage = "ارسال لینک بازیابی در حال حاضر ممکن نیست. لطفاً کمی بعد دوباره تلاش کنید.",
                     Status = false
                 };
                 return returnResult;
@@ -416,7 +438,7 @@ namespace Application.Services.User
             {
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "کاربری  با این مشخصات یافت نشد !!!!",
+                    ErrorMessage = "لینک بازیابی معتبر نیست یا منقضی شده است.",
                     Status = false,
                 };
                 return returnResult;
@@ -426,7 +448,7 @@ namespace Application.Services.User
             {
                 var returnResult = new ResultDto()
                 {
-                    SuccesMessage = "رمز عبور با موفقیت تغییر یافت .",
+                    SuccesMessage = "رمز عبور شما با موفقیت تغییر کرد.",
                     Status = true,
                 };
                 return returnResult;
@@ -454,10 +476,17 @@ namespace Application.Services.User
                 var productPrice = 0;
                 var returnResult = new ResultDto();
 
+                if (count < 1 || count > 100)
+                {
+                    returnResult.ErrorMessage = "لطفاً تعداد محصول را بین ۱ تا ۱۰۰ انتخاب کنید.";
+                    returnResult.Status = false;
+                    return returnResult;
+                }
+
                 var product = await _productRepository.GetProductAsync(productId);
                 if (product == null)
                 {
-                    returnResult.ErrorMessage = "محصولی با این مشخصات یافت نشد !!!!!";
+                    returnResult.ErrorMessage = "محصول موردنظر پیدا نشد یا دیگر در دسترس نیست.";
                     returnResult.Status = false;
 
                     return returnResult;
@@ -469,14 +498,14 @@ namespace Application.Services.User
                 {
                     if (product.AttributeTemplates.Count() > 0)
                     {
-                        returnResult.ErrorMessage = "لطفا نوع مورد نظر را انتخاب کنید !!!";
+                        returnResult.ErrorMessage = "لطفاً نوع محصول موردنظر را انتخاب کنید.";
                         returnResult.Status = false;
 
                         return returnResult;
                     }
                     if (product.Count < count)
                     {
-                        returnResult.ErrorMessage = "تعداد خواسته شده از تعداده موجو در انبار بیشتر است !!!";
+                        returnResult.ErrorMessage = "تعداد انتخاب‌شده بیشتر از موجودی فعلی محصول است.";
                         returnResult.Status = false;
 
                         return returnResult;
@@ -489,14 +518,14 @@ namespace Application.Services.User
                     var findTemplate = product.AttributeTemplates.SingleOrDefault(p => p.AttributeTemplateId == templateId);
                     if (findTemplate == null)
                     {
-                        returnResult.ErrorMessage = "این نوع محصول موجود نمیباشد لطفا نوع دیگری را انتخاب کنید !!!";
+                        returnResult.ErrorMessage = "نوع انتخاب‌شده موجود نیست؛ لطفاً گزینه‌ی دیگری را انتخاب کنید.";
                         returnResult.Status = false;
 
                         return returnResult;
                     }
                     if (findTemplate.AttrinbuteTemplateCount < count)
                     {
-                        returnResult.ErrorMessage = "تعداد خواسته شده از تعداده موجو در انبار بیشتر است !!!";
+                        returnResult.ErrorMessage = "تعداد انتخاب‌شده بیشتر از موجودی فعلی این نوع محصول است.";
                         returnResult.Status = false;
 
                         return returnResult;
@@ -508,7 +537,7 @@ namespace Application.Services.User
                 var user = await _userManager.FindByIdAsync(userId);
                 if (user == null)
                 {
-                    returnResult.ErrorMessage = "لطفا ابتدا وارد سایت شوید !";
+                    returnResult.ErrorMessage = "برای افزودن محصول به سبد خرید، لطفاً ابتدا وارد حساب کاربری خود شوید.";
                     returnResult.Status = false;
                     return returnResult;
                 }
@@ -534,7 +563,7 @@ namespace Application.Services.User
                         ProductId = product.Id,
                         Product = product,
                         ProductPrice = productPrice,
-                        TotalPrice = Convert.ToInt32(productPrice * count),
+                        TotalPrice = checked(productPrice * count),
                         Templates = template
                     };
 
@@ -542,7 +571,10 @@ namespace Application.Services.User
                 }
                 else
                 {
-                    var cartDetail = cart.CartDetails.SingleOrDefault(p => p.ProductId == product.Id);
+                    var cartDetail = cart.CartDetails.SingleOrDefault(p =>
+                        p.ProductId == product.Id &&
+                        (p.Templates == null ? template == null : template != null &&
+                            p.Templates.AttributeTemplateId == template.AttributeTemplateId));
 
                     if (cartDetail == null)
                     {
@@ -554,7 +586,7 @@ namespace Application.Services.User
                             ProductId = product.Id,
                             ProductCount = count,
                             ProductPrice = productPrice,
-                            TotalPrice = productPrice * count,
+                            TotalPrice = checked(productPrice * count),
                             Templates = templateId == 0 ? null : template
                         };
 
@@ -567,7 +599,7 @@ namespace Application.Services.User
                         {
                             if (product.Count < count)
                             {
-                                returnResult.ErrorMessage = "تعداد خواسته شده از تعداده موجو در انبار بیشتر است !!!";
+                                returnResult.ErrorMessage = "تعداد انتخاب‌شده بیشتر از موجودی فعلی محصول است.";
                                 returnResult.Status = false;
 
                                 return returnResult;
@@ -577,7 +609,7 @@ namespace Application.Services.User
                         {
                             if (template.AttrinbuteTemplateCount < count)
                             {
-                                returnResult.ErrorMessage = "تعداد خواسته شده از تعداده موجو در انبار بیشتر است !!!";
+                                returnResult.ErrorMessage = "تعداد انتخاب‌شده بیشتر از موجودی فعلی این نوع محصول است.";
                                 returnResult.Status = false;
 
                                 return returnResult;
@@ -586,7 +618,7 @@ namespace Application.Services.User
 
                         cartDetail.ProductCount = count;
                         cartDetail.ProductPrice = productPrice;
-                        cartDetail.TotalPrice = productPrice * count;
+                        cartDetail.TotalPrice = checked(productPrice * count);
                         cartDetail.Templates = templateId == 0 ? null : template;
 
                         _cartRepository.UpdateCartDetail(cartDetail);
@@ -595,7 +627,7 @@ namespace Application.Services.User
                 await _cartRepository.SaveAsync();
 
 
-                returnResult.SuccesMessage = "محصول به درستی به سبد خرید شما افزوده شد.";
+                returnResult.SuccesMessage = "محصول با موفقیت به سبد خرید شما اضافه شد.";
                 returnResult.Status = true;
 
                 return returnResult;
@@ -605,7 +637,7 @@ namespace Application.Services.User
                 Console.WriteLine(e);
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "مشکلی در افزودن محصول به سبد خرید به وجود آمده است ! لطفا دوباره امتحان کنید . در صورت بروز مشکل با پشتیبانی تماس بگیرید ...",
+                    ErrorMessage = "افزودن محصول به سبد خرید انجام نشد. لطفاً دوباره تلاش کنید.",
                     Status = false
                 };
                 return returnResult;
@@ -679,11 +711,11 @@ namespace Application.Services.User
             }
         }
 
-        public async Task<bool> RemoveCartDetail(int cartDetailId)
+        public async Task<bool> RemoveCartDetail(int cartDetailId, string userId)
         {
             try
             {
-                var cartDetail = await _cartRepository.GetCartDetailAsync(cartDetailId);
+                var cartDetail = await _cartRepository.GetCartDetailAsync(cartDetailId, userId);
                 if (cartDetail == null)
                     return false;
 
@@ -699,11 +731,11 @@ namespace Application.Services.User
                 return false;
             }
         }
-        public async Task<bool> LowOffProduct(int cartDetailId)
+        public async Task<bool> LowOffProduct(int cartDetailId, string userId)
         {
             try
             {
-                var cartDetail = await _cartRepository.GetCartDetailAsync(cartDetailId);
+                var cartDetail = await _cartRepository.GetCartDetailAsync(cartDetailId, userId);
                 if (cartDetail == null) return false;
 
                 if (cartDetail.ProductCount <= 1)
@@ -738,11 +770,11 @@ namespace Application.Services.User
 
         }
 
-        public async Task<bool> IncreaseProduct(int cartDetailId)
+        public async Task<bool> IncreaseProduct(int cartDetailId, string userId)
         {
             try
             {
-                var cartDetail = await _cartRepository.GetCartDetailAsync(cartDetailId);
+                var cartDetail = await _cartRepository.GetCartDetailAsync(cartDetailId, userId);
                 if (cartDetail == null) return false;
 
                 if (cartDetail.Product.AttributeTemplates.Count() == 0)
@@ -802,7 +834,7 @@ namespace Application.Services.User
                 var product = await _productRepository.GetProductAsync(productId);
                 if (product == null)
                 {
-                    returnResult.ErrorMessage = "مشکلی در افزودن محصول به علاقه مندی ها به وجود آمده است !!!";
+                    returnResult.ErrorMessage = "محصول موردنظر یافت نشد.";
                     returnResult.Status = false;
                     return returnResult;
                 }
@@ -810,7 +842,7 @@ namespace Application.Services.User
                 var user = await _userManager.FindByIdAsync(userId);
                 if (user == null)
                 {
-                    returnResult.ErrorMessage = "لطفا ابتدا وارد سایت شوید !!!";
+                    returnResult.ErrorMessage = "برای استفاده از علاقه‌مندی‌ها، لطفاً ابتدا وارد حساب خود شوید.";
                     returnResult.Status = false;
                     return returnResult;
                 }
@@ -837,7 +869,7 @@ namespace Application.Services.User
 
                     await _cartRepository.AddFavoriteDetail(favoriteDetailCreate);
 
-                    returnResult.SuccesMessage = "محصول با موفقیت به لیست علاقه مندی ها افزوده شد .";
+                    returnResult.SuccesMessage = "محصول به فهرست علاقه‌مندی‌های شما افزوده شد.";
                     returnResult.Status = true;
 
 
@@ -858,14 +890,14 @@ namespace Application.Services.User
 
                         await _cartRepository.AddFavoriteDetail(favoriteDetailCreate);
 
-                        returnResult.SuccesMessage = "محصول با موفقیت به لیست علاقه مندی ها افزوده شد .";
+                        returnResult.SuccesMessage = "محصول به فهرست علاقه‌مندی‌های شما افزوده شد.";
                         returnResult.Status = true;
                     }
                     else
                     {
                         _cartRepository.RemoveFavoriteDetail(favoriteDetail);
 
-                        returnResult.SuccesMessage = "محصول از لیست علاقه مندی ها حذف شد !!";
+                        returnResult.SuccesMessage = "محصول از فهرست علاقه‌مندی‌های شما حذف شد.";
                         returnResult.Status = true;
                     }
 
@@ -879,7 +911,7 @@ namespace Application.Services.User
                 Console.WriteLine(e);
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "مشکلی در افزودن محصول به لیست علاقه مندی ها به وجود آمده است !!! لطفا دوباره تلاش کنید و درصورت وجود مشکل با پشتیبانی تماس بگیرید !!!",
+                    ErrorMessage = "تغییر فهرست علاقه‌مندی‌ها انجام نشد. لطفاً دوباره تلاش کنید.",
                     Status = false
                 };
                 return returnResult;
@@ -913,11 +945,11 @@ namespace Application.Services.User
             return favoriteReturn;
 
         }
-        public async Task<bool> RemoveFavoriteDetailAsync(int favoriteDetailId)
+        public async Task<bool> RemoveFavoriteDetailAsync(int favoriteDetailId, string userId)
         {
             try
             {
-                var favoriteDetail = await _cartRepository.GetFavoriteDetailAsync(favoriteDetailId);
+                var favoriteDetail = await _cartRepository.GetFavoriteDetailAsync(favoriteDetailId, userId);
                 if (favoriteDetail == null) return false;
 
                 _cartRepository.RemoveFavoriteDetail(favoriteDetail);
@@ -943,21 +975,21 @@ namespace Application.Services.User
                 var user = await _userManager.FindByEmailAsync(question.Email);
                 if (user == null)
                 {
-                    returnResult.ErrorMessage = "کاربری با این ایمیل یافت نشد !!!";
+                    returnResult.ErrorMessage = "حسابی با این ایمیل یافت نشد. لطفاً ایمیل را بررسی کنید.";
                     returnResult.Status = false;
                     return returnResult;
                 }
 
                 if (question.ProductId == 0)
                 {
-                    returnResult.ErrorMessage = "مشکلی در ثبت سوال پیش آمده است لطفا دوباره تلاش کنید !!!";
+                    returnResult.ErrorMessage = "اطلاعات محصول معتبر نیست. لطفاً صفحه را تازه‌سازی و دوباره تلاش کنید.";
                     returnResult.Status = false;
                     return returnResult;
                 }
                 var product = await _productRepository.GetProductAsync(question.ProductId);
                 if (product == null)
                 {
-                    returnResult.ErrorMessage = "مشکلی در ثبت سوال پیش آمده است لطفا دوباره تلاش کنید !!!";
+                    returnResult.ErrorMessage = "محصول موردنظر یافت نشد.";
                     returnResult.Status = false;
                     return returnResult;
                 }
@@ -968,7 +1000,7 @@ namespace Application.Services.User
                     parent = await _questionReposiotry.GetQuestionAsync(question.ReplayId);
                     if (parent == null)
                     {
-                        returnResult.ErrorMessage = "مشکلی در ثبت سوال پیش آمده است لطفا دوباره تلاش کنید !!!";
+                        returnResult.ErrorMessage = "پرسش مرجع یافت نشد. لطفاً صفحه را تازه‌سازی و دوباره تلاش کنید.";
                         returnResult.Status = false;
                         return returnResult;
                     }
@@ -997,7 +1029,7 @@ namespace Application.Services.User
 
                 await _questionReposiotry.SaveAsync();
 
-                returnResult.SuccesMessage = "سوال شما با موفقیت ثبت شد در صورت جواب دادن از طریق ایمیل به شما اعلام خواهیم کرد ...";
+                returnResult.SuccesMessage = "پرسش شما با موفقیت ثبت شد. در صورت ثبت پاسخ، از طریق ایمیل اطلاع‌رسانی می‌کنیم.";
                 returnResult.Status = true;
 
                 return returnResult;
@@ -1007,7 +1039,7 @@ namespace Application.Services.User
                 Console.WriteLine(e);
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "مشکلی پیش آمده است و سوال شما ثبت نشسده است لطفا دوباره تلاش کنید !!! در صورت بروز مشکل با پشتیبانی تماس بگیرید ...",
+                    ErrorMessage = "پرسش شما ثبت نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
                     Status = false
                 };
                 return returnResult;
@@ -1048,7 +1080,7 @@ namespace Application.Services.User
             return addToProfile;
         }
 
-        public async Task<ResultDto> DiscountCartAsync(CartViewModel discount)
+        public async Task<ResultDto> DiscountCartAsync(CartViewModel discount, string userId)
         {
             try
             {
@@ -1059,27 +1091,39 @@ namespace Application.Services.User
 
                 if (discountFind == null)
                 {
-                    returnResult.ErrorMessage = "کد تخفیف یافت نشد!!!";
+                    returnResult.ErrorMessage = "کد تخفیف واردشده معتبر نیست.";
                     returnResult.Status = false;
                     return returnResult;
                 }
 
-                var carts = await _cartRepository.GetCartsAsync();
-                var cart = carts.SingleOrDefault(p => p.CartId == discount.Id);
+                var cart = await _cartRepository.GetCartAsync(userId);
                 if (cart == null)
                 {
-                    returnResult.ErrorMessage = "کد تخفیف یافت نشد!!!";
+                    returnResult.ErrorMessage = "سبد خرید فعالی برای اعمال کد تخفیف پیدا نشد.";
                     returnResult.Status = false;
                     return returnResult;
                 }
 
+                if (discountFind.ExpireTime != default && discountFind.ExpireTime <= DateTime.UtcNow)
+                {
+                    returnResult.ErrorMessage = "مهلت استفاده از این کد تخفیف به پایان رسیده است.";
+                    returnResult.Status = false;
+                    return returnResult;
+                }
+
+                if (cart.Discounts.Any(item => item.Id == discountFind.Id))
+                {
+                    returnResult.ErrorMessage = "این کد تخفیف قبلاً روی سبد خرید شما اعمال شده است.";
+                    returnResult.Status = false;
+                    return returnResult;
+                }
 
                 cart.Discounts.Add(discountFind);
 
                 await _cartRepository.SaveAsync();
 
 
-                returnResult.SuccesMessage = "کد تخفیف اعمال شد ...";
+                returnResult.SuccesMessage = "کد تخفیف با موفقیت روی سبد خرید شما اعمال شد.";
                 returnResult.Status = true;
                 return returnResult;
             }
@@ -1088,7 +1132,7 @@ namespace Application.Services.User
                 Console.WriteLine(e);
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "کد تخفیف اعمال نشد ... لطفا دوباره امتحان کنید !!!",
+                    ErrorMessage = "اعمال کد تخفیف انجام نشد. لطفاً دوباره تلاش کنید.",
                     Status = false
                 };
                 return returnResult;
@@ -1128,10 +1172,13 @@ namespace Application.Services.User
 
             return retrunProfile;
         }
-        public async Task<ProfileViewModel> GetFactorAsync(int id)
+        public async Task<ProfileViewModel> GetFactorAsync(int id, string userId)
         {
-            var factors = await _payRepository.GetFactors();
-            var factor = factors.SingleOrDefault(p => p.Id == id);
+            var factor = await _payRepository.GetFactorAsync(id, userId);
+            if (factor == null)
+            {
+                return null;
+            }
 
             var retrunProfile = new ProfileViewModel()
             {
@@ -1185,7 +1232,7 @@ namespace Application.Services.User
 
                 var returnResult = new ResultDto()
                 {
-                    SuccesMessage = "درخواست شما با موفقیت ثبت شد ... در طول 24 یا 48 ساعت آینده منتظره پاسخ بمانید ... با تشکر از ثبت درخواست .",
+                    SuccesMessage = "درخواست شما با موفقیت ثبت شد. نتیجه پس از بررسی از طریق اطلاعات تماس شما اعلام می‌شود.",
                     Status = true
                 };
 
@@ -1196,7 +1243,7 @@ namespace Application.Services.User
                 Console.WriteLine(e);
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "مشکلی در ثبت درخواست شما به وجود آمده لطفا با پشتیبانی تماس بگیرید !!!",
+                    ErrorMessage = "درخواست شما ثبت نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
                     Status = false
                 };
                 return returnResult;
@@ -1205,62 +1252,49 @@ namespace Application.Services.User
 
         public JsonResult UploadFileEditor(IFormFile file)
         {
-            try
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "Editor");
+            if (!SecureImageUpload.TrySave(file, filePath, out var fileName, out var errorMessage))
             {
-                if (file.Length <= 0) return null;
-
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "Editor");
-
-                if (!Directory.Exists(filePath))
+                return new JsonResult(new
                 {
-                    Directory.CreateDirectory(filePath);
-                }
-                var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName).ToLower();
-                using (var stream = new FileStream(filePath + "/" + fileName, FileMode.Create))
-                {
-                    file.CopyTo(stream);
-                }
-                var url = $"/Images/Editor/{fileName}";
-                var result = new UploadFileForCkEditorResultViewModel()
-                {
-                    FileName = fileName,
-                    Uploaded = 1,
-                    Url = url
-                };
-                var successResultJson = new JsonResult(result);
-                return successResultJson;
+                    uploaded = 0,
+                    error = new { message = errorMessage }
+                });
             }
-            catch (Exception error)
+
+            return new JsonResult(new UploadFileForCkEditorResultViewModel
             {
-                Console.WriteLine(error);
-                return null;
-            }
+                FileName = fileName,
+                Uploaded = 1,
+                Url = $"/Images/Editor/{fileName}"
+            });
         }
 
         public async Task<ResultDto> JoinToSendEmailAsync(string email)
         {
-            if (email.Contains("@gmail.com"))
+            email = email?.Trim().ToLowerInvariant();
+            if (!string.IsNullOrWhiteSpace(email) && new EmailAddressAttribute().IsValid(email))
             {
                 var getAllNewsEmail = await _contactUsRepository.GetAllEmailInNewsAsync();
-                var isEmailInNewsEmail = getAllNewsEmail.Any(p => p.Email == email.ToLower());
+                var isEmailInNewsEmail = getAllNewsEmail.Any(p => p.Email == email);
                 if (isEmailInNewsEmail)
                 {
                     var returnResult1 = new ResultDto()
                     {
-                        ErrorMessage = "این ایمیل در خبرنامه وجود دارد ...",
+                        ErrorMessage = "این ایمیل قبلاً در خبرنامه ثبت شده است.",
                         Status = false
                     };
                     return returnResult1;
                 }
                 var createNews = new News()
                 {
-                    Email = email.ToLower()
+                    Email = email
                 };
                 await _contactUsRepository.JoinToNewsAsync(createNews);
                 await _contactUsRepository.SaveAsync();
                 var returnResult = new ResultDto()
                 {
-                    SuccesMessage = "ایمیل شما در خبرنامه با موفقیت ثبت شد .",
+                    SuccesMessage = "عضویت شما در خبرنامه با موفقیت انجام شد.",
                     Status = true
                 };
                 return returnResult;
@@ -1269,7 +1303,7 @@ namespace Application.Services.User
             {
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "ایمیل معتبر نیست !!!",
+                    ErrorMessage = "لطفاً یک نشانی ایمیل معتبر وارد کنید.",
                     Status = false
                 };
                 return returnResult;

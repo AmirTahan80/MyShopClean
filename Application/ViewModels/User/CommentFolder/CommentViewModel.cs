@@ -10,11 +10,11 @@ namespace Application.ViewModels.User
     public class CommentViewModel
     {
 
-        [Required(ErrorMessage = "عنوان نظر احباری است !!")]
+        [Required(ErrorMessage = "لطفاً عنوان نظر را وارد کنید.")]
         [Display(Name = "عنوان نظر")]
         public string Topic { get; set; }
 
-        [Required(ErrorMessage ="متن نظر اجباری است !!")]
+        [Required(ErrorMessage ="لطفاً متن نظر را وارد کنید.")]
         [Display(Name ="نظر")]
         public string Text { get; set; }
 

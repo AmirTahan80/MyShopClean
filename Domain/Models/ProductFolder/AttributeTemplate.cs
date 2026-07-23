@@ -11,6 +11,8 @@ namespace Domain.Models
         public string Template { get; set; }
         public int AttrinbuteTemplatePrice { get; set; }
         public int AttrinbuteTemplateCount { get; set; }
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
 
         //Navigation
 

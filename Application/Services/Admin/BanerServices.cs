@@ -1,4 +1,5 @@
 ﻿using Application.InterFaces.Admin;
+using Application.Utilities;
 using Application.Utilities.TagHelper;
 using Application.ViewModels;
 using Application.ViewModels.Admin;
@@ -65,7 +66,7 @@ namespace Application.Services.Admin
                 var imageUploadPath = uploadImage(createBaner.Image);
                 if (string.IsNullOrWhiteSpace(imageUploadPath))
                 {
-                    returnResut.ErrorMessage = "در آپلود عکس شکلی پیش آمده است !!! لطفا دوباره تلاش کنید...";
+                    returnResut.ErrorMessage = "بارگذاری تصویر انجام نشد. لطفاً دوباره تلاش کنید.";
                     returnResut.Status = false;
 
                     return returnResut;
@@ -93,7 +94,7 @@ namespace Application.Services.Admin
                 Console.WriteLine(e);
                 var returnResut = new ResultDto()
                 {
-                    ErrorMessage = "بنر با موفیت افزوده نشد لطفا دقایقی دیگر دوباره امتحان کنید !!!",
+                    ErrorMessage = "بنر ایجاد نشد. لطفاً اطلاعات واردشده را بررسی کنید.",
                     Status = false
                 };
                 return returnResut;
@@ -118,7 +119,7 @@ namespace Application.Services.Admin
                     var result = DeletePhoto(banerFind.Image);
                     if (!result)
                     {
-                        retrunResult.ErrorMessage = "در ویرایش بنر مشکلی به وجود آمده است ... لطفا دوباره تلاش کنید !!!";
+                        retrunResult.ErrorMessage = "ویرایش بنر انجام نشد. لطفاً دوباره تلاش کنید.";
                         retrunResult.Status = false;
                         return retrunResult;
                     }
@@ -140,7 +141,7 @@ namespace Application.Services.Admin
                 Console.WriteLine(e);
                 var retrunResult = new ResultDto()
                 {
-                    ErrorMessage = "در ویرایش بنر مشکلی به وجود آمده است ... لطفا دوباره تلاش کنید !!!",
+                    ErrorMessage = "ویرایش بنر انجام نشد. لطفاً دوباره تلاش کنید.",
                     Status = false
                 };
                 return retrunResult;
@@ -168,7 +169,7 @@ namespace Application.Services.Admin
                     var result = DeletePhoto(baner.Image);
                     if (!result)
                     {
-                        returnResult.ErrorMessage = "در حذف بنر از فایل مشکلی به وجود آمد لطفا دوباره امتحان کنید !!!";
+                        returnResult.ErrorMessage = "فایل تصویر بنر حذف نشد. لطفاً دوباره تلاش کنید.";
                         returnResult.Status = false;
 
                         return returnResult;
@@ -190,7 +191,7 @@ namespace Application.Services.Admin
                 Console.WriteLine(e);
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "در حذف بنر مشکلی پیش آمده است !!! دقایقی دیگر دوباره امتحان کنید !!!",
+                    ErrorMessage = "حذف بنر انجام نشد. لطفاً دوباره تلاش کنید.",
                     Status = false
                 };
                 return returnResult;
@@ -212,19 +213,9 @@ namespace Application.Services.Admin
             {
                 Directory.CreateDirectory(uploadsRootFolder);
             }
-            if (file.Length != 0)
-            {
-
-                string fileName = DateTime.Now.Ticks.ToString() + "-" + file.FileName;
-                string filePath = Path.Combine(uploadsRootFolder, fileName);
-                using (var FileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    file.CopyTo(FileStream);
-                }
-                return (todayDate + "/" + fileName);
-            }
-            else
-                return ("");
+            return SecureImageUpload.TrySave(file, uploadsRootFolder, out var fileName, out _)
+                ? todayDate + "/" + fileName
+                : string.Empty;
         }
 
         private bool DeletePhoto(string imagePath)

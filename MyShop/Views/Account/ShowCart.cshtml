@@ -40,7 +40,7 @@
                                         موفقیت ! @ViewData["Success"]
                                     </div>
                                 }
-                                <form action="#" class="c-form">
+                                <div class="c-form">
                                     <table class="table-cart cart table table-borderless">
                                         <thead>
                                             <tr>
@@ -62,10 +62,12 @@
                                                                 <img src="/Images/ProductImages/@item.ImgSrc">
                                                             </a>
                                                             <div class="product-remove">
-                                                                <a asp-action="RemoveCartDetail" asp-controller="Account"
-                                                                   asp-route-cartDetailId="@item.Id" class="remove">
-                                                                    <i class="fa fa-close"></i>
-                                                                </a>
+                                                                <form asp-action="RemoveCartDetail" asp-controller="Account" method="post">
+                                                                    <input type="hidden" name="cartDetailId" value="@item.Id" />
+                                                                    <button type="submit" class="remove border-0 bg-transparent" aria-label="حذف محصول">
+                                                                        <i class="fa fa-close"></i>
+                                                                    </button>
+                                                                </form>
                                                             </div>
                                                         </div>
                                                         <div class="product-title">
@@ -98,11 +100,15 @@
                                                     <td class="product-cart-quantity">
                                                         <div class="required-number before">
                                                             <div class="quantity">
-                                                                <a asp-action="LowOffProduct" asp-controller="Account"
-                                                                   asp-route-cartDetailId="@item.Id" class="btn btn-outline-danger">&#8722</a>
+                                                                <form asp-action="LowOffProduct" asp-controller="Account" method="post" class="d-inline">
+                                                                    <input type="hidden" name="cartDetailId" value="@item.Id" />
+                                                                    <button type="submit" class="btn btn-outline-danger" aria-label="کاهش تعداد">&#8722;</button>
+                                                                </form>
                                                                 <span>@item.ProductCount</span>
-                                                                <a asp-action="IncreaseProduct" asp-controller="Account"
-                                                                   asp-route-cartDetailId="@item.Id" class="btn btn-outline-success">&#x002B</a>
+                                                                <form asp-action="IncreaseProduct" asp-controller="Account" method="post" class="d-inline">
+                                                                    <input type="hidden" name="cartDetailId" value="@item.Id" />
+                                                                    <button type="submit" class="btn btn-outline-success" aria-label="افزایش تعداد">&#x002B;</button>
+                                                                </form>
 
                                                             </div>
                                                         </div>
@@ -123,7 +129,7 @@
                                             }
                                         </tbody>
                                     </table>
-                                </form>
+                                </div>
                             </div>
                             <div class="cart-collaterals">
                                 <div class="totals d-block">

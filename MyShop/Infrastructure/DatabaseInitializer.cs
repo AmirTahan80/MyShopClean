@@ -17,10 +17,20 @@ namespace MyShop.Infrastructure
         {
             using var scope = services.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<AppWebContext>();
-            await MigrateWithRetryAsync(context);
+            if (configuration.GetValue("Database:ApplyMigrationsOnStartup", false))
+            {
+                await MigrateWithRetryAsync(context);
+            }
+            else if ((await context.Database.GetPendingMigrationsAsync()).Any())
+            {
+                throw new InvalidOperationException(
+                    "Pending database migrations were found. Run the deployment migration step or set Database:ApplyMigrationsOnStartup=true for local development.");
+            }
 
             await SeedRolesAsync(scope.ServiceProvider.GetRequiredService<RoleManager<RoleModel>>());
-            await SeedCatalogAsync(context);
+            await SeedCatalogAsync(
+                context,
+                configuration.GetValue("SeedDemoData:Enabled", false));
             await SeedAdminAsync(
                 scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>(),
                 configuration);
@@ -73,7 +83,7 @@ namespace MyShop.Infrastructure
             }
         }
 
-        private static async Task SeedCatalogAsync(AppWebContext context)
+        private static async Task SeedCatalogAsync(AppWebContext context, bool seedDemoData)
         {
             if (!await context.SiteSettings.AnyAsync())
             {
@@ -96,7 +106,7 @@ namespace MyShop.Infrastructure
                 });
             }
 
-            if (!await context.Products.AnyAsync())
+            if (seedDemoData && !await context.Products.AnyAsync())
             {
                 context.Products.AddRange(
                     CreateProduct("گوشی هوشمند نمونه", 24_900_000, 12),
@@ -104,7 +114,7 @@ namespace MyShop.Infrastructure
                     CreateProduct("ساعت هوشمند نمونه", 4_800_000, 18));
             }
 
-            if (!await context.Baners.AnyAsync())
+            if (seedDemoData && !await context.Baners.AnyAsync())
             {
                 context.Baners.AddRange(
                     CreateBanner("پیشنهاد ویژه", "Right"),

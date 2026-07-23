@@ -51,6 +51,20 @@ namespace Infra.Data
                     .WithMany(p => p.Categories)
                     .HasForeignKey(p => p.ProductId);
             });
+
+            builder.Entity<Factor>()
+                .HasIndex(factor => factor.CartId)
+                .IsUnique();
+
+            builder.Entity<Discount>()
+                .HasIndex(discount => discount.CodeName)
+                .IsUnique();
+
+            builder.Entity<Cart>()
+                .HasIndex(cart => new { cart.UserId, cart.IsFinally });
+
+            builder.Entity<RequestPay>()
+                .HasIndex("ApplicationUserId", "IsPay");
         }
     }
 }

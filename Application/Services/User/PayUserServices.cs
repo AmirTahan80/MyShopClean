@@ -9,6 +9,7 @@ using Dto.Payment;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -33,11 +34,13 @@ namespace Application.Services.User
 
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<PayUserServices> _logger;
 
         Expose expose = new Expose();
 
         public PayUserServices(IPayRepository payRepository, UserManager<ApplicationUser> userManager,
-            ICartRepository cartRepository, IConfiguration configuration)
+            ICartRepository cartRepository, IConfiguration configuration,
+            IHttpClientFactory httpClientFactory, ILogger<PayUserServices> logger)
         {
             _payRepository = payRepository;
             _userManager = userManager;
@@ -47,8 +50,9 @@ namespace Application.Services.User
             _authority = expose.CreateAuthority();
             _transactions = expose.CreateTransactions();
 
-            _httpClient = new HttpClient();
+            _httpClient = httpClientFactory.CreateClient("Payments");
             _configuration = configuration;
+            _logger = logger;
         }
         #endregion
 
@@ -63,7 +67,7 @@ namespace Application.Services.User
 
                 if (string.IsNullOrWhiteSpace(user?.UserDetail?.Address) || string.IsNullOrWhiteSpace(user?.PhoneNumber??""))
                 {
-                    returnResult.ErrorMessage = "در صورتی که به صورت خود کار به بخش ویرایش پروفایل نرفتید لطفا به آن بخش رفته و کدملی ، شماره تلفن و آدرس خود را کامل کنید !";
+                    returnResult.ErrorMessage = "برای ادامه‌ی پرداخت، لطفاً شماره تلفن و آدرس خود را در بخش اطلاعات حساب تکمیل کنید.";
                     returnResult.ReturnRedirect = _configuration["ReturnsUrl:PassIdPayToUrl"];
                     returnResult.Status = false;
                     return returnResult;
@@ -75,27 +79,12 @@ namespace Application.Services.User
 
 
                 var cart = await _cartRepository.GetCartAsync(userId);
-
-                var discounts = cart.Discounts.ToList();
-
-                int discountsSum = 0;
-
-                foreach (var discount in discounts)
+                if (!TryPrepareCart(cart, out amount, out var cartError))
                 {
-                    discountsSum += discount.DiscountPrice;
+                    returnResult.ErrorMessage = cartError;
+                    returnResult.Status = false;
+                    return returnResult;
                 }
-
-                var cartTotalPrice = 0;
-
-                foreach (var cartDetail in cart.CartDetails)
-                {
-                    cartTotalPrice += cartDetail.TotalPrice;
-                }
-
-                amount = cartTotalPrice - discountsSum;
-
-                if (amount <= 0)
-                    amount = 0;
 
 
                 if (requestPay == null)
@@ -122,13 +111,13 @@ namespace Application.Services.User
 
                 if (!string.IsNullOrWhiteSpace(result))
                 {
-                    returnResult.SuccesMessage = "ثبت در خواست با موفقیت انجام شد ...";
+                    returnResult.SuccesMessage = "درخواست پرداخت ایجاد شد؛ در حال انتقال به درگاه هستید.";
                     returnResult.Status = true;
                     returnResult.ReturnRedirect = result;
                 }
                 else
                 {
-                    returnResult.ErrorMessage = "ثبت در خواست با شکست مواجه شد !!!";
+                    returnResult.ErrorMessage = "ایجاد درخواست پرداخت انجام نشد. لطفاً دوباره تلاش کنید.";
                     returnResult.Status = false;
                     returnResult.ShowNotFound = true;
                 }
@@ -138,10 +127,10 @@ namespace Application.Services.User
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Creating Zarinpal payment request failed for user {UserId}", userId);
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "مشکلی در ثبت درخواست پیش آمده لطفا دوباره امتحان کنید !!!",
+                    ErrorMessage = "در حال حاضر امکان اتصال به درگاه پرداخت وجود ندارد. لطفاً کمی بعد دوباره تلاش کنید.",
                     Status = false
                 };
                 return returnResult;
@@ -159,7 +148,7 @@ namespace Application.Services.User
 
                 if (string.IsNullOrWhiteSpace(user.UserDetail.Address) || string.IsNullOrWhiteSpace(user.PhoneNumber))
                 {
-                    returnResult.ErrorMessage = "لطفا کد ملی و شماره تلفن را کامل کنید ...";
+                    returnResult.ErrorMessage = "برای ادامه‌ی پرداخت، لطفاً شماره تلفن و آدرس خود را در بخش اطلاعات حساب تکمیل کنید.";
                     returnResult.ReturnRedirect = _configuration["ReturnsUrl:PassIdPayToUrl"];
                     returnResult.Status = false;
                     return returnResult;
@@ -171,27 +160,12 @@ namespace Application.Services.User
 
 
                 var cart = await _cartRepository.GetCartAsync(userId);
-
-                var discounts = cart.Discounts.ToList();
-
-                int discountsSum = 0;
-
-                foreach (var discount in discounts)
+                if (!TryPrepareCart(cart, out amount, out var cartError))
                 {
-                    discountsSum += discount.DiscountPrice;
+                    returnResult.ErrorMessage = cartError;
+                    returnResult.Status = false;
+                    return returnResult;
                 }
-
-                var cartTotalPrice = 0;
-
-                foreach (var cartDetail in cart.CartDetails)
-                {
-                    cartTotalPrice += cartDetail.TotalPrice;
-                }
-
-                amount = cartTotalPrice - discountsSum;
-
-                if (amount <= 0)
-                    amount = 0;
 
 
                 if (requestPay == null)
@@ -220,13 +194,13 @@ namespace Application.Services.User
 
                 if (!string.IsNullOrWhiteSpace(result))
                 {
-                    returnResult.SuccesMessage = "ثبت در خواست با موفقیت انجام شد ...";
+                    returnResult.SuccesMessage = "درخواست پرداخت ایجاد شد؛ در حال انتقال به درگاه هستید.";
                     returnResult.Status = true;
                     returnResult.ReturnRedirect = result;
                 }
                 else
                 {
-                    returnResult.ErrorMessage = "ثبت در خواست با شکست مواجه شد !!!";
+                    returnResult.ErrorMessage = "ایجاد درخواست پرداخت انجام نشد. لطفاً دوباره تلاش کنید.";
                     returnResult.Status = false;
                     returnResult.ShowNotFound = true;
                 }
@@ -236,10 +210,10 @@ namespace Application.Services.User
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Creating IDPay payment request failed for user {UserId}", userId);
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "مشکلی در ثبت درخواست پیش آمده لطفا دوباره امتحان کنید !!!",
+                    ErrorMessage = "در حال حاضر امکان اتصال به درگاه پرداخت وجود ندارد. لطفاً کمی بعد دوباره تلاش کنید.",
                     Status = false
                 };
                 return returnResult;
@@ -250,6 +224,12 @@ namespace Application.Services.User
         {
             try
             {
+                var apiKey = _configuration["Payments:IdPay:ApiKey"];
+                if (string.IsNullOrWhiteSpace(apiKey))
+                {
+                    return PaymentError("تنظیمات درگاه پرداخت کامل نیست. لطفاً با پشتیبانی فروشگاه تماس بگیرید.");
+                }
+
                 string apiUrl = "https://api.idpay.ir/v1.1/payment/verify";
 
                 var validateValues = new GetResponseIdPayValueViewModel()
@@ -262,8 +242,11 @@ namespace Application.Services.User
 
                 StringContent stringContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-                stringContent.Headers.Add("X-API-KEY", "6a7f99eb-7c20-4412-a972-6dfb7cd253a4");
-                stringContent.Headers.Add("X-SANDBOX", "1");
+                stringContent.Headers.Add("X-API-KEY", apiKey);
+                if (_configuration.GetValue("Payments:IdPay:Sandbox", true))
+                {
+                    stringContent.Headers.Add("X-SANDBOX", "1");
+                }
 
                 var retunrResponse = await _httpClient.PostAsync(apiUrl, stringContent);
 
@@ -272,6 +255,25 @@ namespace Application.Services.User
 
                 if (retunrResponse.IsSuccessStatusCode)
                 {
+                    var requestPays = await _payRepository.GetRequestPaiesAsync();
+                    var requestPay = requestPays.SingleOrDefault(request =>
+                        request.Cart?.CartId == Convert.ToInt32(content.order_id));
+                    if (requestPay == null)
+                    {
+                        return PaymentNotFound();
+                    }
+
+                    var finalizedFactor = await _payRepository.FinalizePaymentAsync(
+                        requestPay.Id,
+                        Convert.ToInt32(content.track_id));
+                    if (finalizedFactor == null)
+                    {
+                        return PaymentError("تأیید پرداخت انجام شد، اما ثبت سفارش کامل نشد. لطفاً با پشتیبانی تماس بگیرید.");
+                    }
+
+                    return BuildVerificationResult(requestPay, finalizedFactor);
+
+#pragma warning disable CS0162
                     var carts = await _cartRepository.GetCartsAsync();
                     var payingCart = carts.SingleOrDefault(p => p.CartId == Convert.ToInt32(content.order_id));
                    
@@ -382,32 +384,17 @@ namespace Application.Services.User
                         }
                     };
                     return returnResult;
+#pragma warning restore CS0162
                 }
                 else
                 {
-                    var returnResult = new VerificationPayViewModel()
-                    {
-                        RetrunResult = new ResultDto()
-                        {
-                            ErrorMessage = "خطایی پیش آمده است در طول 72 ساعت آینده مبلغ پرداختی به حساب شما باز میگردد !",
-                            Status = false
-                        }
-                    };
-                    return returnResult;
+                    return PaymentError("درگاه پرداخت تراکنش را تأیید نکرد. اگر مبلغی از حساب شما کسر شده است، وضعیت آن را در سوابق بانکی بررسی کنید.");
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                var returnResult = new VerificationPayViewModel()
-                {
-                    RetrunResult = new ResultDto()
-                    {
-                        ErrorMessage = "پرداخت با شکست مواجه شد لطفا به پشتیبان خبر بدید ! پول شما در طول 72 ساعته آینده با حسابتان باز خواهد گشت !!",
-                        Status = false
-                    }
-                };
-                return returnResult;
+                _logger.LogError(e, "IDPay verification failed for order {OrderId}", response?.order_id);
+                return PaymentError("بررسی نتیجه‌ی پرداخت کامل نشد. لطفاً پیش از پرداخت دوباره، وضعیت سفارش خود را بررسی کنید.");
             }
         }
 
@@ -415,31 +402,60 @@ namespace Application.Services.User
         {
             try
             {
-                var requestPaies = await _payRepository.GetRequestPaiesAsync();
-                var requestPay = requestPaies.SingleOrDefault(p => p.Id == requestPayId);
+                var requestPay = await _payRepository.GetRequestPayAsync(requestPayId);
                 if (requestPay == null)
                 {
-                    var returnResult = new VerificationPayViewModel()
-                    {
-                        RetrunResult = new ResultDto()
-                        {
-                            ShowNotFound = true,
-                            Status = false
-                        }
-                    };
-                    return returnResult;
+                    return PaymentNotFound();
                 }
 
+                if (requestPay.IsPay)
+                {
+                    var existingFactor = await _payRepository.GetFactorByCartAsync(
+                        requestPay.Cart.CartId,
+                        requestPay.ApplicationUser.Id);
+                    if (existingFactor != null)
+                    {
+                        return BuildVerificationResult(requestPay, existingFactor);
+                    }
+                }
+
+                if (!string.Equals(status, "OK", StringComparison.OrdinalIgnoreCase))
+                {
+                    return PaymentError("پرداخت لغو شد یا توسط درگاه تأیید نشد. مبلغی از حساب شما کسر نخواهد شد.");
+                }
+
+                var merchantId = _configuration["Payments:Zarinpal:MerchantId"];
+                if (string.IsNullOrWhiteSpace(merchantId))
+                {
+                    return PaymentError("تنظیمات درگاه پرداخت کامل نیست. لطفاً با پشتیبانی فروشگاه تماس بگیرید.");
+                }
+
+                var sandbox = _configuration.GetValue("Payments:Zarinpal:Sandbox", true);
                 var verification = await _payment.Verification(new DtoVerification
                 {
                     Amount = requestPay.Amount,
-                    MerchantId = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
+                    MerchantId = merchantId,
                     Authority = authority
-                }, Payment.Mode.sandbox);
+                }, sandbox ? Payment.Mode.sandbox : Payment.Mode.zarinpal);
 
-                if (verification.Status == 100)
+                if (verification.Status != 100 && verification.Status != 101)
                 {
+                    return PaymentError(GetZarinpalErrorMessage(verification.Status));
+                }
 
+                if (verification.Status == 100 || verification.Status == 101)
+                {
+                    var finalizedFactor = await _payRepository.FinalizePaymentAsync(
+                        requestPay.Id,
+                        verification.RefId);
+                    if (finalizedFactor == null)
+                    {
+                        return PaymentError("پرداخت تأیید شد، اما ثبت سفارش کامل نشد. لطفاً با پشتیبانی تماس بگیرید.");
+                    }
+
+                    return BuildVerificationResult(requestPay, finalizedFactor);
+
+#pragma warning disable CS0162
                     var cart = await _cartRepository.GetCartAsync(requestPay.ApplicationUser.Id);
 
                     requestPay.IsPay = true;
@@ -542,6 +558,7 @@ namespace Application.Services.User
                         }
                     };
                     return returnResult;
+#pragma warning restore CS0162
 
                 }
                 else if (verification.Status == -9)
@@ -795,7 +812,7 @@ namespace Application.Services.User
                 {
                     RetrunResult = new ResultDto()
                     {
-                        ErrorMessage = "خطایی غیره منتظره رخ داده است لطفا دوباره تلاش کنید و در صورت مواحه شدن با این خطا با پشتیبانی تماس بگیرید !!!",
+                        ErrorMessage = "پرداخت تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
                         Status = false
                     }
                 };
@@ -805,49 +822,198 @@ namespace Application.Services.User
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                var returnResult = new VerificationPayViewModel()
-                {
-                    RetrunResult = new ResultDto()
-                    {
-                        ErrorMessage = "پرداخت با شکست مواجه شد !!!",
-                        Status = false
-                    }
-                };
-                return returnResult;
+                _logger.LogError(e, "Zarinpal verification failed for request {RequestPayId}", requestPayId);
+                return PaymentError("بررسی نتیجه‌ی پرداخت کامل نشد. لطفاً پیش از پرداخت دوباره، وضعیت سفارش خود را بررسی کنید.");
             }
         }
 
 
         #region Privates Methode
+        private static VerificationPayViewModel PaymentNotFound()
+        {
+            return new VerificationPayViewModel
+            {
+                RetrunResult = new ResultDto
+                {
+                    ErrorMessage = "درخواست پرداخت پیدا نشد یا منقضی شده است.",
+                    ShowNotFound = true,
+                    Status = false
+                }
+            };
+        }
+
+        private static VerificationPayViewModel PaymentError(string message)
+        {
+            return new VerificationPayViewModel
+            {
+                RetrunResult = new ResultDto
+                {
+                    ErrorMessage = message,
+                    Status = false
+                }
+            };
+        }
+
+        private static string GetZarinpalErrorMessage(int status)
+        {
+            return status switch
+            {
+                -9 => "اطلاعات ارسال‌شده به درگاه معتبر نیست.",
+                -10 or -11 or -15 or -16 => "درگاه پرداخت فروشگاه در دسترس نیست. لطفاً با پشتیبانی تماس بگیرید.",
+                -12 => "تعداد درخواست‌های پرداخت بیش از حد مجاز است. لطفاً چند دقیقه دیگر دوباره تلاش کنید.",
+                -50 => "مبلغ پرداخت‌شده با مبلغ سفارش مطابقت ندارد. لطفاً با پشتیبانی تماس بگیرید.",
+                -51 => "پرداخت توسط درگاه ناموفق اعلام شد.",
+                -52 or -53 or -54 => "شناسه‌ی پرداخت معتبر نیست یا به این فروشگاه تعلق ندارد.",
+                _ => "درگاه پرداخت تراکنش را تأیید نکرد. لطفاً دوباره تلاش کنید."
+            };
+        }
+
+        private static VerificationPayViewModel BuildVerificationResult(RequestPay requestPay, Factor factor)
+        {
+            var user = requestPay.ApplicationUser;
+            var userDetail = user.UserDetail;
+            return new VerificationPayViewModel
+            {
+                Id = requestPay.Id,
+                RefId = factor.RefId,
+                TotalPrice = factor.TotalPrice,
+                UserAddress = factor.UserAddress,
+                UserPhoneNumber = factor.UserPhone,
+                UserPostCode = userDetail?.Province ?? string.Empty,
+                UserEmail = factor.UserEmail,
+                UserFirstName = factor.UserName,
+                UserLastName = factor.UserFamilly,
+                DisCounts = factor.Discounts?.Select(discount => new DisCountViewModel
+                {
+                    Name = discount.CodeName,
+                    Price = discount.DiscountPrice
+                }),
+                Products = factor.FactorDetails?.Select(detail => new VerficationProductsViewModel
+                {
+                    ProductName = detail.ProductName,
+                    ProductPrice = detail.ProductPrice,
+                    TotalPrice = detail.TotalPrice
+                }),
+                RetrunResult = new ResultDto
+                {
+                    SuccesMessage = $"پرداخت شما با موفقیت ثبت شد. شماره پیگیری: {factor.RefId}",
+                    Status = true
+                }
+            };
+        }
+
+        private static bool TryPrepareCart(Cart cart, out int amount, out string errorMessage)
+        {
+            amount = 0;
+            errorMessage = null;
+
+            if (cart?.CartDetails == null || cart.CartDetails.Count == 0)
+            {
+                errorMessage = "سبد خرید شما خالی است.";
+                return false;
+            }
+
+            try
+            {
+                var cartTotal = 0;
+                foreach (var detail in cart.CartDetails)
+                {
+                    if (detail.ProductCount <= 0)
+                    {
+                        errorMessage = "تعداد یکی از محصولات سبد خرید معتبر نیست.";
+                        return false;
+                    }
+
+                    var availableStock = detail.Templates?.AttrinbuteTemplateCount ?? detail.Product.Count;
+                    if (availableStock < detail.ProductCount)
+                    {
+                        errorMessage = $"موجودی «{detail.Product.Name}» برای تعداد انتخاب‌شده کافی نیست.";
+                        return false;
+                    }
+
+                    var currentPrice = detail.Templates?.AttrinbuteTemplatePrice ?? detail.Product.Price;
+                    if (currentPrice <= 0)
+                    {
+                        errorMessage = $"قیمت «{detail.Product.Name}» معتبر نیست؛ لطفاً با پشتیبانی تماس بگیرید.";
+                        return false;
+                    }
+
+                    detail.ProductPrice = currentPrice;
+                    detail.TotalPrice = checked(currentPrice * detail.ProductCount);
+                    cartTotal = checked(cartTotal + detail.TotalPrice);
+                }
+
+                var discountTotal = cart.Discounts?.Sum(discount => discount.DiscountPrice) ?? 0;
+                amount = checked(cartTotal - discountTotal);
+                if (amount <= 0)
+                {
+                    errorMessage = "مبلغ نهایی سبد خرید معتبر نیست؛ لطفاً کد تخفیف را بررسی کنید.";
+                    return false;
+                }
+
+                return true;
+            }
+            catch (OverflowException)
+            {
+                errorMessage = "مبلغ سبد خرید از محدوده‌ی مجاز بیشتر است.";
+                return false;
+            }
+        }
+
         private async Task<string> CreateRequestForPayin(ApplicationUser user, int amount)
         {
+            var merchantId = _configuration["Payments:Zarinpal:MerchantId"];
+            if (string.IsNullOrWhiteSpace(merchantId))
+            {
+                throw new InvalidOperationException("Payments:Zarinpal:MerchantId is required.");
+            }
+
             var requestPaies = await _payRepository.GetRequestPaiesAsync();
             var requestPay = requestPaies.SingleOrDefault(p => p.ApplicationUser.Id == user.Id && !p.IsPay);
 
             var cart = await _cartRepository.GetCartAsync(user.Id);
+            var callbackBaseUrl = (_configuration["Payments:CallbackBaseUrl"] ?? string.Empty).TrimEnd('/');
+            if (!Uri.TryCreate(callbackBaseUrl, UriKind.Absolute, out _))
+            {
+                throw new InvalidOperationException("Payments:CallbackBaseUrl must be an absolute URL.");
+            }
+
+            var sandbox = _configuration.GetValue("Payments:Zarinpal:Sandbox", true);
 
             var result = await _payment.Request(new DtoRequest()
             {
                 Mobile = user.PhoneNumber,
-                CallbackUrl =
-                @$"https://localhost:44373/Account/Validate?id={requestPay.Id}",
+                CallbackUrl = $"{callbackBaseUrl}/Account/Validate?id={Uri.EscapeDataString(requestPay.Id)}",
                 Description = $"پرداخت فاکتور {cart.CartId}",
                 Email = user.Email,
                 Amount = Convert.ToInt32(amount),
-                MerchantId = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-            }, ZarinPal.Class.Payment.Mode.sandbox);
+                MerchantId = merchantId
+            }, sandbox ? Payment.Mode.sandbox : Payment.Mode.zarinpal);
 
-            var createReturn = $"https://sandbox.zarinpal.com/pg/StartPay/{result.Authority}";
+            var gatewayBaseUrl = sandbox
+                ? "https://sandbox.zarinpal.com/pg/StartPay"
+                : "https://www.zarinpal.com/pg/StartPay";
+            var createReturn = $"{gatewayBaseUrl}/{result.Authority}";
 
             return createReturn;
         }
         private async Task<string> CreateRequestForPayingIdPayAsync(int amount, ApplicationUser user, Cart cart)
         {
+            var apiKey = _configuration["Payments:IdPay:ApiKey"];
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                throw new InvalidOperationException("Payments:IdPay:ApiKey is required.");
+            }
+
             var apiUrlIdPay = @"https://api.idpay.ir/v1.1/payment";
 
-            var callBackString =
-            _configuration["ReturnsUrl:CallBackUrl"];
+            var callbackBaseUrl = (_configuration["Payments:CallbackBaseUrl"] ?? string.Empty).TrimEnd('/');
+            if (!Uri.TryCreate(callbackBaseUrl, UriKind.Absolute, out _))
+            {
+                throw new InvalidOperationException("Payments:CallbackBaseUrl must be an absolute URL.");
+            }
+
+            var callBackString = $"{callbackBaseUrl}/Account/ValidateIdPay";
 
 
             var IdPayContent = new IdPaySendApiViewModel()
@@ -865,8 +1031,11 @@ namespace Application.Services.User
 
             StringContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-            content.Headers.Add("X-API-KEY", "6a7f99eb-7c20-4412-a972-6dfb7cd253a4");
-            content.Headers.Add("X-SANDBOX", "1");
+            content.Headers.Add("X-API-KEY", apiKey);
+            if (_configuration.GetValue("Payments:IdPay:Sandbox", true))
+            {
+                content.Headers.Add("X-SANDBOX", "1");
+            }
 
             var result = await _httpClient.PostAsync(apiUrlIdPay, content);
 

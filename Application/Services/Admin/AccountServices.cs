@@ -318,7 +318,7 @@ namespace Application.Services.Admin
                 var comment = await _commentRepository.GetCommentAsync(editComment.CommentId);
                 if (comment == null)
                 {
-                    returnResultDto.ErrorMessage = "ویرایش کامنت با شکست مواجه شد !!! صفحه را رفرش کنید و دوباره سعی کنید !!!";
+                    returnResultDto.ErrorMessage = "ویرایش نظر انجام نشد. لطفاً صفحه را تازه‌سازی و دوباره تلاش کنید.";
                     returnResultDto.Status = false;
                     return returnResultDto;
                 }
@@ -340,7 +340,7 @@ namespace Application.Services.Admin
                 Console.WriteLine(e);
                 var returnResultDto = new ResultDto()
                 {
-                    ErrorMessage = "مشکلی در ویرایش نظر به وجود آمده است لطفا دقایقی دیگر امتحان کنید و در صورت وجود مشکل با پشتیبانی تماس بگیرید !!!",
+                    ErrorMessage = "ویرایش نظر انجام نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
                     Status = false
                 };
                 return returnResultDto;
@@ -427,7 +427,7 @@ namespace Application.Services.Admin
                 Console.WriteLine(e);
                 var retrunResult = new ResultDto()
                 {
-                    ErrorMessage = "مشکلی در ثبت پاسخ به وجود آمده است !!!",
+                    ErrorMessage = "پاسخ ثبت نشد. لطفاً دوباره تلاش کنید.",
                     Status = false
                 };
                 return retrunResult;
@@ -471,7 +471,7 @@ namespace Application.Services.Admin
                 Console.WriteLine(e);
                 var returnResultDto = new ResultDto()
                 {
-                    ErrorMessage = "مشکلی در حذف سوالات به وجود آمده است لطفا دوباره تلاش کنید !!!",
+                    ErrorMessage = "حذف پرسش‌های انتخاب‌شده انجام نشد. لطفاً دوباره تلاش کنید.",
                     Status = false
                 };
                 return returnResultDto;
@@ -556,7 +556,7 @@ namespace Application.Services.Admin
                 Console.WriteLine(e);
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "در ویرایش سفارش مشکلی پیش آمده است لطفا دوباره تلاش کنید !!!",
+                    ErrorMessage = "ویرایش سفارش انجام نشد. لطفاً دوباره تلاش کنید.",
                     Status = false
                 };
                 return returnResult;
@@ -623,7 +623,7 @@ namespace Application.Services.Admin
                 Console.WriteLine(e);
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "ثبت درخواست با مشکل مواجه شد ... دوباره امتحان کنید و اگر به مشکل خوردید به پشتیبان سایت تماس بگیرید !!!",
+                    ErrorMessage = "درخواست ثبت نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
                     Status = false
                 };
                 return returnResult;

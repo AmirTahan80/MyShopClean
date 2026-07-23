@@ -126,10 +126,13 @@
                                                        asp-route-productId="@Model[b].Id">ویرایش</a>
                                                 </td>
                                                 <td class="text-truncate">
-                                                    <a class="btn btn-outline-info"
-                                                       asp-action="PostProductToInstagram"
-                                                       asp-controller="ProductManager"
-                                                       asp-route-productId="@Model[b].Id">پست در اینستاگرام</a>
+                                                    <button type="submit"
+                                                            class="btn btn-outline-info"
+                                                            asp-action="PostProductToInstagram"
+                                                            asp-controller="ProductManager"
+                                                            asp-route-productId="@Model[b].Id">
+                                                        ارسال به اینستاگرام
+                                                    </button>
                                                 </td>
                                             </tr>
                                         }

@@ -94,7 +94,8 @@
                                         <label asp-for="TorobEnabled" class="custom-control-label"></label>
                                     </div>
                                     <label asp-for="TorobAccessToken"></label>
-                                    <input asp-for="TorobAccessToken" class="form-control" dir="ltr" autocomplete="off" />
+                                    <input asp-for="TorobAccessToken" type="password" class="form-control" dir="ltr" autocomplete="new-password" placeholder="برای حفظ توکن فعلی خالی بگذارید" />
+                                    <span asp-validation-for="TorobAccessToken" class="text-danger"></span>
                                     <small class="form-text text-muted">خروجی: <code>/integrations/torob/products</code></small>
                                 </div>
                                 <div class="form-group col-md-6 marketplace-setting-card">
@@ -103,7 +104,8 @@
                                         <label asp-for="EmallsEnabled" class="custom-control-label"></label>
                                     </div>
                                     <label asp-for="EmallsAccessToken"></label>
-                                    <input asp-for="EmallsAccessToken" class="form-control" dir="ltr" autocomplete="off" />
+                                    <input asp-for="EmallsAccessToken" type="password" class="form-control" dir="ltr" autocomplete="new-password" placeholder="برای حفظ توکن فعلی خالی بگذارید" />
+                                    <span asp-validation-for="EmallsAccessToken" class="text-danger"></span>
                                     <small class="form-text text-muted">JSON: <code>/integrations/emalls/products</code> — XML: <code>/integrations/emalls/products.xml</code></small>
                                 </div>
                             </div>

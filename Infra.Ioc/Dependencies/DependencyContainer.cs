@@ -12,6 +12,7 @@ using Domain.Models;
 using Infra.Data;
 using Infra.Data.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -89,16 +90,19 @@ namespace Infra.Ioc.Dependencies
 
             services.AddIdentity<ApplicationUser, RoleModel>(option =>
             {
-                option.Password.RequiredLength = 8;
-                option.Password.RequireDigit = false;
-                option.Password.RequireLowercase = false;
-                option.Password.RequireUppercase = false;
-                option.Password.RequireNonAlphanumeric = false;
-                option.Password.RequiredUniqueChars = 0;
+                option.Password.RequiredLength = 12;
+                option.Password.RequireDigit = true;
+                option.Password.RequireLowercase = true;
+                option.Password.RequireUppercase = true;
+                option.Password.RequireNonAlphanumeric = true;
+                option.Password.RequiredUniqueChars = 1;
                 option.User.RequireUniqueEmail = true;
                 option.User.AllowedUserNameCharacters =
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.@";
-                option.SignIn.RequireConfirmedEmail = false;
+                option.SignIn.RequireConfirmedEmail = true;
+                option.Lockout.AllowedForNewUsers = true;
+                option.Lockout.MaxFailedAccessAttempts = 5;
+                option.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             })
             .AddEntityFrameworkStores<AppWebContext>()
             .AddDefaultTokenProviders();
@@ -108,12 +112,16 @@ namespace Infra.Ioc.Dependencies
                 option.AccessDeniedPath = "/Account/AccessDenied";
                 option.LoginPath = "/Account/Login";
                 option.LogoutPath = "/Account/Logout";
+                option.Cookie.HttpOnly = true;
+                option.Cookie.SameSite = SameSiteMode.Lax;
+                option.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                option.ExpireTimeSpan = TimeSpan.FromHours(8);
+                option.SlidingExpiration = true;
             });
 
             services.Configure<SecurityStampValidatorOptions>(options =>
             {
-                // enables immediate logout, after updating the user's stat.
-                options.ValidationInterval = TimeSpan.Zero;
+                options.ValidationInterval = TimeSpan.FromMinutes(30);
             });
 
         }

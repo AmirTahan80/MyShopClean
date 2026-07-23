@@ -18,6 +18,8 @@ namespace Domain.Models
 
         public string IdReturnIdPay { get; set; }
         public string ReturnLinkIdPay { get; set; }
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
 
 
         //Navigation Bar

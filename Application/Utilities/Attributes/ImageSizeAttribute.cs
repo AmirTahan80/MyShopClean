@@ -51,7 +51,7 @@ namespace Application.Utilities.Attributes
             }
             else
             {
-                return new ValidationResult("برای افزودن محصول حداقل یک عکس مورد نیاز است !!!");
+                return new ValidationResult("برای افزودن محصول، لطفاً حداقل یک تصویر انتخاب کنید.");
             }
         }
     }

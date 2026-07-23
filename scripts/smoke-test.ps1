@@ -2,7 +2,7 @@ $ErrorActionPreference = 'Stop'
 
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
 $webProject = Join-Path $repositoryRoot 'MyShop'
-$applicationDll = Join-Path $webProject 'bin\Release\net8.0\MyShop.dll'
+$applicationDll = Join-Path $webProject 'bin\Release\net10.0\MyShop.dll'
 $databaseName = 'MyShopSmoke'
 $stdoutPath = Join-Path ([System.IO.Path]::GetTempPath()) 'myshop-smoke.stdout.log'
 $stderrPath = Join-Path ([System.IO.Path]::GetTempPath()) 'myshop-smoke.stderr.log'
@@ -14,9 +14,11 @@ try {
 
     sqllocaldb start MSSQLLocalDB | Out-Null
     $env:ConnectionStrings__ConnectToDataBase = "Server=(localdb)\MSSQLLocalDB;Database=$databaseName;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
-    $env:SeedAdmin__Password = 'SmokeTestAdmin2026'
+    $env:SeedAdmin__Password = 'SmokeTest_Admin#2026'
     $env:ASPNETCORE_URLS = 'http://127.0.0.1:5099'
     $env:ASPNETCORE_ENVIRONMENT = 'Development'
+    $env:Database__ApplyMigrationsOnStartup = 'true'
+    $env:SeedDemoData__Enabled = 'true'
 
     Remove-Item -LiteralPath $stdoutPath, $stderrPath -Force -ErrorAction SilentlyContinue
     $appProcess = Start-Process `

@@ -25,10 +25,12 @@ namespace MyShop.Controllers
 
         [HttpGet("torob/products")]
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-        public async Task<IActionResult> TorobProducts([FromQuery] string token = null)
+        public async Task<IActionResult> TorobProducts()
         {
             var setting = await _siteSettingService.GetAsync();
-            var accessResult = ValidateAccess(setting.TorobEnabled, setting.TorobAccessToken, token);
+            var accessResult = await ValidateAccessAsync(
+                setting.TorobEnabled,
+                await _siteSettingService.IsTorobTokenValidAsync(Request.Headers["X-Integration-Token"]));
             if (accessResult != null) return accessResult;
 
             var products = await BuildProductsAsync(setting.PublicBaseUrl);
@@ -37,10 +39,12 @@ namespace MyShop.Controllers
 
         [HttpGet("emalls/products")]
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-        public async Task<IActionResult> EmallsProducts([FromQuery] string token = null)
+        public async Task<IActionResult> EmallsProducts()
         {
             var setting = await _siteSettingService.GetAsync();
-            var accessResult = ValidateAccess(setting.EmallsEnabled, setting.EmallsAccessToken, token);
+            var accessResult = await ValidateAccessAsync(
+                setting.EmallsEnabled,
+                await _siteSettingService.IsEmallsTokenValidAsync(Request.Headers["X-Integration-Token"]));
             if (accessResult != null) return accessResult;
 
             var products = await BuildProductsAsync(setting.PublicBaseUrl);
@@ -49,10 +53,12 @@ namespace MyShop.Controllers
 
         [HttpGet("emalls/products.xml")]
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-        public async Task<IActionResult> EmallsProductsXml([FromQuery] string token = null)
+        public async Task<IActionResult> EmallsProductsXml()
         {
             var setting = await _siteSettingService.GetAsync();
-            var accessResult = ValidateAccess(setting.EmallsEnabled, setting.EmallsAccessToken, token);
+            var accessResult = await ValidateAccessAsync(
+                setting.EmallsEnabled,
+                await _siteSettingService.IsEmallsTokenValidAsync(Request.Headers["X-Integration-Token"]));
             if (accessResult != null) return accessResult;
 
             var products = await BuildProductsAsync(setting.PublicBaseUrl);
@@ -72,15 +78,15 @@ namespace MyShop.Controllers
             return Content(document.ToString(), "application/xml; charset=utf-8");
         }
 
-        private IActionResult ValidateAccess(bool enabled, string expectedToken, string token)
+        private Task<IActionResult> ValidateAccessAsync(bool enabled, bool tokenIsValid)
         {
-            if (!enabled) return NotFound();
-            if (!string.IsNullOrWhiteSpace(expectedToken) && !string.Equals(expectedToken, token, StringComparison.Ordinal))
+            if (!enabled) return Task.FromResult<IActionResult>(NotFound());
+            if (!tokenIsValid)
             {
-                return Unauthorized();
+                return Task.FromResult<IActionResult>(Unauthorized());
             }
 
-            return null;
+            return Task.FromResult<IActionResult>(null);
         }
 
         private async Task<List<MarketplaceProduct>> BuildProductsAsync(string configuredBaseUrl)

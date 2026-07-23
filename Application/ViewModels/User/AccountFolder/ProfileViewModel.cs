@@ -10,10 +10,10 @@ namespace Application.ViewModels.User
     public class ProfileViewModel
     {
         public string Id { get; set; }
-        [Required(ErrorMessage ="فیلد {0} احباری است ")]
+        [Required(ErrorMessage ="لطفاً {0} را وارد کنید.")]
         [Display(Name ="نام کاربری")]
         public string Name { get; set; }
-        [Required(ErrorMessage ="فیلد {0} احباری است ")]
+        [Required(ErrorMessage ="لطفاً {0} را وارد کنید.")]
         [Display(Name = "پست الکترونیک")]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }

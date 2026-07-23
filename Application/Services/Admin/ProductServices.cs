@@ -1,4 +1,5 @@
 ﻿using Application.InterFaces.Admin;
+using Application.Utilities;
 using Application.Utilities.TagHelper;
 using Application.ViewModels;
 using Application.ViewModels.Admin;
@@ -570,7 +571,7 @@ namespace Application.Services.Admin
                 Console.WriteLine(e);
                 var returnResut = new ResultDto()
                 {
-                    ErrorMessage = "در ویرایش کد تخفیف مشکلی به وجود امده است لطفا دقایقی دیگر دوباره امتحان کنید !!!",
+                    ErrorMessage = "ویرایش کد تخفیف انجام نشد. لطفاً دوباره تلاش کنید.",
                     Status = false
                 };
                 return returnResut;
@@ -673,36 +674,22 @@ namespace Application.Services.Admin
 
         public JsonResult UploadFileEditor(IFormFile file)
         {
-            try
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "Editor");
+            if (!SecureImageUpload.TrySave(file, filePath, out var fileName, out var errorMessage))
             {
-                if (file.Length <= 0) return null;
-
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "Editor");
-
-                if (!Directory.Exists(filePath))
+                return new JsonResult(new
                 {
-                    Directory.CreateDirectory(filePath);
-                }
-                var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName).ToLower();
-                using (var stream = new FileStream(filePath + "/" + fileName, FileMode.Create))
-                {
-                    file.CopyTo(stream);
-                }
-                var url = $"/Images/Editor/{fileName}";
-                var result = new UploadFileForCkEditorResultViewModel()
-                {
-                    FileName = fileName,
-                    Uploaded = 1,
-                    Url = url
-                };
-                var successResultJson = new JsonResult(result);
-                return successResultJson;
+                    uploaded = 0,
+                    error = new { message = errorMessage }
+                });
             }
-            catch (Exception error)
+
+            return new JsonResult(new UploadFileForCkEditorResultViewModel
             {
-                Console.WriteLine(error);
-                return null;
-            }
+                FileName = fileName,
+                Uploaded = 1,
+                Url = $"/Images/Editor/{fileName}"
+            });
         }
 
         public async Task<ResultDto> CreateDiscountAsync(DiscountViewMode discountAdd)
@@ -732,7 +719,7 @@ namespace Application.Services.Admin
                 Console.WriteLine(e);
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "کد تخفیف ساخته نشد ... لطفا دوباره امتحان کنید!!",
+                    ErrorMessage = "کد تخفیف ایجاد نشد. لطفاً اطلاعات را بررسی و دوباره تلاش کنید.",
                     Status = false
                 };
                 return returnResult;
@@ -787,19 +774,9 @@ namespace Application.Services.Admin
             {
                 Directory.CreateDirectory(uploadsRootFolder);
             }
-            if (file.Length != 0)
-            {
-
-                string fileName = DateTime.Now.Ticks.ToString() + "-" + file.FileName;
-                string filePath = Path.Combine(uploadsRootFolder, fileName);
-                using (var FileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    file.CopyTo(FileStream);
-                }
-                return (fileName, todayDate);
-            }
-            else
-                return ("", "");
+            return SecureImageUpload.TrySave(file, uploadsRootFolder, out var fileName, out _)
+                ? (fileName, todayDate)
+                : ("", "");
         }
         private bool DeletePhoto(string imageName, string fileName)
         {

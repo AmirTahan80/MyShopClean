@@ -35,12 +35,14 @@ namespace Data.Repositories.AdminRepositories
                 .SingleOrDefaultAsync(p => p.UserId == userId && !p.IsFinally);
             return cart;
         }
-        public async Task<CartDetail> GetCartDetailAsync(int cartDetailId)
+        public async Task<CartDetail> GetCartDetailAsync(int cartDetailId, string userId)
         {
             var cartDetail = await _context.CartDetails
                 .Include(p => p.Product).ThenInclude(p => p.AttributeTemplates)
                 .Include(p => p.Cart)
-                .SingleOrDefaultAsync(p => p.CartDetailId == cartDetailId);
+                .SingleOrDefaultAsync(p => p.CartDetailId == cartDetailId
+                    && p.Cart.UserId == userId
+                    && !p.Cart.IsFinally);
 
             return cartDetail;
         }
@@ -91,9 +93,12 @@ namespace Data.Repositories.AdminRepositories
 
             return favorite;
         }
-        public async Task<UserFavoritesDetail> GetFavoriteDetailAsync(int favoriteDetailId)
+        public async Task<UserFavoritesDetail> GetFavoriteDetailAsync(int favoriteDetailId, string userId)
         {
-            var favoriteDetail = await _context.UserFavoritesDetails.SingleOrDefaultAsync(p => p.UserFavoritesDetailId == favoriteDetailId);
+            var favoriteDetail = await _context.UserFavoritesDetails
+                .Include(detail => detail.UserFavorit)
+                .SingleOrDefaultAsync(detail => detail.UserFavoritesDetailId == favoriteDetailId
+                    && detail.UserFavorit.UserId == userId);
 
             return favoriteDetail;
         }

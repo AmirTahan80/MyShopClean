@@ -39,7 +39,7 @@ namespace Application.Services.User
                 var product = await _productRepository.GetProductAsync(addComment.ProductId);
                 if (product == null)
                 {
-                    returnResult.ErrorMessage = "مشکلی در افزودن نظر شما به وجود آمده است !!";
+                    returnResult.ErrorMessage = "محصول موردنظر برای ثبت نظر پیدا نشد.";
                     returnResult.Status = false;
                     return returnResult;
                 }
@@ -47,7 +47,7 @@ namespace Application.Services.User
                 var user = await _userManager.FindByIdAsync(userId);
                 if (user == null)
                 {
-                    returnResult.ErrorMessage = "مشکلی در افزودن نظر شما به وجود آمده است !!";
+                    returnResult.ErrorMessage = "برای ثبت نظر، لطفاً دوباره وارد حساب کاربری خود شوید.";
                     returnResult.Status = false;
                     return returnResult;
                 }
@@ -124,7 +124,7 @@ namespace Application.Services.User
 
                 await _commentRepository.SaveAsync();
 
-                returnResult.SuccesMessage = "نظر شما با موفقیت ثبت شد و تا 24 ساعت آینده نظر شما نمایش داده می شود .";
+                returnResult.SuccesMessage = "نظر شما با موفقیت ثبت شد و پس از بررسی نمایش داده می‌شود.";
                 returnResult.Status = true;
                 return returnResult;
             }
@@ -133,7 +133,7 @@ namespace Application.Services.User
                 Console.WriteLine(e);
                 var returnResult = new ResultDto()
                 {
-                    ErrorMessage = "نظر شما ثبت نشد لطفا دقایقی دیگر دوباره امتحان کنید  !!",
+                    ErrorMessage = "ثبت نظر انجام نشد. لطفاً کمی بعد دوباره تلاش کنید.",
                     Status = false
                 };
                 return returnResult;

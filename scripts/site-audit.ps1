@@ -2,7 +2,7 @@ $ErrorActionPreference = 'Stop'
 
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
 $webProject = Join-Path $repositoryRoot 'MyShop'
-$applicationDll = Join-Path $webProject 'bin\Release\net8.0\MyShop.dll'
+$applicationDll = Join-Path $webProject 'bin\Release\net10.0\MyShop.dll'
 $databaseName = 'MyShopSiteAudit'
 $baseUrl = 'http://127.0.0.1:5099'
 $artifactDirectory = Join-Path $repositoryRoot 'artifacts\responsive-audit'
@@ -23,7 +23,9 @@ try {
 
     sqllocaldb start MSSQLLocalDB | Out-Null
     $env:ConnectionStrings__ConnectToDataBase = "Server=(localdb)\MSSQLLocalDB;Database=$databaseName;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
-    $env:SeedAdmin__Password = 'SiteAuditAdmin2026'
+    $env:SeedAdmin__Password = 'SiteAudit_Admin#2026'
+    $env:Database__ApplyMigrationsOnStartup = 'true'
+    $env:SeedDemoData__Enabled = 'true'
     $env:ASPNETCORE_URLS = $baseUrl
     $env:ASPNETCORE_ENVIRONMENT = 'Development'
 
@@ -71,9 +73,9 @@ SET [SiteName] = N'Responsive Test Shop',
     [SupportEmail] = N'test@example.com',
     [PublicBaseUrl] = N'$baseUrl',
     [TorobEnabled] = 1,
-    [TorobAccessToken] = N'torob-audit',
+    [TorobAccessToken] = N'torob-audit-token-12345678901234567890',
     [EmallsEnabled] = 1,
-    [EmallsAccessToken] = N'emalls-audit';
+    [EmallsAccessToken] = N'emalls-audit-token-1234567890123456789';
 "@
     sqlcmd -S '(localdb)\MSSQLLocalDB' -d $databaseName -b -Q $settingsSql | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'Could not update the temporary site settings.' }
@@ -109,9 +111,15 @@ SET [SiteName] = N'Responsive Test Shop',
         }
     }
 
-    $torob = Invoke-RestMethod -Uri "$baseUrl/integrations/torob/products?token=torob-audit" -TimeoutSec 10
-    $emalls = Invoke-RestMethod -Uri "$baseUrl/integrations/emalls/products?token=emalls-audit" -TimeoutSec 10
-    $emallsXml = Invoke-WebRequest -Uri "$baseUrl/integrations/emalls/products.xml?token=emalls-audit" -UseBasicParsing -TimeoutSec 10
+    $torob = Invoke-RestMethod -Uri "$baseUrl/integrations/torob/products" -Headers @{
+        'X-Integration-Token' = 'torob-audit-token-12345678901234567890'
+    } -TimeoutSec 10
+    $emalls = Invoke-RestMethod -Uri "$baseUrl/integrations/emalls/products" -Headers @{
+        'X-Integration-Token' = 'emalls-audit-token-1234567890123456789'
+    } -TimeoutSec 10
+    $emallsXml = Invoke-WebRequest -Uri "$baseUrl/integrations/emalls/products.xml" -Headers @{
+        'X-Integration-Token' = 'emalls-audit-token-1234567890123456789'
+    } -UseBasicParsing -TimeoutSec 10
 
     if ($torob.count -lt 1 -or $emalls.count -lt 1) { throw 'A marketplace feed contained no products.' }
     if ($torob.products[0].currency -ne 'TOMAN') { throw 'The Torob feed currency was not declared.' }

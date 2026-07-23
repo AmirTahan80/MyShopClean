@@ -61,10 +61,15 @@
                                                 </td>
                                                 <td> @Model[b].Caption.Text.Substring(0,20) .... </td>
                                                 <td class="text-truncate">
-                                                <a asp-action="PostToProduct" asp-controller="ProductManager" asp-route-imageUri="@Model[b].Images[0].Uri">
-                                                    <i class="ft-upload"></i>
-                                                    آپلود در سایت
-                                                </a>
+                                                <form asp-action="PostToProduct"
+                                                      asp-controller="ProductManager"
+                                                      asp-route-imageUri="@Model[b].Images[0].Uri"
+                                                      method="post">
+                                                    <button type="submit" class="btn btn-link">
+                                                        <i class="ft-upload"></i>
+                                                        افزودن به سایت
+                                                    </button>
+                                                </form>
                                                 </td>
                                             </tr>
                                         }

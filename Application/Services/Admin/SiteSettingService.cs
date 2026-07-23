@@ -1,8 +1,8 @@
 using Application.InterFaces.Admin;
+using Application.Utilities;
 using Application.ViewModels.Admin;
 using Domain.InterFaces;
 using Domain.Models;
-using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Threading.Tasks;
 
@@ -10,27 +10,24 @@ namespace Application.Services.Admin
 {
     public class SiteSettingService : ISiteSettingService
     {
-        private const string CacheKey = "site-settings";
         private readonly ISiteSettingRepository _repository;
-        private readonly IMemoryCache _cache;
+        private SiteSettingViewModel _requestCache;
 
-        public SiteSettingService(ISiteSettingRepository repository, IMemoryCache cache)
+        public SiteSettingService(ISiteSettingRepository repository)
         {
             _repository = repository;
-            _cache = cache;
         }
 
         public async Task<SiteSettingViewModel> GetAsync()
         {
-            if (_cache.TryGetValue(CacheKey, out SiteSettingViewModel cached))
+            if (_requestCache != null)
             {
-                return cached;
+                return _requestCache;
             }
 
             var setting = await _repository.GetAsync() ?? CreateDefault();
-            var model = Map(setting);
-            _cache.Set(CacheKey, model, TimeSpan.FromMinutes(10));
-            return model;
+            _requestCache = Map(setting);
+            return _requestCache;
         }
 
         public async Task UpdateAsync(SiteSettingViewModel model)
@@ -49,12 +46,30 @@ namespace Application.Services.Admin
             setting.SupportEmail = model.SupportEmail?.Trim();
             setting.PublicBaseUrl = model.PublicBaseUrl?.Trim().TrimEnd('/');
             setting.TorobEnabled = model.TorobEnabled;
-            setting.TorobAccessToken = model.TorobAccessToken?.Trim();
+            if (!string.IsNullOrWhiteSpace(model.TorobAccessToken))
+            {
+                setting.TorobAccessToken = AccessTokenHasher.Hash(model.TorobAccessToken);
+            }
             setting.EmallsEnabled = model.EmallsEnabled;
-            setting.EmallsAccessToken = model.EmallsAccessToken?.Trim();
+            if (!string.IsNullOrWhiteSpace(model.EmallsAccessToken))
+            {
+                setting.EmallsAccessToken = AccessTokenHasher.Hash(model.EmallsAccessToken);
+            }
 
             await _repository.SaveAsync(setting);
-            _cache.Remove(CacheKey);
+            _requestCache = null;
+        }
+
+        public async Task<bool> IsTorobTokenValidAsync(string token)
+        {
+            var setting = await _repository.GetAsync();
+            return setting != null && AccessTokenHasher.Verify(setting.TorobAccessToken, token);
+        }
+
+        public async Task<bool> IsEmallsTokenValidAsync(string token)
+        {
+            var setting = await _repository.GetAsync();
+            return setting != null && AccessTokenHasher.Verify(setting.EmallsAccessToken, token);
         }
 
         private static SiteSettingViewModel Map(SiteSetting setting) => new SiteSettingViewModel
@@ -73,9 +88,9 @@ namespace Application.Services.Admin
             SupportEmail = setting.SupportEmail,
             PublicBaseUrl = setting.PublicBaseUrl,
             TorobEnabled = setting.TorobEnabled,
-            TorobAccessToken = setting.TorobAccessToken,
+            TorobAccessToken = null,
             EmallsEnabled = setting.EmallsEnabled,
-            EmallsAccessToken = setting.EmallsAccessToken
+            EmallsAccessToken = null
         };
 
         private static SiteSetting CreateDefault() => new SiteSetting

@@ -7,5 +7,7 @@ namespace Application.InterFaces.Admin
     {
         Task<SiteSettingViewModel> GetAsync();
         Task UpdateAsync(SiteSettingViewModel model);
+        Task<bool> IsTorobTokenValidAsync(string token);
+        Task<bool> IsEmallsTokenValidAsync(string token);
     }
 }

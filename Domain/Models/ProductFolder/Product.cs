@@ -23,6 +23,8 @@ namespace Domain.Models
         public DateTime InsertTime{ get; set; }
         [Required]
         public bool IsProductHaveAttributes { get; set; }
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
 
         // NavigationBar       
         public ICollection<CategoryToProduct> Categories { get; set; }

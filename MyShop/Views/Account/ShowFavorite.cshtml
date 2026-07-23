@@ -1,6 +1,6 @@
 ﻿@model FavoriteViewModel
 @{
-    ViewData["Title"] = "علاقه مندی ها";
+    ViewData["Title"] = "علاقه‌مندی‌ها";
 }
 
 @section Header{
@@ -20,7 +20,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">خانه</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">علاقه مندی ها</li>
+                            <li class="breadcrumb-item active" aria-current="page">علاقه‌مندی‌ها</li>
                         </ol>
                     </nav>
                 </div>
@@ -40,7 +40,7 @@
                                         موفقیت ! @ViewData["Success"]
                                     </div>
                                 }
-                                <form action="#" class="c-form">
+                                <div class="c-form">
                                     <table class="table-cart cart table table-borderless">
                                         <thead>
                                             <tr>
@@ -61,10 +61,12 @@
                                                                 <img src="/Images/ProductImages/@item.ProductImage">
                                                             </a>
                                                             <div class="product-remove">
-                                                                <a asp-action="RemoveFavorite" asp-controller="Account"
-                                                                   asp-route-favoriteDetailId="@item.Id" class="remove">
-                                                                    <i class="mdi mdi-close"></i>
-                                                                </a>
+                                                                <form asp-action="RemoveFavorite" asp-controller="Account" method="post">
+                                                                    <input type="hidden" name="favoriteDetailId" value="@item.Id" />
+                                                                    <button type="submit" class="remove border-0 bg-transparent" aria-label="حذف از علاقه‌مندی‌ها">
+                                                                        <i class="mdi mdi-close"></i>
+                                                                    </button>
+                                                                </form>
                                                             </div>
                                                         </div>
                                                         <div class="product-title">
@@ -91,7 +93,7 @@
                                             }
                                         </tbody>
                                     </table>
-                                </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -115,7 +117,7 @@ else
                                     <div class="cart-empty-img mb-4 mt-4">
                                         <img src="/assets/images/shopping-cart.png">
                                     </div>
-                                    <p class="cart-empty-title">محصولی برای نمایش وجود ندارد !!</p>
+                                    <p class="cart-empty-title">هنوز محصولی به علاقه‌مندی‌های خود اضافه نکرده‌اید.</p>
                                     <div class="return-to-shop">
                                         <a asp-action="Index" asp-controller="Product" class="backward btn btn-secondary">بازگشت به صفحه اصلی</a>
                                     </div>

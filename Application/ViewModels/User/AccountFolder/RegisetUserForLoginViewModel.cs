@@ -14,10 +14,11 @@ namespace Application.ViewModels.User
         [Required(ErrorMessage = "فیلد {0} اجباری است !")]
         [DataType(DataType.Password)]
         [Display(Name = "رمز عبور")]
+        [MinLength(12, ErrorMessage = "رمز عبور باید حداقل ۱۲ نویسه داشته باشد.")]
         public string PassWord { get; set; }
         [Required(ErrorMessage = "فیلد {0} اجباری است !")]
         [DataType(DataType.Password)]
-        [Compare("PassWord", ErrorMessage = "رمز عبور با تکرار آن یکی نیست !!!")]
+        [Compare("PassWord", ErrorMessage = "رمز عبور و تکرار آن یکسان نیستند.")]
         [Display(Name = "تکرار رمز عبور")]
         public string RePassWord { get; set; }
     }

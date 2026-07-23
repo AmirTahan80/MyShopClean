@@ -58,6 +58,7 @@ namespace Application.ViewModels.Admin
         [Display(Name = "فعال‌سازی خروجی ترب")]
         public bool TorobEnabled { get; set; }
 
+        [MinLength(32, ErrorMessage = "توکن دسترسی باید حداقل ۳۲ نویسه و غیرقابل حدس باشد.")]
         [MaxLength(200)]
         [Display(Name = "توکن دسترسی ترب")]
         public string TorobAccessToken { get; set; }
@@ -65,6 +66,7 @@ namespace Application.ViewModels.Admin
         [Display(Name = "فعال‌سازی خروجی ایمالز")]
         public bool EmallsEnabled { get; set; }
 
+        [MinLength(32, ErrorMessage = "توکن دسترسی باید حداقل ۳۲ نویسه و غیرقابل حدس باشد.")]
         [MaxLength(200)]
         [Display(Name = "توکن دسترسی ایمالز")]
         public string EmallsAccessToken { get; set; }

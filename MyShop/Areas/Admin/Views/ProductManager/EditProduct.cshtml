@@ -247,6 +247,7 @@
 
     <script src="~/Vendors/Tags-master/dist/tags.min.js"></script>
     <script src="~/Vendors/ckeditor5/build/ckeditor.js"></script>
+    <script src="~/assets/js/secure-ckeditor-upload.js"></script>
     @*Manage Images*@
     <script type='text/javascript'>
         $(function () {
@@ -363,6 +364,10 @@
                     ]
                 }
             })
+            .then(editor => enableSecureCkEditorUpload(
+                editor,
+                "/Admin/ProductManager/UploadEditorFile",
+                "@Antiforgery.GetAndStoreTokens(Context).RequestToken"))
             .catch(error => {
                 console.error(error);
             });

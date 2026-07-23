@@ -73,13 +73,15 @@
                                         <div>
                                             <ul class="gallery-actions">
                                                 <li>
-                                                    <a asp-action="AddToFavorite" asp-controller="Account"
-                                                       asp-route-productId="@Model.Id"
-                                                       asp-route-returnUrl="@this.Url.Action("Description", "Product", new {productId=Model.Id})"
-                                                       class="btn-option add-product-wishes p-1" style="@(Model.IsInUserFavorite==true?"background: antiquewhite;":"")">
-                                                        <i class="fa fa-heart"></i>
-                                                        <span>محبوب</span>
-                                                    </a>
+                                                    <form asp-action="AddToFavorite" asp-controller="Account" method="post">
+                                                        <input type="hidden" name="productId" value="@Model.Id" />
+                                                        <input type="hidden" name="returnUrl" value="@this.Url.Action("Description", "Product", new {productId=Model.Id})" />
+                                                        <button type="submit" class="btn-option add-product-wishes p-1 border-0"
+                                                                style="@(Model.IsInUserFavorite==true?"background: antiquewhite;":"")">
+                                                            <i class="fa fa-heart"></i>
+                                                            <span>علاقه‌مندی</span>
+                                                        </button>
+                                                    </form>
                                                 </li>
                                                 <li class="Three-dimensional">
                                                     <a href="#" class="btn-option btn-Three-dimensional p-1" data-toggle="modal" data-target="#more-product">
@@ -228,7 +230,7 @@
                                                     </span>
                                                 </a>
                                             </div>
-                                            <form asp-action="AddToCart" asp-controller="Account" method="get" enctype="text/plain">
+                                            <form asp-action="AddToCart" asp-controller="Account" method="post">
                                                 <input type="hidden" name="returnUrl" value="@this.Url.Action("Description", "Product", new {productId=Model.Id})" />
                                                 <input type="hidden" asp-for="Id" name="productId" />
                                                 <div class="product-seller-row guarantee">
@@ -297,7 +299,7 @@
                                 <section class="">
                                     <div class="mask pm-3">
                                         <div class="mask-text" style="overflow:hidden">
-                                            <p>@Html.Raw(Model.Description)</p>
+                                            <div>@Html.Raw(Application.Utilities.SafeHtmlRenderer.Sanitize(Model.Description))</div>
                                         </div>
                                     </div>
                                 </section>
@@ -338,7 +340,7 @@
                                             <div class="comments-summary-box">
                                                 <p>
                                                     برای ثبت نظر ابتدا باید وارد سایت شوید و بعد میتوانید نظر را ثبت کنید ... <br />
-                                                    نظر شما بعد از 24 ساعت توسط ادمین اگر تایید شود نشان داده می شود و در صورت تایید نکردن نشان داده نمی شود !!
+                                                    نظر شما پس از بررسی و تأیید مدیر سایت نمایش داده می‌شود.
                                                 </p>
                                                 @*<ul class="comments-item-rating">
                                                         <li>

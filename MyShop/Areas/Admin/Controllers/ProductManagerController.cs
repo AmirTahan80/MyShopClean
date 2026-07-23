@@ -154,18 +154,19 @@ namespace Areas.Admin.Controllers
             var resut = await _porudctServices.EditProductAsync(model);
             if (!resut)
             {
-                ViewData["Error"] = "خطایی در ویرایش محصول به وجود آمده است !!";
+                ViewData["Error"] = "ویرایش محصول انجام نشد. لطفاً اطلاعات واردشده را بررسی کنید.";
                 return View(model);
             }
             else
-                ViewData["Success"] = "ویرایش محصول با موفقیت انجام شد !!";
+                ViewData["Success"] = "محصول با موفقیت ویرایش شد.";
 
 
             return RedirectToAction("Index");
         }
         
         [HttpPost]
-        [IgnoreAntiforgeryToken]
+        [ValidateAntiForgeryToken]
+        [RequestSizeLimit(5_242_880)]
         public JsonResult UploadEditorFile(IFormFile upload)
         {
             var result = _porudctServices.UploadFileEditor(upload);
@@ -299,11 +300,11 @@ namespace Areas.Admin.Controllers
             return View(model);
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> PostProductToInstagram(int productId)
         {
             var product = await _porudctServices.GetProductAsync(productId);
-            var result = await _instagramBotServices.UploadAlbumAsync(product);
+            await _instagramBotServices.UploadAlbumAsync(product);
             return RedirectToAction("GetPosts");
         }
 
@@ -319,13 +320,13 @@ namespace Areas.Admin.Controllers
             var result = await _instagramBotServices.LoginToInsta(loginToInsta.UserName, loginToInsta.PassWord);
             if (result.Data)
             {
-                ViewData["Success"] = "ورود به اکانت اینستاگرام با موفقیت انجام شد.";
+                ViewData["Success"] = "ورود به حساب اینستاگرام با موفقیت انجام شد.";
                 return View();
             }
             else
             {
-                ViewData["Error"] = "ورود به اکانت اینستاگرام با شکست مواجه شد.";
-                return BadRequest();
+                ViewData["Error"] = "ورود به حساب اینستاگرام انجام نشد. لطفاً اطلاعات ورود را بررسی و دوباره تلاش کنید.";
+                return View(loginToInsta);
             }
         }
 
@@ -336,7 +337,7 @@ namespace Areas.Admin.Controllers
             return View(result);
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> PostToProduct(string imageUri)
         {
             var categoriesTreeView = await _porudctServices.GetCategoriesTreeViewForAdd();

@@ -7,8 +7,7 @@ services:
       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Copy .env.example to .env and set MSSQL_SA_PASSWORD}
     volumes:
       - myshop-sql-data:/var/opt/mssql
-    ports:
-      - "1433:1433"
+    restart: unless-stopped
 
   web:
     build:
@@ -16,11 +15,23 @@ services:
     depends_on:
       - database
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__ConnectToDataBase: Server=database,1433;Database=MyShop;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True
       SeedAdmin__Password: ${SEED_ADMIN_PASSWORD:-}
+      Payments__Zarinpal__MerchantId: ${ZARINPAL_MERCHANT_ID:-}
+      Payments__IdPay__ApiKey: ${IDPAY_API_KEY:-}
+      Payments__CallbackBaseUrl: ${PAYMENTS_CALLBACK_BASE_URL:-http://localhost:8080}
+      DataProtection__KeysPath: /app/keys
+      Database__ApplyMigrationsOnStartup: "true"
+      SeedDemoData__Enabled: "true"
+    volumes:
+      - myshop-data-protection:/app/keys
+      - myshop-images:/app/wwwroot/Images
     ports:
       - "8080:8080"
+    restart: unless-stopped
 
 volumes:
   myshop-sql-data:
+  myshop-data-protection:
+  myshop-images:

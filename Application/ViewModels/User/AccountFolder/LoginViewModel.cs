@@ -9,10 +9,10 @@ namespace Application.ViewModels.User
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage ="فیلد {0} اجباری است")]
+        [Required(ErrorMessage ="لطفاً {0} را وارد کنید.")]
         [Display(Name="پست الکترونیکی یا نام کاربری")]
         public string EmailOrName { get; set; }
-        [Required(ErrorMessage ="فیلد {0} اجباری است")]
+        [Required(ErrorMessage ="لطفاً {0} را وارد کنید.")]
         [Display(Name="رمز عبور")]
         [DataType(DataType.Password)]
         public string PassWord { get; set; }

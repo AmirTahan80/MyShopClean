@@ -1,4 +1,5 @@
 ﻿using Application.InterFaces.Admin;
+using Application.Utilities;
 using Application.Utilities.TagHelper;
 using Application.ViewModels;
 using Application.ViewModels.Admin;
@@ -9,6 +10,7 @@ using InstagramApiSharp.Classes.Models;
 using InstagramApiSharp.Classes.SessionHandlers;
 using InstagramApiSharp.Enums;
 using InstagramApiSharp.Logger;
+using Microsoft.AspNetCore.Http;
 using Org.BouncyCastle.Asn1.X509;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Security.Policy;
 using System.Threading.Tasks;
 
@@ -24,8 +27,13 @@ namespace Application.Services.Admin
     public class InstagramBotServices : IInstagramBotServices
     {
         private static IInstaApi _instaApi;
-        private static readonly HttpClient HttpClient = new HttpClient();
+        private readonly HttpClient _httpClient;
         private readonly IInstaLogger _logger = new DebugLogger(LogLevel.Exceptions);
+
+        public InstagramBotServices(IHttpClientFactory httpClientFactory)
+        {
+            _httpClient = httpClientFactory.CreateClient("InstagramMedia");
+        }
 
         public async Task<ResultDto<bool>> LoginToInsta(string userName, string passWord)
         {
@@ -124,7 +132,7 @@ namespace Application.Services.Admin
             //    return new()
             //    {
             //        Status = false,
-            //        ErrorMessage = "حذف کامنت با مشکل مواحه شد " + e.Message
+            //        ErrorMessage = "حذف دیدگاه با مشکل مواجه شد " + e.Message
             //    };
             //}
             return NotSupportedAsync<bool>();
@@ -235,7 +243,7 @@ namespace Application.Services.Admin
             //    return new()
             //    {
             //        Status = false,
-            //        ErrorMessage = "درج کامنت با مشکل مواحه شد " + e.Message
+            //        ErrorMessage = "ثبت دیدگاه با مشکل مواجه شد " + e.Message
             //    };
             //}
             return NotSupportedAsync<InstaComment>();
@@ -536,40 +544,127 @@ namespace Application.Services.Admin
             }
 
         }
-        private static async Task<string> DownloadRemoteImageFileAsync(string uri, string folder)
+        private async Task<string> DownloadRemoteImageFileAsync(string uri, string folder)
         {
-            //var uploadsRootFolder = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+            var currentUri = await ValidateInstagramMediaUriAsync(uri);
+            HttpResponseMessage response = null;
 
-            //if (!Directory.Exists(uploadsRootFolder))
-            //{
-            //    File.Create(uploadsRootFolder);
-            //}
-            //HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-            //HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            //if ((response.StatusCode == HttpStatusCode.OK ||
-            //    response.StatusCode == HttpStatusCode.Moved ||
-            //    response.StatusCode == HttpStatusCode.Redirect) &&
-            //    response.ContentType.StartsWith("image", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    using Stream inputStream = response.GetResponseStream();
-            //    using Stream outputStream = File.OpenWrite(uploadsRootFolder);
-            //    byte[] buffer = new byte[inputStream.Length];
-            //    int bytesRead;
-            //    do
-            //    {
-            //        bytesRead = inputStream.Read(buffer, 0, buffer.Length);
-            //        outputStream.Write(buffer, 0, bytesRead);
-            //    } while (bytesRead != 0);
-            //    FileStream fileStream = inputStream as FileStream;
-            //    return fileStream.Name;
-            //}
-            Directory.CreateDirectory(folder);
-            var imageName = $"{Guid.NewGuid()}instagram.png";
-            var imagePath = Path.Combine(folder, imageName);
-            var imageBytes = await HttpClient.GetByteArrayAsync(new Uri(uri));
-            await File.WriteAllBytesAsync(imagePath, imageBytes);
+            for (var redirect = 0; redirect <= 3; redirect++)
+            {
+                response?.Dispose();
+                response = await _httpClient.GetAsync(currentUri, HttpCompletionOption.ResponseHeadersRead);
 
-            return $"{new DirectoryInfo(folder).Name}/{imageName}";
+                if ((int)response.StatusCode is >= 300 and < 400)
+                {
+                    var location = response.Headers.Location
+                        ?? throw new InvalidOperationException("Instagram media redirect is missing a location.");
+                    currentUri = await ValidateInstagramMediaUriAsync(
+                        location.IsAbsoluteUri ? location.ToString() : new Uri(currentUri, location).ToString());
+                    continue;
+                }
+
+                response.EnsureSuccessStatusCode();
+                break;
+            }
+
+            using (response)
+            {
+                if (response == null || (int)response.StatusCode is >= 300 and < 400)
+                {
+                    throw new InvalidOperationException("Instagram media exceeded the redirect limit.");
+                }
+
+                if (response.Content.Headers.ContentLength > SecureImageUpload.MaximumFileSize)
+                {
+                    throw new InvalidOperationException("Instagram image is larger than 5 MB.");
+                }
+
+                var contentType = response.Content.Headers.ContentType?.MediaType;
+                if (contentType == null || !contentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException("Instagram media response is not an image.");
+                }
+
+                await using var input = await response.Content.ReadAsStreamAsync();
+                await using var buffer = new MemoryStream();
+                var chunk = new byte[81920];
+                int bytesRead;
+                while ((bytesRead = await input.ReadAsync(chunk)) > 0)
+                {
+                    if (buffer.Length + bytesRead > SecureImageUpload.MaximumFileSize)
+                    {
+                        throw new InvalidOperationException("Instagram image is larger than 5 MB.");
+                    }
+
+                    await buffer.WriteAsync(chunk.AsMemory(0, bytesRead));
+                }
+
+                buffer.Position = 0;
+                var formFile = new FormFile(buffer, 0, buffer.Length, "upload", "instagram-image")
+                {
+                    Headers = new HeaderDictionary(),
+                    ContentType = contentType
+                };
+                if (!SecureImageUpload.TrySave(formFile, folder, out var imageName, out var errorMessage))
+                {
+                    throw new InvalidOperationException(errorMessage);
+                }
+
+                return $"{new DirectoryInfo(folder).Name}/{imageName}";
+            }
+        }
+
+        private static async Task<Uri> ValidateInstagramMediaUriAsync(string value)
+        {
+            if (!Uri.TryCreate(value, UriKind.Absolute, out var uri) ||
+                uri.Scheme != Uri.UriSchemeHttps ||
+                !IsInstagramMediaHost(uri.Host))
+            {
+                throw new InvalidOperationException("Instagram media URL is not allowed.");
+            }
+
+            var addresses = await Dns.GetHostAddressesAsync(uri.DnsSafeHost);
+            if (addresses.Length == 0 || addresses.Any(IsPrivateAddress))
+            {
+                throw new InvalidOperationException("Instagram media URL resolves to a private network.");
+            }
+
+            return uri;
+        }
+
+        private static bool IsInstagramMediaHost(string host)
+        {
+            return host.Equals("instagram.com", StringComparison.OrdinalIgnoreCase) ||
+                   host.EndsWith(".instagram.com", StringComparison.OrdinalIgnoreCase) ||
+                   host.Equals("cdninstagram.com", StringComparison.OrdinalIgnoreCase) ||
+                   host.EndsWith(".cdninstagram.com", StringComparison.OrdinalIgnoreCase) ||
+                   host.Equals("fbcdn.net", StringComparison.OrdinalIgnoreCase) ||
+                   host.EndsWith(".fbcdn.net", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsPrivateAddress(IPAddress address)
+        {
+            if (IPAddress.IsLoopback(address) ||
+                address.IsIPv6LinkLocal ||
+                address.IsIPv6SiteLocal ||
+                address.IsIPv6Multicast)
+            {
+                return true;
+            }
+
+            if (address.AddressFamily != AddressFamily.InterNetwork)
+            {
+                return false;
+            }
+
+            var bytes = address.GetAddressBytes();
+            return bytes[0] == 10 ||
+                   bytes[0] == 127 ||
+                   bytes[0] == 0 ||
+                   (bytes[0] == 169 && bytes[1] == 254) ||
+                   (bytes[0] == 172 && bytes[1] is >= 16 and <= 31) ||
+                   (bytes[0] == 192 && bytes[1] == 168) ||
+                   bytes[0] >= 224;
         }
 
         private static Task<ResultDto<T>> NotSupportedAsync<T>() => Task.FromResult(new ResultDto<T>

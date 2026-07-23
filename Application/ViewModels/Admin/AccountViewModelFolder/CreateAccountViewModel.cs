@@ -15,13 +15,13 @@ namespace Application.ViewModels.Admin
         [MinLength(3)]
         public string UserEmail { get; set; }
         [Required(ErrorMessage = "فیلد {0} اجباری است !")]
-        [MinLength(8)]
+        [MinLength(12, ErrorMessage = "رمز عبور باید حداقل ۱۲ نویسه داشته باشد.")]
         public string UserPassWord { get; set; }
         [Required(ErrorMessage = "فیلد {0} اجباری است !")]
-        [MinLength(8)]
-        [Compare("UserPassWord", ErrorMessage = "تکرار گذرواژه با گذزواژه وارد شده یکسان نیست ! ")]
+        [MinLength(12, ErrorMessage = "رمز عبور باید حداقل ۱۲ نویسه داشته باشد.")]
+        [Compare("UserPassWord", ErrorMessage = "رمز عبور و تکرار آن یکسان نیستند.")]
         public string UserRePassWord { get; set; }
-        [Required(ErrorMessage ="مقام کاربر در وبسایت مهم است !!!")]
+        [Required(ErrorMessage ="لطفاً نقش کاربر را انتخاب کنید.")]
         public string RoleId { get; set; }
 
         public List<SelectListItem> RolesItem { get; set; }

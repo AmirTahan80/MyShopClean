@@ -89,19 +89,19 @@ namespace Application.InterFaces.User
         /// </summary>
         /// <param name="cartDetailId"></param>
         /// <returns>bool</returns>
-        Task<bool> RemoveCartDetail(int cartDetailId);
+        Task<bool> RemoveCartDetail(int cartDetailId, string userId);
         /// <summary>
         /// کاهش تعداد محصول از سبد خرید
         /// </summary>
         /// <param name="cartDetailId"></param>
         /// <returns>bool</returns>
-        Task<bool> LowOffProduct(int cartDetailId);
+        Task<bool> LowOffProduct(int cartDetailId, string userId);
         /// <summary>
         /// افزایش تعداد محصول
         /// </summary>
         /// <param name="cartDetailId"></param>
         /// <returns>bool</returns>
-        Task<bool> IncreaseProduct(int cartDetailId);
+        Task<bool> IncreaseProduct(int cartDetailId, string userId);
 
         /// <summary>
         /// افزودن محصول به علاقه مندی ها
@@ -121,7 +121,7 @@ namespace Application.InterFaces.User
         /// </summary>
         /// <param name="favoriteDetailId"></param>
         /// <returns></returns>
-        Task<bool> RemoveFavoriteDetailAsync(int favoriteDetailId);
+        Task<bool> RemoveFavoriteDetailAsync(int favoriteDetailId, string userId);
         /// <summary>
         /// پرسش و پاسخ
         /// </summary>
@@ -140,7 +140,7 @@ namespace Application.InterFaces.User
         /// </summary>
         /// <param name="discount"></param>
         /// <returns></returns>
-        Task<ResultDto> DiscountCartAsync(CartViewModel discount);
+        Task<ResultDto> DiscountCartAsync(CartViewModel discount, string userId);
         /// <summary>
         /// گرفتن فاکتور ها برای کاربر
         /// </summary>
@@ -152,7 +152,7 @@ namespace Application.InterFaces.User
         /// </summary>
         /// <param name="id"></param>
         /// <returns>ProfileViewModel</returns>
-        Task<ProfileViewModel> GetFactorAsync(int id);
+        Task<ProfileViewModel> GetFactorAsync(int id, string userId);
         /// <summary>
         /// ساخت ارتباط با ما
         /// </summary>

@@ -176,7 +176,7 @@ namespace MyShop.Areas.Admin.Controllers
             var result = await _accountServices.DeleteUsersAsync(model);
 
             if (!result)
-                TempData["Error"] = "مشکلی در حذف کاربر یا کابران به وجود آمده است !!";
+                TempData["Error"] = "حذف کاربران انتخاب‌شده انجام نشد. لطفاً دوباره تلاش کنید.";
             else
                 TempData["Success"] = "حذف کاربر یا کاربران با موفقیت انجام شد !";
 

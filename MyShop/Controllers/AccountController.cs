@@ -4,6 +4,7 @@ using Application.ViewModels.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
@@ -26,14 +27,15 @@ namespace MyShop.Controllers
             ICommentUserServices commentUserServices,
             IProductUserServices productUserServices,
             IPayUserServices payUserServices, 
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IHttpClientFactory httpClientFactory)
         {
             _accountUserServices = accountUserServices;
             _commentUserServices = commentUserServices;
             _productUserServices = productUserServices;
             _payUserServices = payUserServices;
             _configuration = configuration;
-            _httpClient = new HttpClient();
+            _httpClient = httpClientFactory.CreateClient("External");
         }
         #endregion
 
@@ -50,6 +52,7 @@ namespace MyShop.Controllers
         [HttpPost]
         [Route("Register")]
         [ValidateAntiForgeryToken]
+        [EnableRateLimiting("authentication")]
         public async Task<IActionResult> Register(RegisetUserForLoginViewModel model)
         {
             var recaptchaResponse = Request.Form["g-recaptcha-response"];
@@ -73,7 +76,7 @@ namespace MyShop.Controllers
             {
                 if (apiJson.success != true)
                 {
-                    ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
+                    ViewData["Error"] = "لطفاً تأیید کنید که ربات نیستید.";
                 }
                 return View(model);
             }
@@ -93,9 +96,9 @@ namespace MyShop.Controllers
             var result = await _accountUserServices.ConfirmEmailAsync(userEmail, token);
 
             if (!result)
-                ViewData["Error"] = $"ایمیل {userEmail} تایید نشد لطفا دوباره امتحان کنید !";
+                ViewData["Error"] = "تأیید ایمیل انجام نشد. ممکن است لینک منقضی شده باشد؛ لطفاً دوباره درخواست دهید.";
             else
-                ViewData["Success"] = $"ایمیل {userEmail} تایید شد !";
+                ViewData["Success"] = "ایمیل شما با موفقیت تأیید شد.";
 
             return View();
         }
@@ -118,6 +121,7 @@ namespace MyShop.Controllers
         [HttpPost]
         [Route("Login")]
         [ValidateAntiForgeryToken]
+        [EnableRateLimiting("authentication")]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             //var recaptchaResponse = Request.Form["g-recaptcha-response"];
@@ -137,7 +141,7 @@ namespace MyShop.Controllers
             //var responseString = await response.Content.ReadAsStringAsync();
             //dynamic apiJson = JObject.Parse(responseString);
 
-            var returnUrl = "";
+            var returnUrl = TempData["returnUrl"] as string ?? string.Empty;
             //if (!ModelState.IsValid || apiJson.success != true)
             //{
             //    if (apiJson.success != true)
@@ -327,6 +331,7 @@ namespace MyShop.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [EnableRateLimiting("authentication")]
         public async Task<IActionResult> ForgotPassWord(ForgotPassWordViewModel model)
         {
             var recaptchaResponse = Request.Form["g-recaptcha-response"];
@@ -351,7 +356,7 @@ namespace MyShop.Controllers
             {
                 if (apiJson.success != true)
                 {
-                    ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
+                    ViewData["Error"] = "لطفاً تأیید کنید که ربات نیستید.";
                 }
                 return View(model);
             }
@@ -381,6 +386,7 @@ namespace MyShop.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [EnableRateLimiting("authentication")]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
             var recaptchaResponse = Request.Form["g-recaptcha-response"];
@@ -435,8 +441,9 @@ namespace MyShop.Controllers
             return RedirectToAction("Login");
         }
 
-        [HttpGet]
+        [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToCart(int productId, int templateId, int count, string returnUrl = "")
         {
             if (productId == 0) return NotFound();
@@ -479,47 +486,58 @@ namespace MyShop.Controllers
 
             return View(cart);
         }
-        [HttpGet]
+        [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveCartDetail(int cartDetailId = 0)
         {
             if (cartDetailId == 0) return NotFound();
 
-            var result = await _accountUserServices.RemoveCartDetail(cartDetailId);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _accountUserServices.RemoveCartDetail(cartDetailId, userId);
             if (result == false)
             {
-                TempData["Error"] = "در حذف محصول مشکلی پیش آمده است !!!";
+                TempData["Error"] = "این محصول در سبد خرید شما پیدا نشد یا امکان حذف آن وجود ندارد.";
             }
             else
             {
-                TempData["Success"] = "حذف محصول با موفقیت انجام شد .";
+                TempData["Success"] = "محصول با موفقیت از سبد خرید شما حذف شد.";
             }
 
             return RedirectToAction("ShowCart");
         }
-        [HttpGet]
+        [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> LowOffProduct(int cartDetailId = 0)
         {
             if (cartDetailId == 0) return NotFound();
 
-            var result = await _accountUserServices.LowOffProduct(cartDetailId);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _accountUserServices.LowOffProduct(cartDetailId, userId);
+            if (!result)
+                TempData["Error"] = "امکان کاهش تعداد این محصول وجود ندارد.";
 
             return RedirectToAction("ShowCart");
         }
-        [HttpGet]
+        [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> IncreaseProduct(int cartDetailId = 0)
         {
             if (cartDetailId == 0) return NotFound();
 
-            var result = await _accountUserServices.IncreaseProduct(cartDetailId);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _accountUserServices.IncreaseProduct(cartDetailId, userId);
+            if (!result)
+                TempData["Error"] = "امکان افزایش تعداد این محصول وجود ندارد؛ لطفاً موجودی را بررسی کنید.";
 
             return RedirectToAction("ShowCart");
         }
 
-        [HttpGet]
+        [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToFavorite(int productId = 0, string returnUrl = "")
         {
             if (productId == 0)
@@ -573,13 +591,19 @@ namespace MyShop.Controllers
             return View(result);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveFavorite(int favoriteDetailId = 0)
         {
             if (favoriteDetailId == 0) return NotFound();
 
-            var result = await _accountUserServices.RemoveFavoriteDetailAsync(favoriteDetailId);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _accountUserServices.RemoveFavoriteDetailAsync(favoriteDetailId, userId);
+            if (result)
+                TempData["Success"] = "محصول از فهرست علاقه‌مندی‌های شما حذف شد.";
+            else
+                TempData["Error"] = "این محصول در فهرست علاقه‌مندی‌های شما پیدا نشد.";
 
             return RedirectToAction("ShowFavorite");
 
@@ -714,7 +738,12 @@ namespace MyShop.Controllers
             if (string.IsNullOrWhiteSpace(model.CodeName))
                 return NotFound();
 
-            var result = await _accountUserServices.DiscountCartAsync(model);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _accountUserServices.DiscountCartAsync(model, userId);
+            if (result.Status)
+                TempData["Success"] = result.SuccesMessage;
+            else
+                TempData["Error"] = result.ErrorMessage;
 
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
@@ -841,7 +870,10 @@ namespace MyShop.Controllers
             if (factorId == 0)
                 return NotFound();
 
-            var result = await _accountUserServices.GetFactorAsync(factorId);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _accountUserServices.GetFactorAsync(factorId, userId);
+            if (result == null)
+                return NotFound();
 
             return View(result);
         }
@@ -856,6 +888,7 @@ namespace MyShop.Controllers
         [HttpPost]
         [Route("ContactUs")]
         [ValidateAntiForgeryToken]
+        [EnableRateLimiting("authentication")]
         public async Task<IActionResult> ContactUs(ContactUsViewModel model)
         {
             var recaptchaResponse = Request.Form["g-recaptcha-response"];
@@ -880,7 +913,7 @@ namespace MyShop.Controllers
             {
                 if (apiJson.success != true)
                 {
-                    ViewData["Error"] = "لطفا احراز هویت را تکمیل کنید !";
+                    ViewData["Error"] = "لطفاً تأیید کنید که ربات نیستید.";
                 }
                 return View(model);
             }
@@ -900,14 +933,6 @@ namespace MyShop.Controllers
             return View();
         }
 
-        [HttpPost]
-        [IgnoreAntiforgeryToken]
-        public JsonResult UploadEditorFile(IFormFile upload)
-        {
-            var result = _accountUserServices.UploadFileEditor(upload);
-            return result;
-        }
-        
         [HttpGet]
         [Route("Work-With-MyShop")]
         public IActionResult RequestForWork()
@@ -915,7 +940,9 @@ namespace MyShop.Controllers
             return View();
         }
 
-        [HttpGet]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [EnableRateLimiting("authentication")]
         [Route("Join")]
         public async Task<IActionResult> JoinUs(string email,string returnUrl)
         {

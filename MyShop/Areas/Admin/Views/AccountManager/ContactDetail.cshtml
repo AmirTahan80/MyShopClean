@@ -93,6 +93,7 @@
 
 
     <script src="~/Vendors/ckeditor5/build/ckeditor.js"></script>
+    <script src="~/assets/js/secure-ckeditor-upload.js"></script>
 
     <script>
 
@@ -155,6 +156,10 @@
                     ]
                 }
             })
+            .then(editor => enableSecureCkEditorUpload(
+                editor,
+                "/Admin/ProductManager/UploadEditorFile",
+                "@Antiforgery.GetAndStoreTokens(Context).RequestToken"))
             .catch(error => {
                 console.error(error);
             });
