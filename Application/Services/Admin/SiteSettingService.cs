@@ -1,9 +1,12 @@
 using Application.InterFaces.Admin;
 using Application.Utilities;
+using Application.Utilities.TagHelper;
 using Application.ViewModels.Admin;
 using Domain.InterFaces;
 using Domain.Models;
+using Microsoft.AspNetCore.Http;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Application.Services.Admin
@@ -46,6 +49,15 @@ namespace Application.Services.Admin
             setting.SupportEmail = model.SupportEmail?.Trim();
             setting.PublicBaseUrl = model.PublicBaseUrl?.Trim().TrimEnd('/');
             setting.TorobEnabled = model.TorobEnabled;
+
+            if (model.LogoUrl != setting.LogoUrl)
+            {
+                DeletePhoto(setting.LogoUrl);
+                var logoUrl = uploadImage(model.Logo);
+
+                setting.LogoUrl = model.LogoUrl;
+            }
+
             if (!string.IsNullOrWhiteSpace(model.TorobAccessToken))
             {
                 setting.TorobAccessToken = AccessTokenHasher.Hash(model.TorobAccessToken);
@@ -106,4 +118,42 @@ namespace Application.Services.Admin
             PublicBaseUrl = "http://localhost:8080"
         };
     }
-}
+
+    #region PrivateMethode TagHelper
+
+        private string uploadImage(IFormFile file)
+        {
+            if (file == null)
+                return ("");
+
+            var todayDate = ConverToShamsi.GetMonthAndYear(DateTime.Now);
+            string folder = $@"wwwroot\Images\Baners\{todayDate}";
+            var uploadsRootFolder = Path.Combine(Directory.GetCurrentDirectory(), folder);
+            if (!Directory.Exists(uploadsRootFolder))
+            {
+                Directory.CreateDirectory(uploadsRootFolder);
+            }
+            return SecureImageUpload.TrySave(file, uploadsRootFolder, out var fileName, out _)
+                ? todayDate + "/" + fileName
+                : string.Empty;
+        }
+
+        private bool DeletePhoto(string imagePath)
+        {
+            if (imagePath == "")
+                return false;
+
+            string folder = $@"wwwroot\Images\Baners\{imagePath}";
+            var uploadsRootFolder = Path.Combine(Directory.GetCurrentDirectory(), folder);
+            if (File.Exists(uploadsRootFolder))
+            {
+                File.Delete(uploadsRootFolder);
+                return true;
+            }
+            else
+                return false;
+        }
+
+
+        #endregion
+    }

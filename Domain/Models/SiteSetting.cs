@@ -25,7 +25,7 @@ namespace Domain.Models
         public string FooterTitle { get; set; }
 
         [MaxLength(2000)]
-        public string FooterDescription { get; set; }
+        public string FooterDescription { get; set; } = "توسعه داده شده توسط AmirTahan.";
 
         [MaxLength(500)]
         public string FooterCopyright { get; set; }
@@ -51,5 +51,11 @@ namespace Domain.Models
 
         [MaxLength(200)]
         public string EmallsAccessToken { get; set; }
+
+        [MaxLength(1000)]
+        public string LogoUrl { get; set; }
+
+        [MaxLength(250)]
+        public string Slogan { get; set; }
     }
 }

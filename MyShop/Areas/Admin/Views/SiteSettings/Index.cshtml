@@ -31,6 +31,16 @@
                                     <label asp-for="SiteTagline"></label>
                                     <input asp-for="SiteTagline" class="form-control" />
                                 </div>
+                                <div class="form-group col-md-6">
+                                    <label asp-for="Logo"></label>
+                                    <input asp-for="Logo" class="form-control" />
+                                    <input asp-for="LogoUrl" class="form-control" style="display:none;"/>
+                                    @if(!string.IsNullOrWhiteSpace(Model.LogoUrl))
+                                    {
+                                        <img style="width:50px; height:50px" src="@Model.LogoUrl"/>
+                                    }
+                                    <span asp-validation-for="Logo" class="text-danger"></span>
+                                </div>
                             </div>
 
                             <div class="form-row">

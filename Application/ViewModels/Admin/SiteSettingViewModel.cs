@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace Application.ViewModels.Admin
@@ -70,5 +71,10 @@ namespace Application.ViewModels.Admin
         [MaxLength(200)]
         [Display(Name = "توکن دسترسی ایمالز")]
         public string EmallsAccessToken { get; set; }
+
+        [Display(Name = "لوگو")]
+        public IFormFile Logo { get; set; }
+
+        public string LogoUrl { get; set; } = "";
     }
 }

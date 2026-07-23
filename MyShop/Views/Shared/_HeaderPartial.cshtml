@@ -21,7 +21,7 @@
     <div class="container-main">
         <section class="site-header-row">
             <a asp-action="Index" asp-controller="Home" class="site-brand" aria-label="@siteSettings.SiteName">
-                <img src="/assets/images/logo.png" alt="لوگوی @siteSettings.SiteName" />
+                <img src="@siteSettings.LogoUrl" alt="لوگوی @siteSettings.SiteName" />
                 <span>
                     <strong>@siteSettings.SiteName</strong>
                     @if (!string.IsNullOrWhiteSpace(siteSettings.SiteTagline))
