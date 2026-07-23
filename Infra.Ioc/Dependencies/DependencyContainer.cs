@@ -62,6 +62,9 @@ namespace Infra.Ioc.Dependencies
 
             services.AddScoped<IAdminIndexManagerServices, AdminIndexManagerServices>();
 
+            services.AddScoped<ISiteSettingRepository, SiteSettingRepository>();
+            services.AddScoped<ISiteSettingService, SiteSettingService>();
+
             services.AddScoped<IInstagramBotServices, InstagramBotServices>();
 
 
@@ -94,7 +97,7 @@ namespace Infra.Ioc.Dependencies
                 option.Password.RequiredUniqueChars = 0;
                 option.User.RequireUniqueEmail = true;
                 option.User.AllowedUserNameCharacters =
-                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.@";
                 option.SignIn.RequireConfirmedEmail = false;
             })
             .AddEntityFrameworkStores<AppWebContext>()

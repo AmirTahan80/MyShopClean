@@ -1,0 +1,122 @@
+@model SiteSettingViewModel
+@{
+    ViewData["Title"] = "تنظیمات سایت";
+}
+
+<div class="content-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">تنظیمات عمومی، ظاهر و اتصال فروشگاه</h4>
+                    </div>
+                    <div class="card-body">
+                        @if (ViewData["Success"] != null)
+                        {
+                            <div class="alert alert-success">@ViewData["Success"]</div>
+                        }
+
+                        <form asp-action="Index" method="post">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                            <h5 class="mb-3">هویت فروشگاه</h5>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label asp-for="SiteName"></label>
+                                    <input asp-for="SiteName" class="form-control" />
+                                    <span asp-validation-for="SiteName" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label asp-for="SiteTagline"></label>
+                                    <input asp-for="SiteTagline" class="form-control" />
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label asp-for="PrimaryColor"></label>
+                                    <input asp-for="PrimaryColor" type="color" class="form-control site-color-input" />
+                                    <span asp-validation-for="PrimaryColor" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label asp-for="SecondaryColor"></label>
+                                    <input asp-for="SecondaryColor" type="color" class="form-control site-color-input" />
+                                    <span asp-validation-for="SecondaryColor" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label asp-for="AccentColor"></label>
+                                    <input asp-for="AccentColor" type="color" class="form-control site-color-input" />
+                                    <span asp-validation-for="AccentColor" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <h5 class="mt-4 mb-3">اطلاعات تماس و فوتر</h5>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label asp-for="Phone"></label>
+                                    <input asp-for="Phone" class="form-control" dir="ltr" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label asp-for="SupportEmail"></label>
+                                    <input asp-for="SupportEmail" class="form-control" dir="ltr" />
+                                    <span asp-validation-for="SupportEmail" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Address"></label>
+                                <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="FooterTitle"></label>
+                                <input asp-for="FooterTitle" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="FooterDescription"></label>
+                                <textarea asp-for="FooterDescription" class="form-control" rows="4"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="FooterCopyright"></label>
+                                <input asp-for="FooterCopyright" class="form-control" />
+                            </div>
+
+                            <h5 class="mt-4 mb-3">ترب و ایمالز</h5>
+                            <div class="form-group">
+                                <label asp-for="PublicBaseUrl"></label>
+                                <input asp-for="PublicBaseUrl" class="form-control" dir="ltr" placeholder="https://shop.example.com" />
+                                <span asp-validation-for="PublicBaseUrl" class="text-danger"></span>
+                                <small class="form-text text-muted">برای ساخت لینک مطلق محصول و تصویر در خروجی‌ها استفاده می‌شود.</small>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6 marketplace-setting-card">
+                                    <div class="custom-control custom-switch mb-3">
+                                        <input asp-for="TorobEnabled" class="custom-control-input" />
+                                        <label asp-for="TorobEnabled" class="custom-control-label"></label>
+                                    </div>
+                                    <label asp-for="TorobAccessToken"></label>
+                                    <input asp-for="TorobAccessToken" class="form-control" dir="ltr" autocomplete="off" />
+                                    <small class="form-text text-muted">خروجی: <code>/integrations/torob/products</code></small>
+                                </div>
+                                <div class="form-group col-md-6 marketplace-setting-card">
+                                    <div class="custom-control custom-switch mb-3">
+                                        <input asp-for="EmallsEnabled" class="custom-control-input" />
+                                        <label asp-for="EmallsEnabled" class="custom-control-label"></label>
+                                    </div>
+                                    <label asp-for="EmallsAccessToken"></label>
+                                    <input asp-for="EmallsAccessToken" class="form-control" dir="ltr" autocomplete="off" />
+                                    <small class="form-text text-muted">JSON: <code>/integrations/emalls/products</code> — XML: <code>/integrations/emalls/products.xml</code></small>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">ذخیره تنظیمات</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

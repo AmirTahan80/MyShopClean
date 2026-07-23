@@ -1,6 +1,33 @@
 ﻿@model GetProductDescriptionViewModel
 @inject IConfiguration configuration
-@{ ViewData["Title"] = "جزئیات محصول"; int b = 0, c = 0; }
+@inject ISiteSettingService SiteSettingService
+@{
+    ViewData["Title"] = Model.Name;
+    int b = 0, c = 0;
+    var siteSettings = await SiteSettingService.GetAsync();
+    var baseUrl = string.IsNullOrWhiteSpace(siteSettings.PublicBaseUrl) ? $"{Context.Request.Scheme}://{Context.Request.Host}" : siteSettings.PublicBaseUrl.TrimEnd('/');
+    var productImage = Model.Images?.FirstOrDefault()?.ImgSrc ?? "placeholder.svg";
+    var productImageUrl = Model.InstagramPost ? productImage : $"/Images/ProductImages/{productImage}";
+    var structuredProduct = new Dictionary<string, object>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "Product",
+        ["name"] = Model.Name,
+        ["description"] = Model.Description,
+        ["image"] = Model.InstagramPost ? productImage : $"{baseUrl}{productImageUrl}",
+        ["sku"] = Model.Id.ToString(),
+        ["offers"] = new Dictionary<string, object>
+        {
+            ["@type"] = "Offer",
+            ["url"] = $"{baseUrl}/Product/Description?productId={Model.Id}",
+            ["priceCurrency"] = "IRR",
+            ["price"] = Model.Price.Replace(",", string.Empty),
+            ["availability"] = Model.Count > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+        }
+    };
+}
+
+<script type="application/ld+json">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(structuredProduct))</script>
 
 @section Header{
     <!-- plugin-------------------------------------->
@@ -90,47 +117,26 @@
                                     </div>
                                     <div class="gallery-item">
                                         <div class="gallery-img">
-                                            @if(!Model.InstagramPost)
-                                            { 
-                                                <a href="/Images/ProductImages/@Model.Images.FirstOrDefault().ImgSrc">
-                                                    <img class="zoom-img" id="img-product-zoom" src="/Images/ProductImages/@Model.Images.FirstOrDefault().ImgSrc"
-                                                         data-zoom-image="/Images/ProductImages/@Model.Images.FirstOrDefault().ImgSrc" width="411" style="height:500px;" />
-                                                    <div id="gallery_01f" style="width:420px;float:right;">
-                                                </a>                                                
-                                            }
-                                            else
-                                            {
-                                                <a href="@Model.Images.FirstOrDefault().ImgSrc">
-                                                    <img class="zoom-img" id="img-product-zoom" src="@Model.Images.FirstOrDefault().ImgSrc"
-                                                         data-zoom-image="@Model.Images.FirstOrDefault().ImgSrc" width="411" style="height:500px;" />
-                                                    <div id="gallery_01f" style="width:420px;float:right;">
-                                                </a> 
-                                            }
-                                            <ul class="gallery-items owl-carousel owl-theme" id="gallery-slider">
-                                                @foreach (var image in Model.Images)
-                                                {
-                                                    <li class="item">
-                                                        @if (!Model.InstagramPost)
-                                                        {
-                                                            <a href="/Images/ProductImages/@image.ImgSrc"
-                                                           class="elevatezoom-gallery @(b<5?"active":"")" data-update=""
-                                                           data-image="/Images/ProductImages/@image.ImgSrc"
-                                                           data-zoom-image="/Images/ProductImages/@image.ImgSrc">
-                                                                <img src="/Images/ProductImages/@image.ImgSrc" width="100" style="max-height:100px" />
+                                            <a href="@productImageUrl">
+                                                <img class="zoom-img" id="img-product-zoom" src="@productImageUrl"
+                                                     data-zoom-image="@productImageUrl" alt="@Model.Name" />
+                                            </a>
+                                            <div id="gallery_01f">
+                                                <ul class="gallery-items owl-carousel owl-theme" id="gallery-slider">
+                                                    @foreach (var image in Model.Images)
+                                                    {
+                                                        var imageUrl = Model.InstagramPost ? image.ImgSrc : $"/Images/ProductImages/{image.ImgSrc}";
+                                                        <li class="item">
+                                                            <a href="@imageUrl"
+                                                               class="elevatezoom-gallery @(b<5?"active":"")" data-update=""
+                                                               data-image="@imageUrl"
+                                                               data-zoom-image="@imageUrl">
+                                                                <img src="@imageUrl" width="100" style="max-height:100px" alt="@Model.Name" />
                                                             </a>
-                                                        }
-                                                        else
-                                                        {
-                                                            <a href="@image.ImgSrc"
-                                                           class="elevatezoom-gallery @(b<5?"active":"")" data-update=""
-                                                           data-image="@image.ImgSrc"
-                                                           data-zoom-image="@image.ImgSrc">
-                                                                <img src="@image.ImgSrc" width="100" style="max-height:100px" />
-                                                            </a>
-                                                        }
-                                                    </li>
-                                                }
-                                            </ul>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

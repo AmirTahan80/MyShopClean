@@ -1,5 +1,12 @@
 ﻿@model HomePageViewModel
-@{ ViewData["Title"] = "خانه"; int i = 0, d = 0, c = 0;}
+@{
+    ViewData["Title"] = "خانه";
+    int i = 0, d = 0, c = 0;
+    var rightBanner = Model.Baners.FirstOrDefault(p => p.ImageLocation == "Right");
+    var sliderBanners = Model.Baners.Where(p => p.ImageLocation == "Slider").ToList();
+    var middleLeftBanner = Model.Baners.FirstOrDefault(p => p.ImageLocation == "MiddleLeft");
+    var middleRightBanner = Model.Baners.FirstOrDefault(p => p.ImageLocation == "MiddleRight");
+}
 
 @section Header{
     <!-- plugin-------------------------------------->
@@ -10,32 +17,37 @@
 
 <!-- adplacement------------------------------->
 <div class="container-main">
+    @if (rightBanner != null)
+    {
     <div class="col-lg-3 col-md-3 col-xs-12 pr">
         <div class="adplacement-container-row mt-4">
-            <a href="@Model.Baners.SingleOrDefault(p=>p.ImageLocation=="Right").Link" class="adplacement-item">
+            <a href="@rightBanner.Link" class="adplacement-item">
                 <div class="adplacement-sponsored_box">
-                    <img src="/Images/Baners/@Model.Baners.SingleOrDefault(p=>p.ImageLocation=="Right").ImageSrc" style="max-height: 475px;">
+                    <img src="/Images/Baners/@rightBanner.ImageSrc" style="max-height: 475px;" alt="@rightBanner.Text">
                 </div>
             </a>
         </div>
     </div>
+    }
     <!-- slider-main--------------------------->
-    <div class="col-lg-9 col-md-9 col-xs-12 pl">
+    @if (sliderBanners.Count > 0)
+    {
+    <div class="@(rightBanner == null ? "col-lg-12 col-md-12" : "col-lg-9 col-md-9") col-xs-12 pl">
         <div class="slider-main-container d-block">
             <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
                 <ol class="carousel-indicators">
-                    @for (var b = 0; b < Model.Baners.Where(p => p.ImageLocation == "Slider").Count(); b++)
+                    @for (var b = 0; b < sliderBanners.Count; b++)
                     {
                         <li data-target="#carouselExampleIndicators" data-slide-to="@b" class="active"></li>
                     }
                 </ol>
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <a href="@Model.Baners.Where(p => p.ImageLocation == "Slider").FirstOrDefault().Link" class="adplacement-item">
-                            <img src="/Images/Baners/@Model.Baners.Where(p => p.ImageLocation == "Slider").FirstOrDefault().ImageSrc" class="d-block w-100" alt="@Model.Baners.FirstOrDefault().Text">
+                        <a href="@sliderBanners[0].Link" class="adplacement-item">
+                            <img src="/Images/Baners/@sliderBanners[0].ImageSrc" class="d-block w-100" alt="@sliderBanners[0].Text">
                         </a>
                     </div>
-                    @foreach (var item in Model.Baners.Where(p => p.ImageLocation == "Slider").Skip(1))
+                    @foreach (var item in sliderBanners.Skip(1))
                     {
                         <div class="carousel-item">
                             <a href="@item.Link" class="adplacement-item">
@@ -55,6 +67,7 @@
             </div>
         </div>
     </div>
+    }
     <!-- moment-slider-------------------------->
     <!-- slider-amazing------------------------->
     <!-- adplacement--------------------------->
@@ -203,24 +216,33 @@
     </div>
 </div>
 <!-- adplacement--------------------------->
+@if (middleLeftBanner != null || middleRightBanner != null)
+{
 <div class="container-main">
     <div class="adplacement-container-row">
+        @if (middleLeftBanner != null)
+        {
         <div class="col-6 col-lg-6 pr">
-            <a href="@Model.Baners.SingleOrDefault(p=>p.ImageLocation=="MiddleLeft").Link" class="adplacement-item">
+            <a href="@middleLeftBanner.Link" class="adplacement-item">
                 <div class="adplacement-sponsored_box">
-                    <img src="/Images/Baners/@Model.Baners.SingleOrDefault(p=>p.ImageLocation=="MiddleLeft").ImageSrc" style=" max-height: 236px;">
+                    <img src="/Images/Baners/@middleLeftBanner.ImageSrc" style="max-height: 236px;" alt="@middleLeftBanner.Text">
                 </div>
             </a>
         </div>
+        }
+        @if (middleRightBanner != null)
+        {
         <div class="col-6 col-lg-6 pr">
-            <a href="@Model.Baners.SingleOrDefault(p=>p.ImageLocation=="MiddleRight").Link" class="adplacement-item">
+            <a href="@middleRightBanner.Link" class="adplacement-item">
                 <div class="adplacement-sponsored_box">
-                    <img src="/Images/Baners/@Model.Baners.SingleOrDefault(p=>p.ImageLocation=="MiddleRight").ImageSrc" style=" max-height: 236px;">
+                    <img src="/Images/Baners/@middleRightBanner.ImageSrc" style="max-height: 236px;" alt="@middleRightBanner.Text">
                 </div>
             </a>
         </div>
+        }
     </div>
 </div>
+}
 <!-- slider-product------------------------------->
 <div class="col-lg-12 col-md-12 col-xs-12 pr order-1 d-block">
     <div class="slider-widget-products slider-content-tabs">
@@ -297,4 +319,4 @@
     <!-- plugin----------------------------------------------------->
     <script src="~/assets/js/vendor/jquery.nice-select.min.js"></script>
 
-} 
+}

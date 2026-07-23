@@ -1,10 +1,14 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
+#nullable disable
+
 namespace Infra.Data.Migrations
 {
-    public partial class CreateDataBase : Migration
+    /// <inheritdoc />
+    public partial class InitialCreate : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -12,8 +16,7 @@ namespace Infra.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RoleNamePersian = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    RoleNamePersian = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -56,8 +59,7 @@ namespace Infra.Data.Migrations
                         name: "FK_Categories_Categories_ParentId",
                         column: x => x.ParentId,
                         principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -192,14 +194,12 @@ namespace Infra.Data.Migrations
                 name: "CategoryToProducts",
                 columns: table => new
                 {
-                    ProductId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
-                    ProductId1 = table.Column<int>(type: "int", nullable: false)
+                    ProductId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CategoryToProducts", x => x.ProductId);
+                    table.PrimaryKey("PK_CategoryToProducts", x => new { x.CategoryId, x.ProductId });
                     table.ForeignKey(
                         name: "FK_CategoryToProducts_Categories_CategoryId",
                         column: x => x.CategoryId,
@@ -207,8 +207,8 @@ namespace Infra.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CategoryToProducts_Products_ProductId1",
-                        column: x => x.ProductId1,
+                        name: "FK_CategoryToProducts_Products_ProductId",
+                        column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -281,9 +281,8 @@ namespace Infra.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserDetailId = table.Column<int>(type: "int", nullable: true),
-                    RegisterTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UserDetailId = table.Column<int>(type: "int", nullable: false),
+                    RegisterTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -460,14 +459,12 @@ namespace Infra.Data.Migrations
                         name: "FK_Comments_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Comments_Comments_ReplayId",
                         column: x => x.ReplayId,
                         principalTable: "Comments",
-                        principalColumn: "CommentId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "CommentId");
                     table.ForeignKey(
                         name: "FK_Comments_Products_ProductId",
                         column: x => x.ProductId,
@@ -525,20 +522,17 @@ namespace Infra.Data.Migrations
                         name: "FK_Question_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Question_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Question_Question_ReplayOnId",
                         column: x => x.ReplayOnId,
                         principalTable: "Question",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -583,8 +577,7 @@ namespace Infra.Data.Migrations
                         name: "FK_CartDetails_AttributeTemplates_TemplatesAttributeTemplateId",
                         column: x => x.TemplatesAttributeTemplateId,
                         principalTable: "AttributeTemplates",
-                        principalColumn: "AttributeTemplateId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "AttributeTemplateId");
                     table.ForeignKey(
                         name: "FK_CartDetails_Carts_CartId",
                         column: x => x.CartId,
@@ -645,14 +638,12 @@ namespace Infra.Data.Migrations
                         name: "FK_RequestPays_AspNetUsers_ApplicationUserId",
                         column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_RequestPays_Carts_CartId",
                         column: x => x.CartId,
                         principalTable: "Carts",
-                        principalColumn: "CartId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "CartId");
                 });
 
             migrationBuilder.CreateTable(
@@ -701,8 +692,7 @@ namespace Infra.Data.Migrations
                         name: "FK_FactorDetails_Factors_FactorId",
                         column: x => x.FactorId,
                         principalTable: "Factors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -816,14 +806,9 @@ namespace Infra.Data.Migrations
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CategoryToProducts_CategoryId",
+                name: "IX_CategoryToProducts_ProductId",
                 table: "CategoryToProducts",
-                column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CategoryToProducts_ProductId1",
-                table: "CategoryToProducts",
-                column: "ProductId1");
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_ProductId",
@@ -912,6 +897,7 @@ namespace Infra.Data.Migrations
                 column: "UserFavoriteId");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

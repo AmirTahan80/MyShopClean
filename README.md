@@ -1,6 +1,70 @@
 # MyShopClean
-This is shop website with asp.net 5 witch one so compelete for persian websites.
-I users Identity3.1 for authentication and user controller.
-For client I userd RazorPages and connect to my application layer.
-I used clean arthitectur for this project and split any services and database from the mvc.
 
+یک فروشگاه اینترنتی فارسی با ASP.NET Core MVC، Entity Framework Core، SQL Server، Identity و معماری لایه‌ای است. نسخه فعلی روی **.NET 8 LTS** اجرا می‌شود و برای اجرای محلی یک تنظیم کامل Docker دارد.
+
+## اجرای سریع با Docker
+
+پیش‌نیاز: Docker Desktop
+
+```powershell
+Copy-Item .env.example .env
+docker compose up --build
+```
+
+سپس برنامه را در `http://localhost:8080` باز کنید. دیتابیس، migrationها، نقش‌ها، چند محصول نمونه و بنرهای دموی صفحه اصلی به‌صورت خودکار ساخته می‌شوند.
+
+برای ورود مدیر از نام کاربری `admin` و مقدار `SEED_ADMIN_PASSWORD` داخل فایل `.env` استفاده کنید. قبل از انتشار عمومی، هر دو رمز نمونه در `.env` را تغییر دهید. فایل `.env` توسط Git نادیده گرفته می‌شود.
+
+توقف برنامه:
+
+```powershell
+docker compose down
+```
+
+حذف کامل دیتابیس دموی محلی:
+
+```powershell
+docker compose down --volumes
+```
+
+## اجرای مستقیم با .NET
+
+یک SQL Server در دسترس قرار دهید و connection string را با متغیر محیطی تنظیم کنید:
+
+```powershell
+$env:ConnectionStrings__ConnectToDataBase = "Server=localhost,1433;Database=MyShop;User Id=sa;Password=YOUR_PASSWORD;TrustServerCertificate=True"
+$env:SeedAdmin__Password = "YOUR_ADMIN_PASSWORD"
+dotnet run --project .\MyShop\MyShop.csproj
+```
+
+تنظیمات اختیاری ایمیل و reCAPTCHA نیز باید با User Secrets یا متغیرهای محیطی مانند `MailSettings__Password` و `reCAPTCHA__SecretKey` وارد شوند؛ هیچ کلید واقعی نباید در `appsettings.json` commit شود.
+
+محیط Development از کلیدهای تست عمومی reCAPTCHA استفاده می‌کند که همیشه اجازه عبور می‌دهند؛ برای Production حتماً کلیدهای دامنه خودتان را تنظیم کنید.
+
+## تنظیمات پویا و اتصال فروشگاه‌ها
+
+بعد از ورود مدیر، از منوی مدیریت وارد **تنظیمات سایت** شوید. نام و شعار سایت، سه رنگ اصلی، متن‌های فوتر، آدرس، تلفن، ایمیل پشتیبانی و آدرس عمومی سایت از این بخش تغییر می‌کنند و در دیتابیس ذخیره می‌شوند.
+
+برای آماده‌سازی خروجی محصولات ترب و ایمالز، آدرس عمومی سایت را با دامنه نهایی مقداردهی و سرویس موردنظر را فعال کنید. در صورت نیاز یک توکن غیرقابل‌حدس هم تعیین کنید:
+
+```text
+GET /integrations/torob/products?token=YOUR_TOKEN
+GET /integrations/emalls/products?token=YOUR_TOKEN
+GET /integrations/emalls/products.xml?token=YOUR_TOKEN
+```
+
+قیمت خروجی‌ها بر حسب تومان است. فعال‌کردن endpoint به‌تنهایی فروشگاه را در ترب یا ایمالز ثبت نمی‌کند؛ آدرس خروجی را پس از ثبت و تأیید فروشگاه، مطابق فرمت نهایی مورد قبول پنل آن سرویس در اختیار پشتیبانی آن قرار دهید.
+
+## بررسی پروژه
+
+```powershell
+dotnet restore MyShopClean.sln
+dotnet build MyShopClean.sln -c Release --no-restore
+dotnet test MyShopClean.sln -c Release --no-build
+& .\scripts\smoke-test.ps1
+& .\scripts\site-audit.ps1
+```
+
+تست آخر، تنظیمات پویا و feedهای فروشگاه را با یک دیتابیس موقت بررسی می‌کند و از هفت صفحه عمومی در اندازه موبایل، تبلت و دسکتاپ داخل `artifacts/responsive-audit` تصویر می‌گیرد. اجرای آن به SQL Server LocalDB و Google Chrome نیاز دارد.
+
+> migrationهای قدیمی این شاخه schema ناسازگار تولید می‌کردند و با یک migration اولیه تمیز جایگزین شده‌اند. برای این نسخه از یک دیتابیس تازه استفاده کنید؛ اگر دیتابیس قبلی دارید، ابتدا از آن پشتیبان بگیرید.

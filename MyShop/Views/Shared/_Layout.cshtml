@@ -1,49 +1,42 @@
-﻿<!DOCTYPE html>
+@inject ISiteSettingService SiteSettingService
+@{
+    var siteSettings = await SiteSettingService.GetAsync();
+}
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"] - کلوزاستور</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - @siteSettings.SiteName</title>
+    <meta name="theme-color" content="@siteSettings.PrimaryColor" />
+    <meta name="description" content="@siteSettings.SiteTagline" />
 
-    <!-- font---------------------------------------->
-    <!-- plugin-------------------------------------->
     <link href="~/assets/css/vendor/SiteStyleMin.css" rel="stylesheet" />
-
     @await RenderSectionAsync("Header", required: false)
-
-    <!-- main-style---------------------------------->
     <link href="~/assets/css/mainMin.css" rel="stylesheet" />
     <link href="~/assets/css/responsiveMin.css" rel="stylesheet" />
     <link href="~/assets/css/vendor/font-awesome.min.css" rel="stylesheet" />
-
+    <link href="~/css/site-overrides.css" rel="stylesheet" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+    <style>
+        :root {
+            --site-primary: @siteSettings.PrimaryColor;
+            --site-secondary: @siteSettings.SecondaryColor;
+            --site-accent: @siteSettings.AccentColor;
+        }
+    </style>
 </head>
 <body>
-    <!-- header-------------------------------->
     <partial name="_HeaderPartial" />
-    <!-- header-------------------------------->
-
-    <div>
-        @RenderBody()
-    </div>
-
-    <!-- footer------------------------------------------->
+    <main class="site-main">@RenderBody()</main>
     <partial name="_FooterPartial" />
-    <!-- footer------------------------------------------->
-    <!-- scroll_Progress------------------------->
+
     <div class="progress-wrap">
-        <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
-            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
-        </svg>
+        <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102"><path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" /></svg>
     </div>
-    <!-- scroll_Progress------------------------->
+
     <script src="~/assets/js/vendor/SiteJsMin.js"></script>
-
     @await RenderSectionAsync("Scripts", required: false)
-
-    <!-- main js---------------------------------------------------->
     <script src="~/assets/js/mainMin.js"></script>
-
 </body>
 </html>
